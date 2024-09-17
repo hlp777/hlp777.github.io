@@ -13,7 +13,7 @@
         name="viewport"
         content="width=device-width, initial-scale=1, maximum-scale=1"
       />
-      <title> huang</title>
+      <title>Java 技巧 |  huang</title>
   <meta name="generator" content="hexo-theme-ayer">
       
       <link rel="shortcut icon" href="/favicon.ico" />
@@ -53,109 +53,8 @@
     
       
     <main class="content on">
-      
-<section class="cover">
-    
-      
-      <a class="forkMe" href="https://github.com/hlp777"
-        target="_blank"><img width="149" height="149" src="/images/forkme.png"
-          class="attachment-full size-full" alt="Fork me on GitHub" data-recalc-dims="1"></a>
-    
-  <div class="cover-frame">
-    <div class="bg-box">
-      <img src="/images/cover1.jpg" alt="image frame" />
-    </div>
-    <div class="cover-inner text-center text-white">
-      <h1><a href="/">huang</a></h1>
-      <div id="subtitle-box">
-        
-        <span id="subtitle"></span>
-        
-      </div>
-      <div>
-        
-      </div>
-    </div>
-  </div>
-  <div class="cover-learn-more">
-    <a href="javascript:void(0)" class="anchor"><i class="ri-arrow-down-line"></i></a>
-  </div>
-</section>
-
-
-
-<script src="https://cdn.staticfile.org/typed.js/2.0.12/typed.min.js"></script>
-
-
-<!-- Subtitle -->
-
-  <script>
-    try {
-      var typed = new Typed("#subtitle", {
-        strings: ['面朝大海，春暖花开', '愿你一生努力，一生被爱', '想要的都拥有，得不到的都释怀'],
-        startDelay: 0,
-        typeSpeed: 200,
-        loop: true,
-        backSpeed: 100,
-        showCursor: true
-      });
-    } catch (err) {
-      console.log(err)
-    }
-  </script>
-  
-<div id="main">
-  <section class="outer">
-  
-  
-  
-
-<div class="notice" style="margin-top:50px">
-    <i class="ri-heart-fill"></i>
-    <div class="notice-content" id="broad"></div>
-</div>
-<script type="text/javascript">
-    fetch('https://v1.hitokoto.cn')
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById("broad").innerHTML = data.hitokoto;
-        })
-        .catch(console.error)
-</script>
-
-<style>
-    .notice {
-        padding: 20px;
-        border: 1px dashed #e6e6e6;
-        color: #969696;
-        position: relative;
-        display: inline-block;
-        width: 100%;
-        background: #fbfbfb50;
-        border-radius: 10px;
-    }
-
-    .notice i {
-        float: left;
-        color: #999;
-        font-size: 16px;
-        padding-right: 10px;
-        vertical-align: middle;
-        margin-top: -2px;
-    }
-
-    .notice-content {
-        display: initial;
-        vertical-align: middle;
-    }
-</style>
-  
-  <article class="articles">
-    
-    
-    
-    
-    <article
+      <section class="outer">
+  <article
   id="post-Effective+Java笔记"
   class="article article-type-post"
   itemscope
@@ -166,10 +65,9 @@
     
     <header class="article-header">
        
-<h2 itemprop="name">
-  <a class="article-title" href="/2024/09/17/Effective+Java%E7%AC%94%E8%AE%B0/"
-    >Java 技巧</a> 
-</h2>
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  Java 技巧
+</h1>
  
 
       
@@ -178,9 +76,34 @@
     <div class="article-meta">
       <a href="/2024/09/17/Effective+Java%E7%AC%94%E8%AE%B0/" class="article-date">
   <time datetime="2024-09-17T03:42:36.689Z" itemprop="datePublished">2024-09-17</time>
-</a>    
+</a>   
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> Word count:</span>
+            <span class="post-count">3.8k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> Reading time≈</span>
+            <span class="post-count">12 min</span>
+        </span>
+    </span>
+</div>
+ 
     </div>
       
+    <div class="tocbot"></div>
+
+
+
+
+  
     <div class="article-entry" itemprop="articleBody">
        
   <h4 id="1-考虑用静态工厂方法代替构造函数"><a href="#1-考虑用静态工厂方法代替构造函数" class="headerlink" title="1.考虑用静态工厂方法代替构造函数"></a>1.考虑用静态工厂方法代替构造函数</h4><p><strong>静态工厂方法的好处</strong></p>
@@ -213,89 +136,107 @@
 <h5 id="transient修饰符表明这个实例域将从一个类的默认序列化形式中省略掉"><a href="#transient修饰符表明这个实例域将从一个类的默认序列化形式中省略掉" class="headerlink" title="transient修饰符表明这个实例域将从一个类的默认序列化形式中省略掉"></a>transient修饰符表明这个实例域将从一个类的默认序列化形式中省略掉</h5><h5 id="如果所有的实例域都是transient的，那么，从技术角度而言，省去调用defaultWriteObject和defaultReadObject也是允许的，但是不推荐这么做"><a href="#如果所有的实例域都是transient的，那么，从技术角度而言，省去调用defaultWriteObject和defaultReadObject也是允许的，但是不推荐这么做" class="headerlink" title="如果所有的实例域都是transient的，那么，从技术角度而言，省去调用defaultWriteObject和defaultReadObject也是允许的，但是不推荐这么做"></a>如果所有的实例域都是transient的，那么，从技术角度而言，省去调用defaultWriteObject和defaultReadObject也是允许的，但是不推荐这么做</h5><h5 id="在决定将一个域做成非transient之前，请一定要确信它的值将是该对象逻辑状态的一部分"><a href="#在决定将一个域做成非transient之前，请一定要确信它的值将是该对象逻辑状态的一部分" class="headerlink" title="在决定将一个域做成非transient之前，请一定要确信它的值将是该对象逻辑状态的一部分"></a>在决定将一个域做成非transient之前，请一定要确信它的值将是该对象逻辑状态的一部分</h5><h5 id="不管你选择了那种序列化形式，你都要为自己编写的每个可序列化的类声明一个显式的序列版本UID-serial-version-UID"><a href="#不管你选择了那种序列化形式，你都要为自己编写的每个可序列化的类声明一个显式的序列版本UID-serial-version-UID" class="headerlink" title="不管你选择了那种序列化形式，你都要为自己编写的每个可序列化的类声明一个显式的序列版本UID(serial version UID)"></a>不管你选择了那种序列化形式，你都要为自己编写的每个可序列化的类声明一个显式的序列版本UID(serial version UID)</h5><h4 id="56-保护性地编写readObject方法"><a href="#56-保护性地编写readObject方法" class="headerlink" title="56.保护性地编写readObject方法"></a>56.保护性地编写readObject方法</h4><h5 id="当一个对象被反序列化的时候，对于客户不应该拥有的对象引用，如果哪个域包含了这样的对象引用，则必须要做保护性拷贝，这是非常重要的"><a href="#当一个对象被反序列化的时候，对于客户不应该拥有的对象引用，如果哪个域包含了这样的对象引用，则必须要做保护性拷贝，这是非常重要的" class="headerlink" title="当一个对象被反序列化的时候，对于客户不应该拥有的对象引用，如果哪个域包含了这样的对象引用，则必须要做保护性拷贝，这是非常重要的"></a>当一个对象被反序列化的时候，对于客户不应该拥有的对象引用，如果哪个域包含了这样的对象引用，则必须要做保护性拷贝，这是非常重要的</h5><h4 id="57-必要时提供一个readResolve方法"><a href="#57-必要时提供一个readResolve方法" class="headerlink" title="57.必要时提供一个readResolve方法"></a>57.必要时提供一个readResolve方法</h4><h5 id="readResolve方法不仅仅对于singleton对象是必要的，而且对于所有其他的实例受控的（instance-controlled）类也是必需的"><a href="#readResolve方法不仅仅对于singleton对象是必要的，而且对于所有其他的实例受控的（instance-controlled）类也是必需的" class="headerlink" title="readResolve方法不仅仅对于singleton对象是必要的，而且对于所有其他的实例受控的（instance-controlled）类也是必需的"></a>readResolve方法不仅仅对于singleton对象是必要的，而且对于所有其他的实例受控的（instance-controlled）类也是必需的</h5><h5 id="readResolve方法的第二个用法是，就像在第56条中建议的那样，作为保护性的readObject方法的一种保守的替代选择"><a href="#readResolve方法的第二个用法是，就像在第56条中建议的那样，作为保护性的readObject方法的一种保守的替代选择" class="headerlink" title="readResolve方法的第二个用法是，就像在第56条中建议的那样，作为保护性的readObject方法的一种保守的替代选择"></a>readResolve方法的第二个用法是，就像在第56条中建议的那样，作为保护性的readObject方法的一种保守的替代选择</h5><h5 id="尽管保护性readResolve模式并没有被广泛使用，但是它值得认真考虑"><a href="#尽管保护性readResolve模式并没有被广泛使用，但是它值得认真考虑" class="headerlink" title="尽管保护性readResolve模式并没有被广泛使用，但是它值得认真考虑"></a>尽管保护性readResolve模式并没有被广泛使用，但是它值得认真考虑</h5><h5 id="readResolve方法的可访问性（accessibility）是非常重要的"><a href="#readResolve方法的可访问性（accessibility）是非常重要的" class="headerlink" title="readResolve方法的可访问性（accessibility）是非常重要的"></a>readResolve方法的可访问性（accessibility）是非常重要的</h5> 
       <!-- reward -->
       
-    </div>
-    
-
-    <!-- copyright -->
-    
-    <footer class="article-footer">
-       
-    </footer>
-  </div>
-
-   
-   
-  
-</article>
-
-    
-    <article
-  id="post-hello-world"
-  class="article article-type-post"
-  itemscope
-  itemprop="blogPost"
-  data-scroll-reveal
->
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2023/03/27/hello-world/"
-    >Hello World</a> 
-</h2>
- 
-
-      
-    </header>
-     
-    <div class="article-meta">
-      <a href="/2023/03/27/hello-world/" class="article-date">
-  <time datetime="2023-03-27T10:00:40.592Z" itemprop="datePublished">2023-03-27</time>
-</a>    
-    </div>
-      
-    <div class="article-entry" itemprop="articleBody">
-       
-  <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
- 
-      <!-- reward -->
+      <div id="reword-out">
+        <div id="reward-btn">
+          Donate
+        </div>
+      </div>
       
     </div>
     
 
     <!-- copyright -->
     
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>Copyright： </strong>
+          
+          Copyright is owned by the author. For commercial reprints, please contact the author for authorization. For non-commercial reprints, please indicate the source.
+          
+        </li>
+      </ul>
+    </div>
+    
     <footer class="article-footer">
        
-    </footer>
-  </div>
-
-   
-   
-  
-</article>
-
-    
-  </article>
-  
-
-  
-</section>
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
 </div>
 
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://hlp777.github.io/2024/09/17/Effective+Java%E7%AC%94%E8%AE%B0/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+    
+      <a href="/2023/03/27/hello-world/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">Hello World</div>
+      </a>
+    
+  </nav>
+
+  
+   
+  
+   
+    <script src="https://cdn.staticfile.org/twikoo/1.4.18/twikoo.all.min.js"></script>
+    <div id="twikoo" class="twikoo"></div>
+    <script>
+        twikoo.init({
+            envId: ""
+        })
+    </script>
+ 
+</article>
+
+</section>
       <footer class="footer">
   <div class="outer">
     <ul>
@@ -414,6 +355,22 @@
 <script src="/js/lazyload.min.js"></script>
 
 <!-- Tocbot -->
+ 
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: ".tocbot",
+    contentSelector: ".article-entry",
+    headingSelector: "h1, h2, h3, h4, h5, h6",
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: "main",
+    positionFixedSelector: ".tocbot",
+    positionFixedClass: "is-position-fixed",
+    fixedSidebarOffset: "auto",
+  });
+</script>
 
 <script src="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.js"></script>
 <link

@@ -774,4 +774,382 @@
 <h5 id="建立equals（）和hashCode（）"><a href="#建立equals（）和hashCode（）" class="headerlink" title="建立equals（）和hashCode（）"></a>建立equals（）和hashCode（）</h5><h5 id="编译，测试"><a href="#编译，测试" class="headerlink" title="编译，测试"></a>编译，测试</h5><h5 id="考虑是否可以删除工厂函数，并将构造函数声明为pubilc"><a href="#考虑是否可以删除工厂函数，并将构造函数声明为pubilc" class="headerlink" title="考虑是否可以删除工厂函数，并将构造函数声明为pubilc"></a>考虑是否可以删除工厂函数，并将构造函数声明为pubilc</h5><h5 id="一个分层良好的系统，应该将处理用户界面和处理业务逻辑的代码分开。之所以这样做，原因有以下几点"><a href="#一个分层良好的系统，应该将处理用户界面和处理业务逻辑的代码分开。之所以这样做，原因有以下几点" class="headerlink" title="一个分层良好的系统，应该将处理用户界面和处理业务逻辑的代码分开。之所以这样做，原因有以下几点"></a>一个分层良好的系统，应该将处理用户界面和处理业务逻辑的代码分开。之所以这样做，原因有以下几点</h5><p>1，你可能需要使用不同的用户界面来表现相同的业务逻辑，如果同时承担两种责任，用户界面会变得过于复杂，2，与GUI隔离之后，领域对象的维护和演化都会更容易，你甚至可以让不同的开发者负责不同部分的开发</p>
 <h3 id="第九章，简化条件表达式"><a href="#第九章，简化条件表达式" class="headerlink" title="第九章，简化条件表达式"></a>第九章，简化条件表达式</h3><h5 id="1-从if，then，else三个段落中分别提炼出独立函数"><a href="#1-从if，then，else三个段落中分别提炼出独立函数" class="headerlink" title="1.从if，then，else三个段落中分别提炼出独立函数"></a>1.从if，then，else三个段落中分别提炼出独立函数</h5><h5 id="2-将测试合并为一个条件表达式，并将这个条件表达式提炼成为一个独立函数"><a href="#2-将测试合并为一个条件表达式，并将这个条件表达式提炼成为一个独立函数" class="headerlink" title="2.将测试合并为一个条件表达式，并将这个条件表达式提炼成为一个独立函数"></a>2.将测试合并为一个条件表达式，并将这个条件表达式提炼成为一个独立函数</h5><h5 id="3-将重复代码搬到条件表达式之外"><a href="#3-将重复代码搬到条件表达式之外" class="headerlink" title="3.将重复代码搬到条件表达式之外"></a>3.将重复代码搬到条件表达式之外</h5><h5 id="4-以break语句或return语句取代控制标记"><a href="#4-以break语句或return语句取代控制标记" class="headerlink" title="4.以break语句或return语句取代控制标记"></a>4.以break语句或return语句取代控制标记</h5><h5 id="5-使用卫语句表现所有特殊情况"><a href="#5-使用卫语句表现所有特殊情况" class="headerlink" title="5.使用卫语句表现所有特殊情况"></a>5.使用卫语句表现所有特殊情况</h5><h5 id="6-将条件表达式的每个分支放进一个子类内的覆写函数中，然后将原始函数声明为抽象函数"><a href="#6-将条件表达式的每个分支放进一个子类内的覆写函数中，然后将原始函数声明为抽象函数" class="headerlink" title="6.将条件表达式的每个分支放进一个子类内的覆写函数中，然后将原始函数声明为抽象函数"></a>6.将条件表达式的每个分支放进一个子类内的覆写函数中，然后将原始函数声明为抽象函数</h5><h5 id="7-将null值替换为null对象"><a href="#7-将null值替换为null对象" class="headerlink" title="7.将null值替换为null对象"></a>7.将null值替换为null对象</h5><h5 id="8-以断言明确表现这种假设"><a href="#8-以断言明确表现这种假设" class="headerlink" title="8.以断言明确表现这种假设"></a>8.以断言明确表现这种假设</h5><h3 id="第十章，简化函数调用"><a href="#第十章，简化函数调用" class="headerlink" title="第十章，简化函数调用"></a>第十章，简化函数调用</h3><h5 id="1-修改函数名称"><a href="#1-修改函数名称" class="headerlink" title="1.修改函数名称"></a>1.修改函数名称</h5><h5 id="2-为函数添加一个对象参数，让该对象带进函数所需信息"><a href="#2-为函数添加一个对象参数，让该对象带进函数所需信息" class="headerlink" title="2.为函数添加一个对象参数，让该对象带进函数所需信息"></a>2.为函数添加一个对象参数，让该对象带进函数所需信息</h5><h5 id="3-移除不必要的参数"><a href="#3-移除不必要的参数" class="headerlink" title="3.移除不必要的参数"></a>3.移除不必要的参数</h5><h5 id="4-将查询函数和修改函数分离"><a href="#4-将查询函数和修改函数分离" class="headerlink" title="4.将查询函数和修改函数分离"></a>4.将查询函数和修改函数分离</h5><h5 id="5-建立单一函数，以参数表示那些不同的值"><a href="#5-建立单一函数，以参数表示那些不同的值" class="headerlink" title="5.建立单一函数，以参数表示那些不同的值"></a>5.建立单一函数，以参数表示那些不同的值</h5><h5 id="6-以明确函数取代参数"><a href="#6-以明确函数取代参数" class="headerlink" title="6.以明确函数取代参数"></a>6.以明确函数取代参数</h5><h5 id="7-保持对象完整"><a href="#7-保持对象完整" class="headerlink" title="7.保持对象完整"></a>7.保持对象完整</h5><h5 id="8-让参数接受者去除该项参数，并直接调用前一个函数"><a href="#8-让参数接受者去除该项参数，并直接调用前一个函数" class="headerlink" title="8.让参数接受者去除该项参数，并直接调用前一个函数"></a>8.让参数接受者去除该项参数，并直接调用前一个函数</h5><h5 id="9-以一个对象取代此参数"><a href="#9-以一个对象取代此参数" class="headerlink" title="9.以一个对象取代此参数"></a>9.以一个对象取代此参数</h5><h5 id="10-去掉该字段的所有设值函数"><a href="#10-去掉该字段的所有设值函数" class="headerlink" title="10.去掉该字段的所有设值函数"></a>10.去掉该字段的所有设值函数</h5><h5 id="11-将函数修改为private"><a href="#11-将函数修改为private" class="headerlink" title="11.将函数修改为private"></a>11.将函数修改为private</h5><h5 id="12-将构造函数替换为工厂函数"><a href="#12-将构造函数替换为工厂函数" class="headerlink" title="12.将构造函数替换为工厂函数"></a>12.将构造函数替换为工厂函数</h5><h5 id="13-将向下转型动作移到函数中"><a href="#13-将向下转型动作移到函数中" class="headerlink" title="13.将向下转型动作移到函数中"></a>13.将向下转型动作移到函数中</h5><h5 id="14-以异常取代错误码"><a href="#14-以异常取代错误码" class="headerlink" title="14.以异常取代错误码"></a>14.以异常取代错误码</h5><h5 id="15-以测试取代异常"><a href="#15-以测试取代异常" class="headerlink" title="15.以测试取代异常"></a>15.以测试取代异常</h5><h3 id="第十一章，处理概括关系"><a href="#第十一章，处理概括关系" class="headerlink" title="第十一章，处理概括关系"></a>第十一章，处理概括关系</h3><h5 id="1-将子类相同的字段移至父类"><a href="#1-将子类相同的字段移至父类" class="headerlink" title="1.将子类相同的字段移至父类"></a>1.将子类相同的字段移至父类</h5><h5 id="2-将子类相同功能的函数移至父类"><a href="#2-将子类相同功能的函数移至父类" class="headerlink" title="2.将子类相同功能的函数移至父类"></a>2.将子类相同功能的函数移至父类</h5><h5 id="3-如果各子类中拥有一些几乎一致的构造函数，请在父类中新建一个构造函数，并在子类构造函数中调用它"><a href="#3-如果各子类中拥有一些几乎一致的构造函数，请在父类中新建一个构造函数，并在子类构造函数中调用它" class="headerlink" title="3.如果各子类中拥有一些几乎一致的构造函数，请在父类中新建一个构造函数，并在子类构造函数中调用它"></a>3.如果各子类中拥有一些几乎一致的构造函数，请在父类中新建一个构造函数，并在子类构造函数中调用它</h5><h5 id="4-父类中的某个函数只与部分子类相关，将这个函数移到相关的子类去"><a href="#4-父类中的某个函数只与部分子类相关，将这个函数移到相关的子类去" class="headerlink" title="4.父类中的某个函数只与部分子类相关，将这个函数移到相关的子类去"></a>4.父类中的某个函数只与部分子类相关，将这个函数移到相关的子类去</h5><h5 id="5-父类中的某些字段只被部分子类用到，将这个字段移到需要它的子类去"><a href="#5-父类中的某些字段只被部分子类用到，将这个字段移到需要它的子类去" class="headerlink" title="5.父类中的某些字段只被部分子类用到，将这个字段移到需要它的子类去"></a>5.父类中的某些字段只被部分子类用到，将这个字段移到需要它的子类去</h5><h5 id="6-如果类中的某些特性只被某些实例用到，新建一个子类，将那部分的特性移到子类中"><a href="#6-如果类中的某些特性只被某些实例用到，新建一个子类，将那部分的特性移到子类中" class="headerlink" title="6.如果类中的某些特性只被某些实例用到，新建一个子类，将那部分的特性移到子类中"></a>6.如果类中的某些特性只被某些实例用到，新建一个子类，将那部分的特性移到子类中</h5><h5 id="7-如果两个类（或者多个类）有相似特性，为者两个类建立一个超类，将相同特性移至超类"><a href="#7-如果两个类（或者多个类）有相似特性，为者两个类建立一个超类，将相同特性移至超类" class="headerlink" title="7.如果两个类（或者多个类）有相似特性，为者两个类建立一个超类，将相同特性移至超类"></a>7.如果两个类（或者多个类）有相似特性，为者两个类建立一个超类，将相同特性移至超类</h5><h5 id="8-将相同的子集提炼到一个独立接口中"><a href="#8-将相同的子集提炼到一个独立接口中" class="headerlink" title="8.将相同的子集提炼到一个独立接口中"></a>8.将相同的子集提炼到一个独立接口中</h5><h5 id="9-父类和子类之间无太大区别，将它们合为一体"><a href="#9-父类和子类之间无太大区别，将它们合为一体" class="headerlink" title="9.父类和子类之间无太大区别，将它们合为一体"></a>9.父类和子类之间无太大区别，将它们合为一体</h5><h5 id="10-你有一些子类，其中相应的某些函数以相同顺序执行类似的操作，但各个操作的细节上有所不同，将这些操作分别放进独立函数中，并保持原函数上移超类"><a href="#10-你有一些子类，其中相应的某些函数以相同顺序执行类似的操作，但各个操作的细节上有所不同，将这些操作分别放进独立函数中，并保持原函数上移超类" class="headerlink" title="10.你有一些子类，其中相应的某些函数以相同顺序执行类似的操作，但各个操作的细节上有所不同，将这些操作分别放进独立函数中，并保持原函数上移超类"></a>10.你有一些子类，其中相应的某些函数以相同顺序执行类似的操作，但各个操作的细节上有所不同，将这些操作分别放进独立函数中，并保持原函数上移超类</h5><h5 id="11-某个子类只使用超类接口中的一部分，或是根本不需要继承而来的数据，在子类中新建一个字段用以保存超类，调整子类函数，令它改而委托超类，然后去掉两者之间的继承关系"><a href="#11-某个子类只使用超类接口中的一部分，或是根本不需要继承而来的数据，在子类中新建一个字段用以保存超类，调整子类函数，令它改而委托超类，然后去掉两者之间的继承关系" class="headerlink" title="11.某个子类只使用超类接口中的一部分，或是根本不需要继承而来的数据，在子类中新建一个字段用以保存超类，调整子类函数，令它改而委托超类，然后去掉两者之间的继承关系"></a>11.某个子类只使用超类接口中的一部分，或是根本不需要继承而来的数据，在子类中新建一个字段用以保存超类，调整子类函数，令它改而委托超类，然后去掉两者之间的继承关系</h5><h5 id="12-在两个类之间使用委托关系，并经常为整个接口编写许多极简单的委托函数，让委托类继承受托类"><a href="#12-在两个类之间使用委托关系，并经常为整个接口编写许多极简单的委托函数，让委托类继承受托类" class="headerlink" title="12.在两个类之间使用委托关系，并经常为整个接口编写许多极简单的委托函数，让委托类继承受托类"></a>12.在两个类之间使用委托关系，并经常为整个接口编写许多极简单的委托函数，让委托类继承受托类</h5><h3 id="第十二章，大型重构"><a href="#第十二章，大型重构" class="headerlink" title="第十二章，大型重构"></a>第十二章，大型重构</h3><h5 id="1-如果某个继承体系同时承担两项责任，建立两个继承体系，并通过委托关系让其中一个可以调用另一个"><a href="#1-如果某个继承体系同时承担两项责任，建立两个继承体系，并通过委托关系让其中一个可以调用另一个" class="headerlink" title="1.如果某个继承体系同时承担两项责任，建立两个继承体系，并通过委托关系让其中一个可以调用另一个"></a>1.如果某个继承体系同时承担两项责任，建立两个继承体系，并通过委托关系让其中一个可以调用另一个</h5><h5 id="2-将过程化设计转化为对象设计"><a href="#2-将过程化设计转化为对象设计" class="headerlink" title="2.将过程化设计转化为对象设计"></a>2.将过程化设计转化为对象设计</h5><h5 id="3-将领域逻辑分离出来，为它们建立独立的领域类"><a href="#3-将领域逻辑分离出来，为它们建立独立的领域类" class="headerlink" title="3.将领域逻辑分离出来，为它们建立独立的领域类"></a>3.将领域逻辑分离出来，为它们建立独立的领域类</h5><h5 id="4-建立继承体系，以一个子类表示一种特殊情况"><a href="#4-建立继承体系，以一个子类表示一种特殊情况" class="headerlink" title="4.建立继承体系，以一个子类表示一种特殊情况"></a>4.建立继承体系，以一个子类表示一种特殊情况</h5><h3 id="第十三章，重构，复用与实现"><a href="#第十三章，重构，复用与实现" class="headerlink" title="第十三章，重构，复用与实现"></a>第十三章，重构，复用与实现</h3><h5 id="1-重构以求短期利益"><a href="#1-重构以求短期利益" class="headerlink" title="1.重构以求短期利益"></a>1.重构以求短期利益</h5><h5 id="2-降低重构带来的开销"><a href="#2-降低重构带来的开销" class="headerlink" title="2.降低重构带来的开销"></a>2.降低重构带来的开销</h5><h5 id="3-安全地进行重构"><a href="#3-安全地进行重构" class="headerlink" title="3.安全地进行重构"></a>3.安全地进行重构</h5>]]></content>
   </entry>
+  <entry>
+    <title>Java</title>
+    <url>/2024/12/18/Java/</url>
+    <content><![CDATA[<h5 id="ParameterizedType-意为参数化类型（泛型）"><a href="#ParameterizedType-意为参数化类型（泛型）" class="headerlink" title="ParameterizedType 意为参数化类型（泛型）"></a>ParameterizedType 意为参数化类型（泛型）</h5><p>ParameterizedType是Type的子接口，可以通过ParameterizedType获取泛型参数Class类型</p>
+<p>源码</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * ParameterizedType 表示参数化类型，例如 Collection&lt;String&gt;。</span></span><br><span class="line"><span class="comment"> * 参数化类型在反射方法第一次需要时创建，如本包中所指定。 创建参数化类型 p 时，解析 p 实例化的泛型类型声明，并递归创建 p 的所有类型参数。 有关类型变量创建过程的详细信息，请参阅TypeVariable 。 重复创建参数化类型无效。</span></span><br><span class="line"><span class="comment"> * 实现此接口的类的实例必须实现一个 equals() 方法，该方法等同于共享相同泛型类型声明并具有相同类型参数的任何两个实例。</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span>：1.5</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">ParameterizedType</span> <span class="keyword">extends</span> <span class="title class_">Type</span> &#123;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 返回一个Type对象数组，表示该类型的实际类型参数。</span></span><br><span class="line"><span class="comment">     * 请注意，在某些情况下，返回的数组为空。 如果此类型表示嵌套在参数化类型中的非参数化类型，则会发生这种情况。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span>: 表示此类型的实际类型参数的Type对象数组</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> TypeNotPresentException 如果任何实际类型参数引用不存在的类型声明</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> MalformedParameterizedTypeException 如果任何实际类型参数引用了由于任何原因无法实例化的参数化类型</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@since</span> 1.5</span></span><br><span class="line"><span class="comment">     */</span>    </span><br><span class="line">    Type[] getActualTypeArguments();</span><br><span class="line"> </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 返回表示声明此类型的类或接口的Type对象。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 表示声明此类型的类或接口的Type对象</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@since</span> 1.5</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    Type <span class="title function_">getRawType</span><span class="params">()</span>;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 返回一个Type对象，表示该类型所属的类型。 例如，如果此类型为O&lt;T&gt;.I&lt;S&gt; ，则返回O&lt;T&gt; 。</span></span><br><span class="line"><span class="comment">     * 如果此类型是顶级类型，则返回null 。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 一个Type对象，表示该类型所属的类型。 如果此类型是顶级类型，则返回null。</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> 如果所有者类型引用不存在的类型声明</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> 如果所有者类型引用了由于任何原因无法实例化的参数化类型</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@since</span> 1.5</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    Type <span class="title function_">getOwnerType</span><span class="params">()</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="什么是BASE柔性事务？"><a href="#什么是BASE柔性事务？" class="headerlink" title="什么是BASE柔性事务？"></a>什么是BASE柔性事务？</h5><p><strong>BASE是基于可用、柔性状态和最终一致性这三个要素</strong></p>
+<ul>
+<li><strong>基本可用</strong>（Basically Available）保证分布式事务参与方不一定要同时在线；</li>
+<li><strong>柔性状态</strong>（Soft state）则允许系统状态更新有一定的延迟，这个延时对客户来说不一定能够察觉到；</li>
+<li><strong>最终一致性</strong>（Eventually consistent）通常是通过消息传递的方式保证系统的最终一致性；</li>
+</ul>
+<h5 id="TCC-分布式事务"><a href="#TCC-分布式事务" class="headerlink" title="TCC 分布式事务"></a>TCC 分布式事务</h5><p>你原本的一个接口，要改造为 3 个逻辑，Try（尝试）-Confirm（确定）-Cancel（取消）</p>
+<ul>
+<li>先是服务调用链路依次执行 Try 逻辑。</li>
+<li>如果都正常的话，TCC 分布式事务框架推进执行 Confirm 逻辑，完成整个事务。</li>
+<li>如果某个服务的 Try 逻辑有问题，TCC 分布式事务框架感知到之后就会推进执行各个服务的 Cancel 逻辑，撤销之前执行的各种操作。</li>
+</ul>
+<p>这就是所谓的 TCC 分布式事务。TCC 分布式事务的核心思想，说白了，就是当遇到下面这些情况时：</p>
+<ul>
+<li>某个服务的数据库宕机了。</li>
+<li>某个服务自己挂了。</li>
+<li>那个服务的 Redis、Elasticsearch、MQ 等基础设施故障了。</li>
+<li>某些资源不足了，比如说库存不够这些。</li>
+</ul>
+<img src="/2024/12/18/Java/image-20231017203133785.png" class="" title="image-20231017203133785">
+
+<p><strong>TCC 分布式事务框架（国内）：ByteTCC，TCC-transaction，Himly。</strong></p>
+<h5 id="最终一致性分布式事务如何保障实际生产中-99-99-高可用？"><a href="#最终一致性分布式事务如何保障实际生产中-99-99-高可用？" class="headerlink" title="最终一致性分布式事务如何保障实际生产中 99.99% 高可用？"></a>最终一致性分布式事务如何保障实际生产中 99.99% 高可用？</h5><img src="/2024/12/18/Java/image-20231017203317652.png" class="" title="image-20231017203317652">
+
+
+
+<h5 id="类加载分几步？"><a href="#类加载分几步？" class="headerlink" title="类加载分几步？"></a>类加载分几步？</h5><p>按照Java虚拟机规范，从class文件到加载到内存中的类，到类卸载出内存为止，它的整个生命周期包括7个阶段</p>
+<p><strong>加载（Loading）-&gt; 链接（Linking） [ 验证(Verification)-&gt;准备(Preparation)-&gt;解析(Resolution) ] -&gt; 初始化(Initialization)-&gt;使用(Using)-&gt;卸载(Unloading)</strong></p>
+<p>其中</p>
+<p><strong>1.第一过程的加载（Loading）也称为装载</strong></p>
+<p><strong>2.验证，准备，解析3个部分统称为链接（Linking）</strong></p>
+<h5 id="类的初始化"><a href="#类的初始化" class="headerlink" title="类的初始化"></a>类的初始化</h5><p>使用static + final 修饰的成员变量，称为：全局变量</p>
+<p>什么时候在链接阶段的准备环节，给此全局常量赋的值是字面量或常量。不涉及到方法或构造器的调用，除此之外，都是在初始化环节赋值的</p>
+<h5 id="为什么要自定义类加载器"><a href="#为什么要自定义类加载器" class="headerlink" title="为什么要自定义类加载器"></a>为什么要自定义类加载器</h5><p>隔离加载类</p>
+<p>修改类加载的方式</p>
+<p>扩展加载源</p>
+<p>防止源码泄漏</p>
+<h5 id="虚拟机栈大小"><a href="#虚拟机栈大小" class="headerlink" title="虚拟机栈大小"></a>虚拟机栈大小</h5><p><strong>如何设置栈内存大小？  -Xss size（-XX : ThreadStackSize)</strong></p>
+<p><strong>栈的大小直接决定了函数调用的最大可达深度</strong></p>
+<p>一般默认为512k-1024k，取决于操作系统</p>
+<p>jdk 5.0之前，默认栈大小：256k</p>
+<p>jdk5.0之后，默认栈大小：1024k  （Linux&#x2F;mac&#x2F;windows）</p>
+<h5 id="方法和栈帧之间存在怎么的关系"><a href="#方法和栈帧之间存在怎么的关系" class="headerlink" title="方法和栈帧之间存在怎么的关系"></a>方法和栈帧之间存在怎么的关系</h5><p>1.在这个线程上正在执行的每个方法都各自对应一个栈帧（Stack Frame）</p>
+<p>2.栈帧是一个内存区块，是一个数据集，维系着方法执行过程中的各种数据信息</p>
+<h5 id="栈帧内部结构"><a href="#栈帧内部结构" class="headerlink" title="栈帧内部结构"></a>栈帧内部结构</h5><p>局部变量表</p>
+<p>操作数栈</p>
+<p>动态链接</p>
+<p>方法返回地址</p>
+<h5 id="如何设置堆空间大小"><a href="#如何设置堆空间大小" class="headerlink" title="如何设置堆空间大小"></a>如何设置堆空间大小</h5><p>-Xms 用于表示起始堆大小，等价于-XX：InitialHeapSize</p>
+<p>-Xmx 用于表示堆区的最大内存，等价于-XX：MaxHeapSize</p>
+<p><strong>超出堆区的内存最大时，将会抛出OutOfMemoryError：heap异常</strong></p>
+<p><strong>通常会将 -Xms和-Xmx两个参数配置相同的值，其目的是为了能够在java垃圾回收机制清理完堆区后不需要重新分隔计算堆区的大小，从而提高性能</strong></p>
+<h5 id="Java语言中，GC-Roots-包括那些元素"><a href="#Java语言中，GC-Roots-包括那些元素" class="headerlink" title="Java语言中，GC Roots 包括那些元素"></a>Java语言中，GC Roots 包括那些元素</h5><p><strong>1.虚拟机栈中引用的对象</strong></p>
+<p><strong>2.类静态属性引用的对象</strong></p>
+<p><strong>3.方法区中常量引用的对象</strong></p>
+<p><strong>4.所有被同步锁synchronization持有的对象</strong></p>
+<p><strong>5.Java虚拟机内部的引用</strong></p>
+<p><strong>6.反映java虚拟机内部情况的JMXBean，JVMTI中注册的回调，本地代码缓存等</strong></p>
+<p><strong>小技巧</strong></p>
+<p><strong>由于Root采用栈方式存放变量和指针，所以如果一个指针，它保存了堆内存里面的对象，但是自己又不存放在堆内存里面，那它就是一个Root</strong></p>
+<h5 id="Java中内存泄漏的8种情况"><a href="#Java中内存泄漏的8种情况" class="headerlink" title="Java中内存泄漏的8种情况"></a>Java中内存泄漏的8种情况</h5><p>1.静态集合类</p>
+<p><strong>如HashMap，LinkedList等，如果这些容器为静态的，那么它们的生命周期与JVM程序一致。长生命周期的对象持有短生命周期对象的引用，尽管短生命周期的对象不再使用，但是因为长生命周期对象持有它的引用而导致不能被回收</strong></p>
+<p>2.单例模式</p>
+<p><strong>原因和静态集合类似。如果单例对象如果持有外部对象的引用，那么这个外部对象也不会被回收，那么就会造成内存泄漏</strong>**</p>
+<p>3.内部类持有外部类</p>
+<p>4.各种连接，如数据库连接，网络连接和IO连接等</p>
+<p>5.变量不合理的作用域</p>
+<p>6.改变哈希值</p>
+<p>7.缓存泄漏</p>
+<p>8.监听器和回调</p>
+<h5 id="STW"><a href="#STW" class="headerlink" title="STW"></a>STW</h5><p>STW（Stop-The-World），指在GC事件发生过程中，会产生应用程序的停顿。停顿产生时整个应用程序线程都会被暂停，没有任何响应，有点像卡死的感觉，这个停顿称为STW。</p>
+<h5 id="GC评估指标"><a href="#GC评估指标" class="headerlink" title="GC评估指标"></a>GC评估指标</h5><p><strong>吞吐量：程序的运行时间（程序的运行时间+内存回收的时间）</strong></p>
+<p><strong>暂停时间：执行垃圾收集时，程序的工作线程被暂停的时间</strong></p>
+<p><strong>内存占用：Java堆区所占的内存的大小</strong></p>
+<p>垃圾收集开销：相对于应用程序的执行，收集操作发生的频率</p>
+<p>收集频率：相对于应用程序的执行，收集操作发生的频率</p>
+<p>快速：一个对象从诞生到被回收所经历的时间</p>
+<p><strong>现在JVM调优标准：在最大吞吐量优先的情况下，降低停顿时间</strong></p>
+<h5 id="OOM示例"><a href="#OOM示例" class="headerlink" title="OOM示例"></a>OOM示例</h5><p>堆溢出</p>
+<p>元空间溢出</p>
+<p>GC overhead limit exceeded（死循环）</p>
+<p>线程溢出（在windows测试会死机，建议在虚拟机尝试）</p>
+<h5 id="栈上分配"><a href="#栈上分配" class="headerlink" title="栈上分配"></a>栈上分配</h5><p>发现如果一个对象并没有逃逸出方法的话，就可能被优化成栈上分配（JDK1.6后默认使用逃逸分析，提高性能）</p>
+<p>JAVA中的逃逸分析，其实优化的点就在于对栈上分配的对象进行标量替换</p>
+<h5 id="如何优雅关闭Spring-Boot？"><a href="#如何优雅关闭Spring-Boot？" class="headerlink" title="如何优雅关闭Spring Boot？"></a>如何优雅关闭Spring Boot？</h5><p>四种优雅关闭Spring Boot应用程序的方案。</p>
+<p>第一种是通过调用activator的shutdown接口，但需要配置认证和权限控制。</p>
+<p>需添加依赖</p>
+<img src="/2024/12/18/Java/image-20240224222824781.png" class="" title="image-20240224222824781">
+
+<p>shutdown接口默认关闭，需开启</p>
+<img src="/2024/12/18/Java/image-20240224222854114.png" class="" title="image-20240224222854114">
+
+<img src="/2024/12/18/Java/image-20240224222941669.png" class="" title="image-20240224222941669">
+
+<p>第二种是调用应用程序上下文的close方法，也需要处理认证和权限问题。</p>
+<img src="/2024/12/18/Java/image-20240224223012206.png" class="" title="image-20240224223012206">
+
+
+
+<p>第三种是调用Spring Application的方法来触发关闭钩子函数。</p>
+<img src="/2024/12/18/Java/image-20240224223048285.png" class="" title="image-20240224223048285">
+
+<p>第四种是直接杀进程，可以在启动时将进程ID写入固定文本文件，然后执行脚本自动关闭应用程序。</p>
+<h5 id="MySQL的rewriteBatchedStatements的使用场景"><a href="#MySQL的rewriteBatchedStatements的使用场景" class="headerlink" title="MySQL的rewriteBatchedStatements的使用场景"></a>MySQL的rewriteBatchedStatements的使用场景</h5><table>
+<thead>
+<tr>
+<th align="left">批量保存方式</th>
+<th align="left">数据量（条）</th>
+<th align="left">耗时（ms）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">单条循环插入</td>
+<td align="left">1000</td>
+<td align="left">121011</td>
+</tr>
+<tr>
+<td align="left">mybatis-plus saveBatch</td>
+<td align="left">1000</td>
+<td align="left">59927</td>
+</tr>
+<tr>
+<td align="left">mybatis-plus saveBatch(添加rewtire参数)</td>
+<td align="left">1000</td>
+<td align="left">2589</td>
+</tr>
+<tr>
+<td align="left">手动拼接sql</td>
+<td align="left">1000</td>
+<td align="left">2275</td>
+</tr>
+<tr>
+<td align="left">jdbc executeBatch</td>
+<td align="left">1000</td>
+<td align="left">55663</td>
+</tr>
+<tr>
+<td align="left">jdbc executeBatch(添加rewtire参数)</td>
+<td align="left">1000</td>
+<td align="left">324</td>
+</tr>
+</tbody></table>
+<p>所以如果有使用 jdbc 的 Batch 性能方面的需求，要将 rewriteBatchedStatements 设置为 true，这样能提高很多性能。</p>
+<p>然后如果喜欢手动拼接 sql 要注意一次拼接的数量，分批处理。</p>
+<h5 id="Spring-AOP常见的失效场景"><a href="#Spring-AOP常见的失效场景" class="headerlink" title="Spring AOP常见的失效场景"></a>Spring AOP常见的失效场景</h5><p>1.当前类没有被 Spring 容器所管理。Spring 的 AOP 是在 Bean 创建的初始化后阶段进行的，如果当前类没有被 Spring 容器所管<br>理，那么它的 Spring AOP 功能肯定会失效。</p>
+<p>2.同一个类中方法的调用</p>
+<p>3.<strong>内部类方法的调用。</strong>（该方式会直接调用内部类实例对象的方法，同样没有使用代理对象，所以 AOP 会失效）</p>
+<p>4.<strong>私有方法。</strong>（私有方法，代理对象是无法调用的，所以 AOP 会失效）</p>
+<p>5.<strong>static 修饰的方法。</strong>（因为 static 修饰的方法属于类对象，而不属于对象实例，所以无法被代理对象调用。）</p>
+<p>6.<strong>final 修饰的方法。</strong>（因为被 final 修饰的方法是无法被重写的，所以代理对象也是无法调用的。）</p>
+<h5 id="Java面向对象的三大特征以及理解"><a href="#Java面向对象的三大特征以及理解" class="headerlink" title="Java面向对象的三大特征以及理解"></a>Java面向对象的三大特征以及理解</h5><p><strong>1.封装</strong></p>
+<p>Java中的封装是指一个类把自己内部的实现细节进行隐藏，只暴露对外的接口（setter和getter方法）。封装又分为属性的封装和方法的封装。把属性定义为私有的，它们通过setter和getter方法来对属性的值进行设定和获取。</p>
+<p><strong>2.继承</strong></p>
+<p>Java中的继承是指在一个现有类（父类）的基础上在构建一个新类（子类），子类可以拥有父类的成员变量以及成员方法（但是不一定能访问或调用，例如父类中private私有的成员变量以及方法不能访问和调用）。继承的作用就是能提高代码的复用性。子类拥有父类中的一切（拥有不一定能使用），它可以访问和使用父类中的非私有成员变量，以及重写父类中的非私有成员方法。</p>
+<p><strong>3.多态</strong></p>
+<p>多态就是指多种状态，就是说当一个操作在不同的对象时，会产生不同的结果。</p>
+<p>在Java中，实现多态的方式有两种，一种是编译时的多态，另外一种是运行时多态，编译时的多态是通过方法的重载实现的，而运行时多态是通过方法的重写实现的。</p>
+<p>方法的重载是指在同一个类中，有多个方法名相同的方法，但是这些方法有着不同的参数列表，在编译期我们就可以确定到底调用哪个方法。</p>
+<p>方法的重写，子类重写父类中的方法（包括接口的实现），父类的引用不仅可以指向父类的对象，而且还可以指向子类的对象。当父类的引用指向子类的引用时，只有在运行时才能确定调用哪个方法。</p>
+<p>其实在运行时的多态的实现，需要满足三个条件：1.继承（包括接口的实现）2.方法的重写 3.父类的引用指向子类对象</p>
+<h5 id="String-为什么不可变？不可变有什么好处？"><a href="#String-为什么不可变？不可变有什么好处？" class="headerlink" title="String 为什么不可变？不可变有什么好处？"></a>String 为什么不可变？不可变有什么好处？</h5><p><strong>为什么不可变？</strong></p>
+<p>1）value使用final修饰</p>
+<img src="/2024/12/18/Java/image-20240413154427443.png" class="" title="image-20240413154427443">
+
+<p>2）没有暴露成员变量</p>
+<img src="/2024/12/18/Java/image-20240413154522492.png" class="" title="image-20240413154522492">
+
+<p>3）内部方法不会改动 value</p>
+<img src="/2024/12/18/Java/image-20240413154545726.png" class="" title="image-20240413154545726">
+
+<p><strong>一旦初始化之后，String 类中的方法就不会去改动 value 中的元素，需要的话都是直接新建一个 String 对象。</strong></p>
+<p>4）类使用final修饰，不可继承</p>
+<img src="/2024/12/18/Java/image-20240413154620466.png" class="" title="image-20240413154620466">
+
+<p><strong>这个设计主要是避免有人定义一个子类继承 String，然后重写 String 的方法，将这个子类设计成可变对象。我们知道在 java 中，有父类引用指向子类对象这种用法，这种情况下，我们需要一个String 对象，可能返回的是String 子类的对象，这会导致 String 看起来是可变的。所以  java 直接将 String定义成不可继承，避免出现这种情况。</strong></p>
+<p><strong>不只是 String 类，其实所有的不可变类大致的设计思想都是按这四步来。后续如果我们自己想要设计一个不可变类，也可以按这四点来设计。</strong></p>
+<p><strong>不可变的好处？为什么这么设计？</strong></p>
+<p>1）安全性</p>
+<p>String 是 Java 中最基础也是最长使用的类，经常用于存储一些敏感信息，例如用户名、密码、网络连接等。因此，String 类的安全性对于整个应用程序至关重要。</p>
+<p>2）节省空间——字符串常量池</p>
+<p>通过使用常量池，内容相同的字符串可以使用同一个对象，从而节省内存空间。如果 String 是可变的，试想一下，当字符串常量池中的某个字符串对象被很多地方引用时，此时修改了这个对象，则所有引用的地方都会改变，这可能会导致预期之外的情况。</p>
+<p>典型的使用字符串常量池的场景：json 工具类，fastjson、jackson 等。</p>
+<p>3）线程安全<br>String 对象是不可修改的，如果线程尝试修改 String 对象，会创建新的 String，所以不存在并发修改同一个对象的问题。</p>
+<p>4）性能<br>String 被广泛应用于 HashMap、HashSet 等哈希类中，当对这些哈希类进行操作时，例如 HashMap 的 get&#x2F;put，hashCode 会被频繁调用。</p>
+<p>由于不可变性，String 的 hashCode 只需要计算1次后就可以缓存起来，因此在哈希类中使用 String 对象可以提升性能。</p>
+<h5 id="IO流"><a href="#IO流" class="headerlink" title="IO流"></a>IO流</h5><p><strong>1.什么是IO流</strong></p>
+<p>Java对数据的操作是通过流的方式，IO是java中实现输入输出的基础，它可以很方便的完成数据的输入输出操作，Java把不同的输入输出抽象为流，通过流的方式允许Java程序使用相同的方式来访问不同的输入、输出。</p>
+<p>IO又分为流IO（java.io）和块IO(java.nio)，Java.io是大多数面向数据流的输入&#x2F;输出类的主要软件包。此外，Java也对块传输提供支持，在核心库 java.nio中采用的便是块IO。流IO的好处是简单易用，缺点是效率较低。块IO效率很高，但编程比较复杂。</p>
+<p><strong>2. IO流原理</strong></p>
+<p>IO流是基于流的概念，它将数据的输入和输出看作是一个连续的流。数据从一个地方流向另一个地方，流的方向可以是输入（读取数据）或输出（写入数据）。Java中的IO流分为字节流和字符流两种类型，分别用于处理字节数据和字符数据。</p>
+<p>IO流的原理是通过流的管道将数据从源头传输到目标地。源头可以是文件、网络连接、内存等，而目标地可以是文件、数据库、网络等。IO流提供了一组丰富的类和方法来实现不同类型的输入和输出操作。</p>
+<p><strong>3.IO流分类</strong><br>Java中的IO流可以按照数据的类型和流的方向进行分类。</p>
+<p><strong>1.按数据类型分类</strong><br>字节流（Byte Stream）：以字节为单位读写数据，适用于处理二进制数据，如图像、音频、视频等。常见的字节流类有InputStream和OutputStream。</p>
+<p>字符流（Character Stream）：以字符为单位读写数据，适用于处理文本数据。字符流会自动进行字符编码和解码，可以处理多国语言字符。常见的字符流类有Reader和Writer。</p>
+<img src="/2024/12/18/Java/image-20240413155749044.png" class="" title="image-20240413155749044">
+
+<p><strong>2 按流的方向分类</strong><br>输入流（Input Stream）：用于读取数据。输入流从数据源读取数据，如文件、网络连接等。常见的输入流类有FileInputStream、ByteArrayInputStream、SocketInputStream等。</p>
+<p>输出流（Output Stream）：用于写入数据。输出流将数据写入到目标地，如文件、数据库、网络等。常见的输出流类有FileOutputStream、ByteArrayOutputStream、SocketOutputStream等。</p>
+<p><strong>4.IO流的使用场景</strong><br>IO流主要用于处理输入和输出操作，适用于以下场景：</p>
+<p>读写文件：IO流可以方便地读取和写入文件中的数据，从而实现文件的读写操作，例如读取配置文件、处理日志文件、读取用户上传的文件等。</p>
+<p>网络通信：IO流可以用于处理网络通信中的数据输入和输出，例如通过Socket进行网络通信时，可以使用IO流来传输数据。</p>
+<p>数据库操作：IO流可以将数据从程序中传输到数据库中，或者从数据库中读取数据到程序中，从而实现数据库的读写操作。</p>
+<p>内存操作：IO流也可以用于处理内存中的数据输入和输出，例如通过ByteArrayInputStream和ByteArrayOutputStream可以在内存中读写数据。</p>
+<p>用户交互：IO流可以用于处理用户输入和输出，例如从控制台读取用户输入的数据，或者向控制台输出提示信息和结果。</p>
+<h5 id="ArrayList线程不安全的几种表现，怎么解决？"><a href="#ArrayList线程不安全的几种表现，怎么解决？" class="headerlink" title="ArrayList线程不安全的几种表现，怎么解决？"></a>ArrayList线程不安全的几种表现，怎么解决？</h5><p><strong>一、线程不安全的三种表现</strong></p>
+<p>1.空指针异常</p>
+<p>2.数组越界异常</p>
+<p>3.并发修改异常</p>
+<p><strong>二、解决方法</strong></p>
+<p>1.将ArrayList替换成Vector</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Vector&lt;Integer&gt; arrayList = <span class="keyword">new</span> <span class="title class_">Vector</span>&lt;&gt;();</span><br></pre></td></tr></table></figure>
+
+<p>2.Collections.synchronizedList()</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">List&lt;Integer&gt; arrayList = Collections.synchronizedList(<span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;());</span><br></pre></td></tr></table></figure>
+
+<p>3.使用CopyOnWriteArrayList</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">List&lt;Integer&gt; arrayList1 = <span class="keyword">new</span> <span class="title class_">CopyOnWriteArrayList</span>&lt;&gt;();</span><br></pre></td></tr></table></figure>
+
+<p><strong>CopyOnWriteArrayList是一个线程安全的ArrayList,其实现原理是读写分离，其对写操作使用ReentrantLock来上锁，对读操作则不加锁；CopyOnWriteArrayList在写操作的时候，会将list中的数组拷贝一份副本，然后对其副本进行操作（如果此时其他线程需要读的事，那么其他线程读取的是原先的没有修改的数组，如果其他写操作的线程要进行写操作，需要等待正在写的线程操作完成，释放ReentrantLock后，去获取锁才能进行写操作），写操作完成后，会讲list中数组的地址引用指向修改后的新数组地址。</strong></p>
+<p><strong>总结</strong><br>1、本文介绍了ArrayList在多线程的情况下可能会出现的三种异常，并分析了原因，结尾给出了三种解决ArrayList线程不安全的方案，一和二两种方法都是将所有的方法都加锁，那会导致效率低下，只能一个线程操作完，下一个线程获取到锁才能操作。</p>
+<p>2、CopyOnWriteArrayList由于写时进行复制，内存里面同时存在两个对象占用内存，如果对象过大容易发送YongGc和FullGc，如果使用场景的写操作十分频繁的话，建议还是不要实现CopyOnWriteArrayList。</p>
+<h5 id="SpringMVC是如何处理一个请求"><a href="#SpringMVC是如何处理一个请求" class="headerlink" title="SpringMVC是如何处理一个请求"></a>SpringMVC是如何处理一个请求</h5><img src="/2024/12/18/Java/image-20240421151829116.png" class="" title="image-20240421151829116">
+
+
+
+<h5 id="Spring中的Bean的生命周期有哪些步骤"><a href="#Spring中的Bean的生命周期有哪些步骤" class="headerlink" title="Spring中的Bean的生命周期有哪些步骤"></a>Spring中的Bean的生命周期有哪些步骤</h5><img src="/2024/12/18/Java/image-20240421152333603.png" class="" title="image-20240421152333603">
+
+
+
+<h5 id="Spring的Aop的完整实现流程"><a href="#Spring的Aop的完整实现流程" class="headerlink" title="Spring的Aop的完整实现流程"></a>Spring的Aop的完整实现流程</h5><p><strong>以 JavaConfig为主</strong></p>
+<p>当@EnableAspectJAutoProxy 会通过@Import注册一个BeanPostProcessor处理AOP</p>
+<p>1.<strong>解祈切面</strong>:在Bean创建之前的第一个Bean后置处理器会去解析切面（解析切面中通知、切点，一个通知就会解析成一个advisor(通知、切点))</p>
+<p>2.<strong>创建动态代理</strong>：正常的Bean初始化后调用BeanPostProcessor 拿到之前缓存的advisor，再通过advisor中poitcut判断当前Bean是合微功点表达式业配，如果匹配，就会为Bean创建动态代理（创建方式1.jdk动态代理2.cglib)。</p>
+<p>3.<strong>调用</strong>:拿到动态代理对象，调用方法就会判断当前方法是否增强的方法，就会通过<strong>调用链</strong>的方式依次去执行通知.</p>
+<h5 id="springIOC容器的加载过程"><a href="#springIOC容器的加载过程" class="headerlink" title="springIOC容器的加载过程"></a>springIOC容器的加载过程</h5><p><strong>从概念态到定义态的过程（1-6）</strong></p>
+<p>1、实例化一个ApplicationContext的对象</p>
+<p>2、调用bean工厂后置处理器完成扫描</p>
+<p>3、循环解析扫描出来的类信息;（就是有写@component 注解）</p>
+<p>4、实例化一个BeanDefinition对象来存储解析出来的信息 （存入一个Map）</p>
+<p>5、把实例化好的beanDefinition对象put到beanDefinitionMap当中缓存起来，以便后面实例化bean;</p>
+<p>6、再次调用其他bean工厂后置处理器;</p>
+<p><strong>从定义态到纯净态（7-9）</strong></p>
+<p>7、当然spring还会干很多事情，比如国际化，比如注册BeanPostProcessor等等，如果我们只关心如何实例化一个bean的话那么这一步是spring调用finishBeanFactoryInitialization方法来实例化单例的bean，实例化之前spring要做验证，需要遍历所有扫描出来的类，依次判断这个bean是否Lazy，是否prototype，是否abstract等等;</p>
+<p>8、如果验证完成spring在实例化一个bean之前需要推断构造方法，因为spring实例化对象是通过构造方法反射，故而需要知道用哪个构造方法;</p>
+<p>9、推断完构造方法之后spring调用构造方法反射<strong>实例化</strong>一个对象;注意我这里说的是对象、对象、对象;这个时候对象已经实例化出来了，但是并不是一个完整的bean,最简单的体现是这个时候实例化出来的对象属性是没有注入，所以不是一个完整的bean</p>
+<p><strong>从纯净态到成熟态</strong></p>
+<p>10、spring处理合并后的beanDefinition</p>
+<p>11、判断是否需要完成<strong>属性注入</strong></p>
+<p>12、如果需要完成属性注入，则开始注入属性</p>
+<p><strong>初始化</strong></p>
+<p>[</p>
+<p>​	13、判断bean的类型回调Aware接口</p>
+<p>​	14、调用生命周期回调方法 （13，14如果需要AOP就创建AOP动态代理）</p>
+<p>​	15、如果需要代理则完成代理</p>
+<p>]</p>
+<p><strong>创建完成</strong></p>
+<p>16、put到单例池——bean完成——存在spring容器当中</p>
+<h5 id="Spring-IOC的扩展点"><a href="#Spring-IOC的扩展点" class="headerlink" title="Spring IOC的扩展点"></a>Spring IOC的扩展点</h5><p>1.执行BeanFactoryPostProcessor的postProcessBeanFactory方法（作用：在注册BeanDefinition的可以对beanFactory进行扩展，调用时机：IOC加载时注册BeanDefinition的时候会调用）  后</p>
+<p>2.执行BeanDefinitionRegistryPostProcessor的postProcessBeanDefinitionRegistry方法（作用：动态注册BeanDefinition，调用时机：IOC加载时注册BeanDefinition的时候会调用）  先</p>
+<p>3.加载BeanPostProcessor实现类:<strong>在Bean的生命周期会调用9次Bean的后置处理器</strong></p>
+<h5 id="Spring-IOC的实现机制"><a href="#Spring-IOC的实现机制" class="headerlink" title="Spring IOC的实现机制"></a>Spring IOC的实现机制</h5><p>简单来说就是：简单工厂+反射</p>
+<p>什么是工厂模式：很简单，就是调用一个方法（工厂方法）根据传入的参数返回一个对象。</p>
+<p><strong>IOC的优点</strong><br>1、集中管理对象，方便维护</p>
+<p>2、减低耦合度</p>
+<p>3、IOC容器支持懒汉式和饿汉式的方式加载， 默认单例</p>
+<h5 id="springboot项目哪里用到了-AOP？怎么用的？"><a href="#springboot项目哪里用到了-AOP？怎么用的？" class="headerlink" title="springboot项目哪里用到了 AOP？怎么用的？"></a>springboot项目哪里用到了 AOP？怎么用的？</h5><p>AOP(Aspect-Oriented Programming:面向切面编程) 能够将那些与业务无关，却为业务模块所共同调用的逻辑或责任（例如事务处理、日志管理、权限控制等）封装起来，便于减少系统的重复代码，降低模块间的耦合度，提高系统可拓展性和可维护性。</p>
+<p><strong>一般项目主要有下面这些地方用到了 AOP</strong></p>
+<p>1.基于 AOP 实现统一的日志管理。<br>2.基于 Redisson + AOP 实现了接口防刷，一个注解即可限制接口指定时间内单个用户可以请求的次数。<br>3.基于 Spring Security 提供的 @PreAuthorize 实现权限控制，其底层也是基于 AOP。</p>
+<p><strong>日志记录</strong><br>利用 AOP 方式记录日志，只需要在 Controller 的方法上使用自定义 @Log 日志注解，就可以将用户操作记录到数据库。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Log(description = &quot;新增用户&quot;)</span></span><br><span class="line"><span class="meta">@PostMapping(value = &quot;/users&quot;)</span></span><br><span class="line"><span class="keyword">public</span> ResponseEntity <span class="title function_">create</span><span class="params">(<span class="meta">@Validated</span> <span class="meta">@RequestBody</span> User resources)</span>&#123;</span><br><span class="line">    checkLevel(resources);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">ResponseEntity</span>(userService.create(resources),HttpStatus.CREATED);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>AOP 切面类 LogAspect用来拦截带有 @Log 注解的方法并处理：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Aspect</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">LogAspect</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">Logger</span> <span class="variable">logger</span> <span class="operator">=</span> LoggerFactory.getLogger(LogAspect.class);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 定义切点，拦截带有 @Log 注解的方法</span></span><br><span class="line">    <span class="meta">@Pointcut(&quot;@annotation(com.example.annotation.Log)&quot;)</span> <span class="comment">// 这里需要根据你的实际包名修改</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">logPointcut</span><span class="params">()</span> &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 环绕通知，用于记录日志</span></span><br><span class="line">    <span class="meta">@Around(&quot;logPointcut()&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> Object <span class="title function_">around</span><span class="params">(ProceedingJoinPoint joinPoint)</span> <span class="keyword">throws</span> Throwable &#123;</span><br><span class="line">      <span class="comment">//...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>限流</strong><br>利用 AOP 方式对接口进行限流，只需要在 Controller 的方法上使用自定义的 @RateLimit 限流注解即可。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 该接口 60 秒内最多只能访问 10 次，保存到 redis 的键名为 limit_test，</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RateLimit(key = &quot;test&quot;, period = 60, count = 10, name = &quot;testLimit&quot;, prefix = &quot;limit&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="type">int</span> <span class="title function_">test</span><span class="params">()</span> &#123;</span><br><span class="line">     <span class="keyword">return</span> ATOMIC_INTEGER.incrementAndGet();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>AOP 切面类 RateLimitAspect用来拦截带有 @RateLimit 注解的方法并处理：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="meta">@Aspect</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RateLimitAspect</span> &#123;</span><br><span class="line">      <span class="comment">// 拦截所有带有 @RateLimit 注解的方法</span></span><br><span class="line">      <span class="meta">@Around(&quot;@annotation(rateLimit)&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> Object <span class="title function_">around</span><span class="params">(ProceedingJoinPoint joinPoint, RateLimit rateLimit)</span> <span class="keyword">throws</span> Throwable &#123;</span><br><span class="line">      <span class="comment">//...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>关于限流实现，并没有自己写 Redis Lua 限流脚本，而是利用 Redisson 中的 RRateLimiter 来实现分布式限流，其底层实现就是基于 Lua 代码+令牌桶算法。</strong></p>
+<p><strong>权限控制</strong><br>Spring Security 使用 AOP 进行方法拦截。在实际调用 update 方法之前，Spring 会检查当前用户的权限，只有用户权限满足对应的条件才能执行。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Log(description = &quot;修改菜单&quot;)</span></span><br><span class="line"><span class="meta">@PutMapping(value = &quot;/menus&quot;)</span></span><br><span class="line"><span class="comment">// 用户拥有 `admin`、`menu:edit` 权限中的任意一个就能能访问`update`方法</span></span><br><span class="line"><span class="meta">@PreAuthorize(&quot;hasAnyRole(&#x27;admin&#x27;,&#x27;menu:edit&#x27;)&quot;)</span></span><br><span class="line"><span class="keyword">public</span> ResponseEntity <span class="title function_">update</span><span class="params">(<span class="meta">@Validated</span> <span class="meta">@RequestBody</span> Menu resources)</span>&#123;</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="java反射的原理"><a href="#java反射的原理" class="headerlink" title="java反射的原理"></a>java反射的原理</h5><p>反射之中包含了一个「反」字，所以想要解释反射就必须先从「正」开始解释。</p>
+<p>一般情况下，我们使用某个类时必定知道它是什么类，是用来做什么的。于是我们直接对这个类进行实例化，之后使用这个类对象进行操作。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">Apple</span> <span class="variable">apple</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Apple</span>(); <span class="comment">//直接初始化，「正射」</span></span><br><span class="line">apple.setPrice(<span class="number">4</span>);</span><br></pre></td></tr></table></figure>
+
+<p>上面这样子进行类对象的初始化，我们可以理解为「正」。</p>
+<p>而反射则是一开始并不知道我要初始化的类对象是什么，自然也无法使用 new 关键字来创建对象了。</p>
+<p>这时候，我们使用 JDK 提供的反射 API 进行反射调用：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">Class</span> <span class="variable">clz</span> <span class="operator">=</span> Class.forName(<span class="string">&quot;com.chenshuyi.reflect.Apple&quot;</span>);</span><br><span class="line"><span class="type">Method</span> <span class="variable">method</span> <span class="operator">=</span> clz.getMethod(<span class="string">&quot;setPrice&quot;</span>, <span class="type">int</span>.class);</span><br><span class="line"><span class="type">Constructor</span> <span class="variable">constructor</span> <span class="operator">=</span> clz.getConstructor();</span><br><span class="line"><span class="type">Object</span> <span class="variable">object</span> <span class="operator">=</span> constructor.newInstance();</span><br><span class="line">method.invoke(object, <span class="number">4</span>);</span><br></pre></td></tr></table></figure>
+
+<p>上面两段代码的执行结果，其实是完全一样的。但是其思路完全不一样，第一段代码在未运行时就已经确定了要运行的类（Apple），而第二段代码则是在运行时通过字符串值才得知要运行的类（com.chenshuyi.reflect.Apple）。</p>
+<p><strong>所以说什么是反射？</strong></p>
+<p><strong>反射就是在运行时才知道要操作的类是什么，并且可以在运行时获取类的完整构造，并调用对应的方法。</strong></p>
+<h5 id="Component和-Bean的区别在哪里？"><a href="#Component和-Bean的区别在哪里？" class="headerlink" title="@Component和@Bean的区别在哪里？"></a>@Component和@Bean的区别在哪里？</h5><p><strong>1.用途不用</strong></p>
+<p>@Component用于标识普通类</p>
+<p>@Bean是在配置类中声明和配置Bean对象</p>
+<p><strong>2.使用方法不同</strong></p>
+<p>@Component是一个类级别的注解，Spring通过@ComponentScan注解扫描并注册为Bean</p>
+<p>@Bean通过方法级别的注解使用，在配置类中手动声明和配置Bean</p>
+<p><strong>3.控制权不同</strong></p>
+<p>@Component注解修饰的类是由Spring框架来创建和初始化的</p>
+<p>@Bean注解允许开发人员手动控制Bean的创建和配置过程</p>
+<h5 id="SpringBoot字段注入和构造函数注入的区别"><a href="#SpringBoot字段注入和构造函数注入的区别" class="headerlink" title="SpringBoot字段注入和构造函数注入的区别"></a>SpringBoot字段注入和构造函数注入的区别</h5><p><strong>在使用Spring开发项目时，我们经常需要使用依赖注入来管理对象之间的依赖关系。Spring提供了多种依赖注入方式，如构造函数注入、Setter方法注入和字段注入等。这些方式各有优缺点，需要根据具体情况选择合适的注入方式。</strong></p>
+<p><strong>在本文中，我将分享我在开发过程中遇到的一些问题，以及我对这些问题的思考和解决方法。主要涉及以下几个方面：</strong></p>
+<ol>
+<li>字段注入和构造函数注入的区别和联系</li>
+<li>为什么字段注入和Setter方法注入不会导致循环依赖的问题，而构造函数注入会导致循环依赖的问题</li>
+<li>为什么Spring不推荐使用字段注入，而推荐使用构造函数注入</li>
+</ol>
+<p><strong>什么是字段注入和构造函数注入？</strong><br>在SpringBoot中，我们可以使用@Autowired注解来实现依赖注入，即让Spring容器自动为我们的类提供所需的对象。有三种常见的注入方式：字段注入，Setter方法注入和构造函数注入。</p>
+<ol>
+<li>字段注入：直接在类的属性上使用@Autowired注解，无需编写额外的代码。</li>
+<li>Setter方法注入：在类的Setter方法上使用@Autowired注解，需要编写相应的Setter方法。</li>
+<li>构造函数注入：在类的构造函数上使用@Autowired注解，需要编写相应的构造函数。</li>
+</ol>
+<p><strong>下面是一个简单的例子，假设我们有一个UserService接口和一个UserServiceImpl实现类，以及一个UserController类，我们想要在UserController中使用UserService对象。</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// UserService接口</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">UserService</span> &#123;</span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">saveUser</span><span class="params">(User user)</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// UserServiceImpl实现类</span></span><br><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">UserServiceImpl</span> <span class="keyword">implements</span> <span class="title class_">UserService</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">saveUser</span><span class="params">(User user)</span> &#123;</span><br><span class="line">        <span class="comment">// 保存用户到数据库</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// UserController类</span></span><br><span class="line"><span class="meta">@Controller</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">UserController</span> &#123;</span><br><span class="line">    <span class="comment">// 字段注入</span></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> UserService userService;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Setter方法注入</span></span><br><span class="line">    <span class="comment">// private UserService userService;</span></span><br><span class="line">    <span class="comment">// @Autowired</span></span><br><span class="line">    <span class="comment">// public void setUserService(UserService userService) &#123;</span></span><br><span class="line">    <span class="comment">//     this.userService = userService;</span></span><br><span class="line">    <span class="comment">// &#125;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 构造函数注入</span></span><br><span class="line">    <span class="comment">// private final UserService userService;</span></span><br><span class="line">    <span class="comment">// @Autowired</span></span><br><span class="line">    <span class="comment">// public UserController(UserService userService) &#123;</span></span><br><span class="line">    <span class="comment">//     this.userService = userService;</span></span><br><span class="line">    <span class="comment">// &#125;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">createUser</span><span class="params">(User user)</span> &#123;</span><br><span class="line">        userService.saveUser(user);</span><br><span class="line">        <span class="comment">// 其他逻辑</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>这两种方式有什么区别？</strong><br>这两种方式在功能上没有区别，都可以实现依赖注入。但是在一些细节上有一些差异，主要有以下几点 ：</p>
+<ol>
+<li>可读性：字段注入的代码更简洁，依赖项被隔离在一个地方，更容易阅读。构造函数注入的代码更冗长，当有多个依赖项时，构造函数可能会变得臃肿。</li>
+<li>不变性：构造函数注入支持不变性，即可以将依赖项声明为final类型，保证对象创建后不会被修改。这有利于线程安全性，状态安全性和可读性。字段注入不支持不变性，无法将依赖项声明为final类型。</li>
+<li>状态安全性：构造函数注入保证了对象被实例化为完整状态或完全不被实例化。如果使用者使用new关键字创建对象，则必须提供所有依赖项作为参数。字段注入无法保证状态安全性，如果使用者使用new关键字创建对象，则无法设置对象的状态。唯一的选择是使用反射设置私有字段。</li>
+<li>循环依赖：循环依赖是指两个或多个类相互依赖对方，导致无法正常创建对象。例如，如果A类依赖B类，B类依赖A类，则会产生循环依赖。循环依赖是一种不良的设计模式，应该避免。</li>
+</ol>
+<p><strong>字段注入和Setter方法注入的联系</strong><br>字段注入和Setter方法注入都是通过反射来实现的，它们都可以在类的属性上使用@Autowired注解来标注依赖关系。它们的区别在于，字段注入是直接在属性上使用@Autowired注解，而Setter方法注入是在属性对应的Setter方法上使用@Autowired注解。</p>
+<p><strong>字段注入和Setter方法注入的联系有以下几点：</strong></p>
+<ol>
+<li>它们都是基于名称或者类型来匹配依赖关系的。如果属性名字或者Setter方法名字与Bean定义中的id或者name相同，则按照名称匹配；否则按照属性类型或者Setter方法参数类型匹配。</li>
+<li>它们都不支持不变性，即无法将依赖项声明为final类型。这可能会导致线程安全性，状态安全性和可读性的问题。</li>
+<li>它们都可以避免循环依赖的问题，因为它们是在对象创建后才进行依赖注入的，而不是在对象创建时。这样可以避免构造函数注入时可能出现的循环依赖异常。</li>
+</ol>
+<p><strong>为什么字段注入和Setter方法注入不会导致循环依赖的问题？</strong><br>循环依赖是指两个或多个类相互依赖对方，导致无法正常创建对象。例如，如果A类依赖B类，B类依赖A类，则会产生循环依赖。循环依赖是一种不良的设计模式，应该避免。</p>
+<p>在Spring中，循环依赖主要发生在构造函数注入的情况下，因为构造函数注入是在对象创建时就进行依赖注入的，而不是在对象创建后。这样就会导致一个死锁的情况，即A类要等待B类创建完成才能创建，而B类又要等待A类创建完成才能创建。</p>
+<p>字段注入和Setter方法注入不会导致循环依赖的问题，因为它们是在对象创建后才进行依赖注入的，而不是在对象创建时。这样就可以避免死锁的情况，即A类和B类都可以先创建出来，然后再互相注入对方。</p>
+<p>Spring解决循环依赖的方法是通过提前暴露半成品对象（Early-Stage Object）来解决。半成品对象是指已经实例化但还没有完成初始化的对象。Spring会将半成品对象放入一个缓存中，当其他对象需要依赖它时，就可以从缓存中获取它，并进行后续的属性赋值和初始化操作。</p>
+<p><strong>两种方式的流程</strong></p>
+<p><strong>字段注入和构造函数注入的流程如下：</strong></p>
+<p>字段注入：当IOC容器创建Bean时，它会先通过反射调用无参构造函数来实例化对象，然后再通过反射获取属性上的@Autowired注解，并根据名称或者类型来匹配依赖关系，最后通过反射将依赖关系注入到属性中。</p>
+<p>构造函数注入：当IOC容器创建Bean时，它会先通过反射获取构造函数上的@Autowired注解，并根据名称或者类型来匹配依赖关系，然后再通过反射调用带参构造函数来实例化对象，并将依赖关系作为参数传递进去。</p>
+<p><strong>为什么Spring不推荐使用字段注入？</strong></p>
+<p><strong>Spring不推荐使用字段注入的原因有以下几点：</strong></p>
+<p>字段注入违反了单一职责原则，因为它使得添加新的依赖项非常容易，而不会引起警告。这可能导致类有太多的责任和关注点，需要进一步的检查和重构。</p>
+<p>字段注入隐藏了依赖关系，因为它没有使用公共接口（方法或构造函数）来清楚地与依赖项通信。这样就不利于类的可测试性和可重用性，也不利于依赖项的可选性和强制性的区分。</p>
+<p>字段注入导致了依赖注入容器的耦合，因为它使得类无法脱离容器独立运行。这意味着类不能通过new关键字来创建，也不能切换到其他的依赖注入框架。</p>
+<p>字段注入不支持不变性，因为它无法将依赖项声明为final类型，也无法注入静态变量。这可能会导致线程安全性，状态安全性和可读性的问题。</p>
+<p><strong>总结</strong></p>
+<p><strong>字段注入和构造函数注入都是Spring中常用的依赖注入方式，它们各有优缺点，开发人员应根据具体情况选择合适的注入方式。一般来说，以下几点可以作为参考：</strong></p>
+<ol>
+<li>如果依赖关系是必须的，且不需要重新配置或者重新注入，则推荐使用构造函数注入，因为它可以支持不变性和状态安全性。</li>
+<li>如果依赖关系是可选的，或者需要重新配置或者重新注入，则推荐使用字段注入或者Setter方法注入，因为它们可以提高代码的简洁性和灵活性。</li>
+<li>如果有循环依赖的问题，则不能使用构造函数注入，只能使用字段注入或者Setter方法注入，因为它们可以避免死锁的情况。</li>
+</ol>
+<h5 id="Spring是如何整合MyBatis将Mapper接口注册为Bean的原理？"><a href="#Spring是如何整合MyBatis将Mapper接口注册为Bean的原理？" class="headerlink" title="Spring是如何整合MyBatis将Mapper接口注册为Bean的原理？"></a>Spring是如何整合MyBatis将Mapper接口注册为Bean的原理？</h5><p>1.首先MyBatis的Mapper接口核心是<strong>JDK动态代理</strong></p>
+<p>2.Spring会排除接口，无法注册到IOC容器中</p>
+<p>3.MyBatis实现了<strong>BeanDefinitionRegistryPostProcessor</strong>可以动态注册BeanDefinition</p>
+<p>4.需要<strong>自定义扫描器</strong>（继承Spring内部扫描器ClassPathBeanDefinitionScanner）重写排除接口的方法（isCandidateComponent）</p>
+<p>5.但是接口虽然注册成了BeanDefinition但是无法实例化Bean，因为接口无法实例化</p>
+<p>6.需要将BeanDefinition的BeanClass，替换成JDK动态代理的实例（<strong>偷天换日</strong>）</p>
+<p>7.MyBatis通过<strong>FactoryBean</strong>的工厂方法设计模式可以自由控制Bean的实例化过程，可以在getObject方法中创建JDK动态代理</p>
+]]></content>
+  </entry>
 </search>

@@ -85,7 +85,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">9.9k</span>
+            <span class="post-count">10k</span>
         </span>
     </span>
 
@@ -94,7 +94,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">35 分钟</span>
+            <span class="post-count">36 分钟</span>
         </span>
     </span>
 </div>
@@ -494,10 +494,15 @@
 <p>3.使用连接池管理数据库连接</p>
 <p>4.使用数据压缩技术</p>
 <p>5.加机器，或者换成合适的数据库</p>
-<h4 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h4><h5 id="Redis是单线程吗？"><a href="#Redis是单线程吗？" class="headerlink" title="Redis是单线程吗？"></a>Redis是单线程吗？</h5><p>Redis单线程指的是{接受客户端请求-&gt;解析请求-&gt;进行数据读写扽操作-&gt;发送数据给客户端}这个过程是由一个线程<strong>（主线程）</strong>来完成的，这是我们常说Redis是单线程的原因</p>
+<h4 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h4><h5 id="Redis是单线程吗？"><a href="#Redis是单线程吗？" class="headerlink" title="Redis是单线程吗？"></a>Redis是单线程吗？</h5><p>Redis单线程指的是**{接受客户端请求-&gt;解析请求-&gt;进行数据读写扽操作-&gt;发送数据给客户端}<strong>这个过程是由一个线程</strong>（主线程）**来完成的，这是我们常说Redis是单线程的原因</p>
 <p>但是，Redis程序并不是单线程的，Redis在启动的时候，是会启动<strong>后台线程 （BIO）</strong>的</p>
 <p><strong>2.6版本</strong>，会启动2个后台线程，分别处理关闭文件，AOF刷盘这两个任务</p>
 <p><strong>4.0版本</strong>之后，新增了一个新的后台线程，用来异步释放Redis内存，也就是lazyfree线程</p>
+<p><strong>6.0版本</strong>之后，采用了<strong>多个I&#x2F;O线程</strong>来处理网络请求，这是因为随着网络硬件的性能提升，Redis的性能瓶颈有时会出现在网络I&#x2F;O的处理上。但是对于<strong>命令的执行</strong>，Redis仍然使用<strong>单线程</strong>来处理。</p>
+<h5 id="Redis持久化"><a href="#Redis持久化" class="headerlink" title="Redis持久化"></a>Redis持久化</h5><p><strong>方式：</strong></p>
+<p><strong>AOF日志</strong>：每执行一条写操作命令，就把该命令以追加的方式写入到一个文件里</p>
+<p><strong>RDB快照</strong>：将某一时刻的内存数据，以二进制的方式写入磁盘</p>
+<p><strong>混合持久化方式</strong>：Redis 4.0 新增的方式，集成了AOF和RBD的优点</p>
  
       <!-- reward -->
       

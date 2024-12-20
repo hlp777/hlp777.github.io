@@ -580,6 +580,33 @@
 <p><strong>AOF日志</strong>：每执行一条写操作命令，就把该命令以追加的方式写入到一个文件里</p>
 <p><strong>RDB快照</strong>：将某一时刻的内存数据，以二进制的方式写入磁盘</p>
 <p><strong>混合持久化方式</strong>：Redis 4.0 新增的方式，集成了AOF和RBD的优点</p>
+<h5 id="Redis集群"><a href="#Redis集群" class="headerlink" title="Redis集群"></a>Redis集群</h5><p><strong>如何是实现高可用</strong></p>
+<p><strong>主从复制</strong></p>
+<p>主从复制时Redis高可用服务的最基础的保证，实现方案就是将从前的一台Redis服务器，同步数据到多台从Redis服务器上，即<strong>一主多从</strong>的模式，且从服务器之间采用的时<strong>（读写分离）</strong>的方式</p>
+<img src="/2024/12/18/Java/image-20241220132200636.png" class="" title="image-20241220132200636">
+
+<p> <strong>注意，主从服务器之间的命令复制是异步进行的</strong></p>
+<p><strong>哨兵模式</strong></p>
+<p>在使用Redis主从服务的时候，会有一个问题，就是当Redis的主从服务器出现<strong>故障宕机</strong>时，需要手动进行恢复</p>
+<p>为了解决 这个问题，Redis增加了哨兵模式（Redis Sentinel），因为哨兵模式做到了可以监控主从服务器，并且提供主从节点故障转移的功能</p>
+<img src="/2024/12/18/Java/image-20241220133112317.png" class="" title="image-20241220133112317">
+
+<p><strong>切片集群模式</strong></p>
+<p>当Redis缓存数据量大到一台服务器无法缓存时，就需要使用<strong>Redis切片集群（Redis Cluster）</strong>方案，它将数据分布在不同的服务器上吗，以此来<strong>降低系统对单主节点的依赖</strong>，从而提高Redis服务的<strong>读写性能</strong></p>
+<p><strong>Redis过期删除与内存淘汰</strong></p>
+<p>Redis使用的<strong>过期策略</strong>策略是（惰性删除+定时删除）这两种策略配合使用</p>
+<p>1.<strong>惰性</strong>删除</p>
+<p>不主动删除过期键，每次从数据库访问key时，都检测key是否过期，如果过期则删除该key</p>
+<p><strong>优点</strong></p>
+<p>只会使用很少的系统资源，对<strong>CUP</strong>时间友好</p>
+<p><strong>缺点</strong></p>
+<p>造成一定的内存空间浪费，对<strong>内存</strong>不友好</p>
+<p>2.<strong>定期</strong>删除</p>
+<p>每一段时间<strong>（随机）</strong>从数据库中取出一定数量的key进行检查，并删除其中的过期key</p>
+<p><strong>优点</strong></p>
+<p>通过限制删除操作执行的<strong>时长和频率</strong>，来减少删除操作对<strong>CPU</strong>的影响，同时也能删除一部分过期的数据<strong>减少</strong>了过期键对空间的无效占用</p>
+<p><strong>缺点</strong></p>
+<p>难以确定删除操作执行的<strong>时长和频率</strong>。如果执行的太频繁，就会对<strong>CPU</strong>不友好，如果执行的太少，那又和惰性删除一样了，过期key占用的内存不会及时得到释放</p>
  
       <!-- reward -->
       

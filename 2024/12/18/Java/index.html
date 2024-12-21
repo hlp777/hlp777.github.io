@@ -85,7 +85,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">11.7k</span>
+            <span class="post-count">11.9k</span>
         </span>
     </span>
 
@@ -94,7 +94,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">41 分钟</span>
+            <span class="post-count">42 分钟</span>
         </span>
     </span>
 </div>
@@ -555,6 +555,21 @@
 <p><strong>非法请求的限制</strong>：当有大量恶意请求访问不存在的数据的时候，也会发生缓存穿透，因此在 API 入口处我们要判断求请求参数是否合理，请求参数是否含有非法值、请求字段是否存在，如果判断出是恶意请求就直接返回错误，避免进一步访问缓存和数据库。</p>
 <p><strong>设置空值或者默认值</strong>：当我们线上业务发现缓存穿透的现象时，可以针对查询的数据，在缓存中设置一个空值或者默认值，这样后续请求就可以从缓存中读取到空值或者默认值，返回给应用，而不会继续查询数据库。</p>
 <p><strong>使用布隆过滤器快速判断数据是否存在，避免通过查询数据库来判断数据是否存在</strong>：我们可以在写入数据库数据时，使用布隆过滤器做个标记，然后在用户请求到来时，业务线程确认缓存失效后，可以通过查询布隆过滤器快速判断数据是否存在，如果不存在，就不用通过查询数据库来判断数据是否存在，即使发生了缓存穿透，大量请求只会查询 Redis 和布隆过滤器，而不会查询数据库，保证了数据库能正常运行，Redis 自身也是支持布隆过滤器的。</p>
+<p><strong>缓存更新策略</strong></p>
+<p><strong>常见的缓存更新策略共有3种：</strong></p>
+<p><strong>1.Cache Aside（旁路缓存）</strong>策略</p>
+<p><strong>2.Read&#x2F;Write Through（读写&#x2F;写穿）</strong>策略</p>
+<p><strong>3.Write Back（写回）</strong>策略</p>
+<p><strong>实际开发中，Redis和MySQL的更新策略用的是Cache Aside，另外两种策略应用不了</strong></p>
+<p><strong>Cache Aside（旁路缓存）策略</strong></p>
+<p>可以细分为<strong>读策略</strong>和<strong>写策略</strong></p>
+<img src="/2024/12/18/Java/image-20241221170840592.png" class="" title="image-20241221170840592">
+
+<p><strong>写策略步骤：</strong></p>
+<p>先更新数据库中的数据，再删除缓存中的数据</p>
+<p><strong>读策略步骤</strong></p>
+<p>如何读取的数据命中了缓存，则直接返回数据</p>
+<p>如果读取的数据没有命中缓存，则从数据库中读取数据，然后将数据写入到缓存，并且返回给用户</p>
  
       <!-- reward -->
       

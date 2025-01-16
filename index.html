@@ -559,6 +559,10 @@
 <p>5.但是接口虽然注册成了BeanDefinition但是无法实例化Bean，因为接口无法实例化</p>
 <p>6.需要将BeanDefinition的BeanClass，替换成JDK动态代理的实例（<strong>偷天换日</strong>）</p>
 <p>7.MyBatis通过<strong>FactoryBean</strong>的工厂方法设计模式可以自由控制Bean的实例化过程，可以在getObject方法中创建JDK动态代理</p>
+<h5 id="Dubbo是如何完成服务导出的"><a href="#Dubbo是如何完成服务导出的" class="headerlink" title="Dubbo是如何完成服务导出的"></a>Dubbo是如何完成服务导出的</h5><p>1.首先Dubbo会将程序员所使用的@Dubboserrce注解或@Senice注解进行解析得到程序员所定义的服务参数，包括定义的服务名、服务接口、服务超时时间、服务协议等等，得到一个ServiceBean。<br>2.然后调用ServiceBean的export方法进行服务导出<br>3.然后将服务信息注册到注册中心，如果有多个协议，多个注册中心，那就将服务按单个协议，单个注册中心进行注册<br>4.将服务信息注册到注册中心后，还会绑定一些监听器，监听动态配置中心的变更<br>5.还会根据服务协议启动对应的Web服务器或网络框架，比如Tomcat、Netty等</p>
+<h5 id="Dubbo是如何完成服务引入的"><a href="#Dubbo是如何完成服务引入的" class="headerlink" title="Dubbo是如何完成服务引入的"></a>Dubbo是如何完成服务引入的</h5><p>1.当程序员使用@Reference注解来引入一个服务时，Dubbo会将注解和服务的信息解析出来，得到当前所引用的服务名、服务接口是什么<br>2.然后从注册中心进行查询服务信息，得到服务的提供者信息，并存在消费端的服务目录中<br>3.并绑定一些监听器用来监听动态配置中心的变更<br>4，然后根据查询得到的服务提供者信息生成一个服务接口的代理对象，并放入Spring容器中作为Bean</p>
+<h5 id="Dubbo支持哪些负载均衡策略"><a href="#Dubbo支持哪些负载均衡策略" class="headerlink" title="Dubbo支持哪些负载均衡策略"></a>Dubbo支持哪些负载均衡策略</h5><p>1.随机:从多个服务提供者随机选择一个来处理本次请求，调用量越大则分布越均匀，并支持按权重设置随机概率<br>2.轮询:依次选择服务提供者来处理请求，并支持按权重进行轮询，底层采用的是平滑加权轮询算法<br>3.最小活跃调用数:统计服务提供者当前正在处理的请求，下次请求过来则交给活跃数最小的服务器来处理<br>4.一致性哈希:相同参数的请求总是发到同一个服务提供者</p>
+<h5 id="epoll和poll的区别"><a href="#epoll和poll的区别" class="headerlink" title="epoll和poll的区别"></a>epoll和poll的区别</h5><p>1.select模型，使用的是数组来存储Socket连接文件描述符，容量是固定的，需要通过轮询来判断是否发生了I0事件<br>2.pol模型，使用的是链表来存储Socket连接文件描述符，容量是不固定的，同样需要通过轮询来判断是否发生了I0事件<br>3.epol模型，epol和pol是完全不同的，epol是一种事件通知模型，当发生了!0事件时，应用程序才进行!0操作，不需要像pol模型那样主动去轮询</p>
 <h5 id="接口优化"><a href="#接口优化" class="headerlink" title="接口优化"></a>接口优化</h5><p><strong>后端优化</strong></p>
 <p>1.缓存机制</p>
 <p>2.并发调用</p>

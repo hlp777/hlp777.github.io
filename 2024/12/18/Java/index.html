@@ -85,7 +85,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">17.6k</span>
+            <span class="post-count">18k</span>
         </span>
     </span>
 
@@ -94,7 +94,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">62 分钟</span>
+            <span class="post-count">64 分钟</span>
         </span>
     </span>
 </div>
@@ -749,7 +749,7 @@
 </ol>
 <p>可以看到，使用了索引下推后，虽然 height 列无法使用到联合索引，但是因为它包含在联合索引（age，height）里，所以直接在存储引擎过滤出满足  height&#x3D; 180的记录后，才去执行回表操作获取整个记录。相比于没有使用索引下推，节省了很多回表操作。</p>
 <p>当你发现执行计划里的 Extr 部分显示了 “Using index condition”，说明使用了索引下推。</p>
-<h5 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h5><ul>
+<h6 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h6><ul>
 <li><p><strong>连接器：</strong>建立连接，管理连接、校验用户身份</p>
 </li>
 <li><p><strong>查询缓存：</strong>查询语句如果命中查询缓存则直接返回，否则继续往下执行。MySQL 8.0 已删除该模块</p>
@@ -767,6 +767,16 @@
 </ul>
 </li>
 </ul>
+<h5 id="常见面试题"><a href="#常见面试题" class="headerlink" title="常见面试题"></a>常见面试题</h5><h6 id="索引的分类"><a href="#索引的分类" class="headerlink" title="索引的分类"></a>索引的分类</h6><p><strong>按照四个角度来分类索引</strong></p>
+<p><strong>按「数据结构」分类：</strong>B+tree索引、Hash索引、Full-text索引。<br><strong>按「物理存储」分类：</strong>聚簇索引（主键索引）、二级索引（辅助索引）。<br><strong>按「字段特性」分类：</strong>主键索引、唯一索引、普通索引、前缀索引。<br><strong>按「字段个数」分类：</strong>单列索引、联合索引。</p>
+<h6 id="B树和B-树的区别，为什么MySQL使用B-树"><a href="#B树和B-树的区别，为什么MySQL使用B-树" class="headerlink" title="B树和B+树的区别，为什么MySQL使用B+树"></a>B树和B+树的区别，为什么MySQL使用B+树</h6><p><strong>B树的特点：</strong></p>
+<p>1.节点排序</p>
+<p>2.一个节点可以存多个元素，多个元素也排序了</p>
+<p><strong>B+树的特点：</strong></p>
+<p>1.拥有B树的特点</p>
+<p>2.叶子节点之间有指针</p>
+<p>3.非叶子节点上的元素在叶子节点上都冗余了，也就是叶子节点中存储了所以的元素，并且排好顺序</p>
+<p>Mysql索引使用的是B+树，因为索引是用来加快查询的，而B+树通过对数据进行排序所以是可以提高查询速度的，然后通过一个节点中可以存储多个元素，从而可以使得B+树的高度不会太高，在Mysql!中一个nnodb页就是一个B+树节点，一个mnodb页默认16kb，所以一般情况下一颗两层的B+树可以存2000万行左右的数据，然后通过利用B+树叶子节点存储了所有数据并且进行了排序，并且叶子节点之间有指针，可以很好的支持全表扫描，范围查找等SQL语句。</p>
  
       <!-- reward -->
       
@@ -868,7 +878,7 @@
     <ul>
       <li>
         Copyrights &copy;
-        2015-2024
+        2015-2025
         <i class="ri-heart-fill heart_icon"></i> Immanuel
       </li>
     </ul>

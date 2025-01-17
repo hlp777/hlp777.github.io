@@ -244,6 +244,7 @@
 <p>-Xmx 用于表示堆区的最大内存，等价于-XX：MaxHeapSize</p>
 <p><strong>超出堆区的内存最大时，将会抛出OutOfMemoryError：heap异常</strong></p>
 <p><strong>通常会将 -Xms和-Xmx两个参数配置相同的值，其目的是为了能够在java垃圾回收机制清理完堆区后不需要重新分隔计算堆区的大小，从而提高性能</strong></p>
+<h5 id="Java中有哪些类加载器"><a href="#Java中有哪些类加载器" class="headerlink" title="Java中有哪些类加载器"></a>Java中有哪些类加载器</h5><p><strong>JDK自带有三个类加载器:bootstrap ClassLoader、ExtClassLoader、AppClassLoader。</strong><br>BootstrapClassLoader是ExtClassLoader的父类加载器，默认负责加载%JAVA HOME%lib下的jar包和class文件<br>ExtClassLoader是AppClassLoader的父类加载器，负责加载%JAVA HOME%&#x2F;lib&#x2F;ext文件夹下的jar包和class类。<br>AppClassLoader是自定义类加载器的父类，负责加载classpath下的类文件。</p>
 <h5 id="Java语言中，GC-Roots-包括那些元素"><a href="#Java语言中，GC-Roots-包括那些元素" class="headerlink" title="Java语言中，GC Roots 包括那些元素"></a>Java语言中，GC Roots 包括那些元素</h5><p><strong>1.虚拟机栈中引用的对象</strong></p>
 <p><strong>2.类静态属性引用的对象</strong></p>
 <p><strong>3.方法区中常量引用的对象</strong></p>

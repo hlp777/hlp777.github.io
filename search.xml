@@ -895,49 +895,9 @@
 <img src="/2024/12/18/Java/image-20240224223048285.png" class="" title="image-20240224223048285">
 
 <p>第四种是直接杀进程，可以在启动时将进程ID写入固定文本文件，然后执行脚本自动关闭应用程序。</p>
-<h5 id="MySQL的rewriteBatchedStatements的使用场景"><a href="#MySQL的rewriteBatchedStatements的使用场景" class="headerlink" title="MySQL的rewriteBatchedStatements的使用场景"></a>MySQL的rewriteBatchedStatements的使用场景</h5><table>
-<thead>
-<tr>
-<th align="left">批量保存方式</th>
-<th align="left">数据量（条）</th>
-<th align="left">耗时（ms）</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">单条循环插入</td>
-<td align="left">1000</td>
-<td align="left">121011</td>
-</tr>
-<tr>
-<td align="left">mybatis-plus saveBatch</td>
-<td align="left">1000</td>
-<td align="left">59927</td>
-</tr>
-<tr>
-<td align="left">mybatis-plus saveBatch(添加rewtire参数)</td>
-<td align="left">1000</td>
-<td align="left">2589</td>
-</tr>
-<tr>
-<td align="left">手动拼接sql</td>
-<td align="left">1000</td>
-<td align="left">2275</td>
-</tr>
-<tr>
-<td align="left">jdbc executeBatch</td>
-<td align="left">1000</td>
-<td align="left">55663</td>
-</tr>
-<tr>
-<td align="left">jdbc executeBatch(添加rewtire参数)</td>
-<td align="left">1000</td>
-<td align="left">324</td>
-</tr>
-</tbody></table>
-<p>所以如果有使用 jdbc 的 Batch 性能方面的需求，要将 rewriteBatchedStatements 设置为 true，这样能提高很多性能。</p>
-<p>然后如果喜欢手动拼接 sql 要注意一次拼接的数量，分批处理。</p>
 <h5 id="Mybatis的优缺点"><a href="#Mybatis的优缺点" class="headerlink" title="Mybatis的优缺点"></a>Mybatis的优缺点</h5><p><strong>优点:</strong><br>1.基于SQL 语句编程，相当灵活，不会对应用程序或者数据库的现有设计造成任何影响，SQL写在XML里，解除sql与程序代码的耦合，便于统一管理;提供XML 标<br>签，支持编写动态 SQL语句，并可重用。<br>2.与JDBC 相比，减少了 50%以上的代码量，消除了JDBC大量冗余的代码，不需要手动开关连接:<br>3.很好的与各种数据库兼容(因为 MyBatis 使用JDBC 来连接数据库，所以只要JDBC 支持的数据库 MyBatis 都支持)。<br>4.能够与 Spring 很好的集成。<br>5.提供映射标签，支持对象与数据库的 ORM 字段关系映射; 提供对象关系映射标签， 支持对象关系组件维护。</p>
 <p><strong>缺点:</strong><br>1.SQL语句的编写工作量较大，尤其当字段多、关联表多时，对开发人员编写SQL语句的功底有一定要求。<br>2.SQL语句依赖于数据库，导致数据库移植性差，不能随意更换数据库。</p>
+<h5 id="和-的区别是什么？"><a href="#和-的区别是什么？" class="headerlink" title="#{}和${}的区别是什么？"></a>#{}和${}的区别是什么？</h5><p><strong>#{}是预编译处理、是占位符，${}是字符串替换、是拼接符</strong><br>Mybatis在处理**#{}<strong>时，会将sql中的</strong>#{}<strong>替换为?号，调用 <strong>PreparedStatement</strong> 来赋值<br>Mybatis在处理</strong>${}<strong>时，会将sql中的</strong>${}**替换成变量的值，调用 <strong>Statement</strong> 来赋值<br><strong>使用#{}可以有效的防止 SQL注入，提高系统安全性</strong></p>
 <h5 id="Spring-AOP常见的失效场景"><a href="#Spring-AOP常见的失效场景" class="headerlink" title="Spring AOP常见的失效场景"></a>Spring AOP常见的失效场景</h5><p>1.当前类没有被 Spring 容器所管理。Spring 的 AOP 是在 Bean 创建的初始化后阶段进行的，如果当前类没有被 Spring 容器所管<br>理，那么它的 Spring AOP 功能肯定会失效。</p>
 <p>2.同一个类中方法的调用</p>
 <p>3.<strong>内部类方法的调用。</strong>（该方式会直接调用内部类实例对象的方法，同样没有使用代理对象，所以 AOP 会失效）</p>
@@ -1463,6 +1423,52 @@
 <p>3.非叶子节点上的元素在叶子节点上都冗余了，也就是叶子节点中存储了所以的元素，并且排好顺序</p>
 <p>Mysql索引使用的是B+树，因为索引是用来加快查询的，而B+树通过对数据进行排序所以是可以提高查询速度的，然后通过一个节点中可以存储多个元素，从而可以使得B+树的高度不会太高，在Mysql!中一个nnodb页就是一个B+树节点，一个mnodb页默认16kb，所以一般情况下一颗两层的B+树可以存2000万行左右的数据，然后通过利用B+树叶子节点存储了所有数据并且进行了排序，并且叶子节点之间有指针，可以很好的支持全表扫描，范围查找等SQL语句。</p>
 <h6 id="Innodb是如何实现事务的"><a href="#Innodb是如何实现事务的" class="headerlink" title="Innodb是如何实现事务的"></a>Innodb是如何实现事务的</h6><p><strong>Innodb通过Buffer Pool，LogBuffer，Redo Log，Undo Log来实现事务，</strong><br>以一个update语句为例:<br>1.Innodb在收到一个update语句后，会先根据条件找到数据所在的页，<br>并将该页缓存在Buffer Pool中<br>2.执行update语句，修改Buffer Pool中的数据，也就是内存中的数据<br>3.针对update语句生成-个RedoLog对象，并存入LogBuffer中<br>4.针对update语句生成undolog日志，用于事务回滚<br>5.如果事务提交，那么则把RedoLog对象进行持久化，后续还有其他机制将Bufer Pool中所修改的数据页持久化到磁盘中<br>6.如果事务回滚，则利用undolog日志进行回滚</p>
+<h6 id="MySQL的rewriteBatchedStatements的使用场景"><a href="#MySQL的rewriteBatchedStatements的使用场景" class="headerlink" title="MySQL的rewriteBatchedStatements的使用场景"></a>MySQL的rewriteBatchedStatements的使用场景</h6><table>
+<thead>
+<tr>
+<th align="left">批量保存方式</th>
+<th align="left">数据量（条）</th>
+<th align="left">耗时（ms）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">单条循环插入</td>
+<td align="left">1000</td>
+<td align="left">121011</td>
+</tr>
+<tr>
+<td align="left">mybatis-plus saveBatch</td>
+<td align="left">1000</td>
+<td align="left">59927</td>
+</tr>
+<tr>
+<td align="left">mybatis-plus saveBatch(添加rewtire参数)</td>
+<td align="left">1000</td>
+<td align="left">2589</td>
+</tr>
+<tr>
+<td align="left">手动拼接sql</td>
+<td align="left">1000</td>
+<td align="left">2275</td>
+</tr>
+<tr>
+<td align="left">jdbc executeBatch</td>
+<td align="left">1000</td>
+<td align="left">55663</td>
+</tr>
+<tr>
+<td align="left">jdbc executeBatch(添加rewtire参数)</td>
+<td align="left">1000</td>
+<td align="left">324</td>
+</tr>
+</tbody></table>
+<p>所以如果有使用 <strong>JDBC</strong>的 Batch 性能方面的需求，要将 rewriteBatchedStatements 设置为 true，这样能提高很多性能。</p>
+<p>然后如果喜欢手动拼接 sql 要注意一次拼接的数量，分批处理。</p>
+<h6 id="MySQL慢查询该如何优化？"><a href="#MySQL慢查询该如何优化？" class="headerlink" title="MySQL慢查询该如何优化？"></a>MySQL慢查询该如何优化？</h6><p>1.检查是否走了索引，如果没有则优化SQL利用索引<br>2.检查所利用的索引，是否是最优索引<br>3.检查所查字段是否都是必须的，是否查询了过多字段，查出了多余数据<br>4.检查表中数据是否过多，是否应该进行分库分表了<br>5.检查数据库实例所在机器的性能配置，是否太低，是否可以适当增加资源</p>
+<h6 id="MySQL锁有哪些，如何理解"><a href="#MySQL锁有哪些，如何理解" class="headerlink" title="MySQL锁有哪些，如何理解"></a>MySQL锁有哪些，如何理解</h6><p><strong>按锁粒度分类:</strong><br>1.行锁:锁某行数据，锁粒度最小，并发度高<br>2.表锁:锁整张表，锁粒度最大，并发度低<br>3.间隙锁:锁的是一个区间</p>
+<p><strong>还可以分为:</strong><br>1.共享锁:也就是读锁，一个事务给某行数据加了读锁，其他事务也可以读，但是不能写<br>2.排它锁:也就是写锁，一个事务给某行数据加了写锁，其他事务不能读（不能加读锁），也不能写</p>
+<p><strong>还可以分为:</strong><br>1.乐观锁:并不会真正的去锁某行记录，而是通过一个版本号来实现的<br>2.悲观锁:上面所的行锁、表锁等都是悲观锁</p>
+<p><strong>在事务的隔离级别实现中，就需要利用锁来解决幻读</strong></p>
 ]]></content>
   </entry>
 </search>

@@ -897,6 +897,7 @@
 <p>第四种是直接杀进程，可以在启动时将进程ID写入固定文本文件，然后执行脚本自动关闭应用程序。</p>
 <h5 id="Mybatis的优缺点"><a href="#Mybatis的优缺点" class="headerlink" title="Mybatis的优缺点"></a>Mybatis的优缺点</h5><p><strong>优点:</strong><br>1.基于SQL 语句编程，相当灵活，不会对应用程序或者数据库的现有设计造成任何影响，SQL写在XML里，解除sql与程序代码的耦合，便于统一管理;提供XML 标<br>签，支持编写动态 SQL语句，并可重用。<br>2.与JDBC 相比，减少了 50%以上的代码量，消除了JDBC大量冗余的代码，不需要手动开关连接:<br>3.很好的与各种数据库兼容(因为 MyBatis 使用JDBC 来连接数据库，所以只要JDBC 支持的数据库 MyBatis 都支持)。<br>4.能够与 Spring 很好的集成。<br>5.提供映射标签，支持对象与数据库的 ORM 字段关系映射; 提供对象关系映射标签， 支持对象关系组件维护。</p>
 <p><strong>缺点:</strong><br>1.SQL语句的编写工作量较大，尤其当字段多、关联表多时，对开发人员编写SQL语句的功底有一定要求。<br>2.SQL语句依赖于数据库，导致数据库移植性差，不能随意更换数据库。</p>
+<h5 id="Redis和MySQL如何保证数据一致"><a href="#Redis和MySQL如何保证数据一致" class="headerlink" title="Redis和MySQL如何保证数据一致"></a>Redis和MySQL如何保证数据一致</h5><p>1.先更新Mysql，再更新Redis，如果更新Redis失败，可能仍然不一致<br>2.先删除Redis缓存数据，再更新Msl，再次查询的时候在将数据添加到缓存中，这种方案能解决1方案的问题，但是在高并发下性能较低，而且仍然会出现数据不一致的问题，比如线程1删除了Redis缓存数据，正在更新Mysgl，此时另外一个查询再查询，那么就会把Mvsal中老数据又查到Redis中<br>3.延时双删，步骤是:先删除Redis缓存数据，再更新Mysql，延迟几百毫秒再删除Redis缓存数据，这样就算在更新Mysql时，有其他线程读了Mysl，把老数据读到了Redis中，那么也会被删除掉，从而把数据保持一致</p>
 <h5 id="和-的区别是什么？"><a href="#和-的区别是什么？" class="headerlink" title="#{}和${}的区别是什么？"></a>#{}和${}的区别是什么？</h5><p><strong>#{}是预编译处理、是占位符，${}是字符串替换、是拼接符</strong><br>Mybatis在处理**#{}<strong>时，会将sql中的</strong>#{}<strong>替换为?号，调用 <strong>PreparedStatement</strong> 来赋值<br>Mybatis在处理</strong>${}<strong>时，会将sql中的</strong>${}**替换成变量的值，调用 <strong>Statement</strong> 来赋值<br><strong>使用#{}可以有效的防止 SQL注入，提高系统安全性</strong></p>
 <h5 id="Spring-AOP常见的失效场景"><a href="#Spring-AOP常见的失效场景" class="headerlink" title="Spring AOP常见的失效场景"></a>Spring AOP常见的失效场景</h5><p>1.当前类没有被 Spring 容器所管理。Spring 的 AOP 是在 Bean 创建的初始化后阶段进行的，如果当前类没有被 Spring 容器所管<br>理，那么它的 Spring AOP 功能肯定会失效。</p>
 <p>2.同一个类中方法的调用</p>
@@ -1215,8 +1216,7 @@
 <p><strong>读策略步骤</strong></p>
 <p>如何读取的数据命中了缓存，则直接返回数据</p>
 <p>如果读取的数据没有命中缓存，则从数据库中读取数据，然后将数据写入到缓存，并且返回给用户</p>
-<h5 id="Redis实战"><a href="#Redis实战" class="headerlink" title="Redis实战"></a>Redis实战</h5><p><strong>Redis 如何实现延迟队列？</strong> </p>
-<p>延迟队列是指把当前要做的事情，往后推迟一段时间再做。延迟队列的常见使用场景有以下几种： </p>
+<h5 id="Redis实战"><a href="#Redis实战" class="headerlink" title="Redis实战"></a>Redis实战</h5><h6 id="Redis-如何实现延迟队列？"><a href="#Redis-如何实现延迟队列？" class="headerlink" title="Redis 如何实现延迟队列？"></a><strong>Redis 如何实现延迟队列？</strong></h6><p>延迟队列是指把当前要做的事情，往后推迟一段时间再做。延迟队列的常见使用场景有以下几种： </p>
 <p>1.在淘宝、京东等购物平台上下单，超过一定时间未付款，订单会自动取消</p>
 <p>2.打车的时候，在规定时间没有车主接单，平台会取消你的单并提醒你暂时没有车主接单</p>
 <p>3.点外卖的时候，如果商家在10分钟还没接单，就会自动取消订单</p>
@@ -1224,15 +1224,13 @@
 <p>使用 <strong>zadd score1 value1</strong> 命令就可以一直往内存中生产消息。再利用 <strong>zrangebysocre</strong> 查询符合条件的所有待处理的任务， 通过循环执行队列任务即可。</p>
 <img src="/2024/12/18/Java/image-20241221193924630.png" class="" title="image-20241221193924630">
 
-<p><strong>Redis管道有什么用？</strong></p>
-<p><strong>管道技术（Pipeline）</strong>是客户端提供的一种<strong>批处理技术</strong>，用于一次处理多个Redis命令，从而提高整个<strong>交互性能</strong></p>
+<h6 id="Redis管道有什么用？"><a href="#Redis管道有什么用？" class="headerlink" title="Redis管道有什么用？"></a><strong>Redis管道有什么用？</strong></h6><p><strong>管道技术（Pipeline）</strong>是客户端提供的一种<strong>批处理技术</strong>，用于一次处理多个Redis命令，从而提高整个<strong>交互性能</strong></p>
 <img src="/2024/12/18/Java/image-20241221195035753.png" class="" title="image-20241221195035753">
 
 <p>使用<strong>管道技术可以解决多个命令执行时的网络等待</strong>，它是吧多个命令整合到一起发送给服务器端处理之后统一返回给客户端，这样就免去了每条命令执行后都要等待的情况，从而有效地提高了程序的执行效率。</p>
 <p>但使用管道技术也要注意避免发送的命令过大，或管道内的数据太多而导致的网络阻塞</p>
 <p>要注意的是，管道技术本质上是客户端提供的功能，而非Redis服务器的功能</p>
-<p><strong>如何用Redis实现分布式锁的？</strong></p>
-<p>分布式锁是用于<strong>分布式环境</strong>下并发控制的一种机制，用于控制某个<strong>资源</strong>在<strong>同一时刻只能被一个应用所使用</strong></p>
+<h6 id="如何用Redis实现分布式锁的？"><a href="#如何用Redis实现分布式锁的？" class="headerlink" title="如何用Redis实现分布式锁的？"></a><strong>如何用Redis实现分布式锁的？</strong></h6><p>分布式锁是用于<strong>分布式环境</strong>下并发控制的一种机制，用于控制某个<strong>资源</strong>在<strong>同一时刻只能被一个应用所使用</strong></p>
 <img src="/2024/12/18/Java/image-20241221200510970.png" class="" title="image-20241221200510970">
 
 <p><strong>Redis的SET命令有个NX参数可以实现（key不存在才插入），所以可以用它来实现分布式锁：</strong></p>
@@ -1253,8 +1251,7 @@
 <li><strong>那么如何合理设置超时时间呢？</strong>我们可以基于续约的方式设置超时时间：先给锁设置一个超时时间，然后启动一个守护线程，让守护线程在一段时间后，重新设置这个锁的超时时间。实现方式就是：写一个守护线程，然后去判断锁的情况，当锁快失效的时候，再次进行续约加锁，当主线程执行完成后，销毁续约锁即可，不过这种方式实现起来相对复杂。</li>
 </ul>
 <p>2.<strong>Redis 主从复制模式中的数据是异步复制的，这样导致分布式锁的不可靠性。</strong>如果在 Redis 主节点获取到锁后，在没有同步到其他节点时，Redis 主节点宕机了，此时新的 Redis 主节点依然可以获取锁，所以多个应用服务就可以同时获取到锁。</p>
-<p><strong>Redis 如何解决集群情况下分布式锁的可靠性？</strong> </p>
-<p>为了保证集群环境下分布式锁的可靠性，Redis 官方已经设计了一个<strong>分布式锁算法 Redlock（红锁）</strong>。 </p>
+<h6 id="Redis-如何解决集群情况下分布式锁的可靠性？"><a href="#Redis-如何解决集群情况下分布式锁的可靠性？" class="headerlink" title="Redis 如何解决集群情况下分布式锁的可靠性？"></a><strong>Redis 如何解决集群情况下分布式锁的可靠性？</strong></h6><p>为了保证集群环境下分布式锁的可靠性，Redis 官方已经设计了一个<strong>分布式锁算法 Redlock（红锁）</strong>。 </p>
 <p>它是基于<strong>多个 Redis 节点</strong>的分布式锁，即使有节点发生了故障，锁变量仍然是存在的，客户端还是可以完成锁操作。官方推荐是至少部署  5 个 Redis 节点，而且都是主节点，它们之间没有任何关系，都是一个个孤立的节点。 </p>
 <p>Redlock 算法的基本思路，<strong>是让客户端和多个独立的 Redis 节点依次请求申请加锁，如果客户端能够和半数以上的节点成功地完成加锁操作，那么我们就认为，客户端成功地获得分布式锁，否则加锁失败。</strong> </p>
 <p>这样一来，即使有某个 Redis 节点发生故障，因为锁的数据在其他节点上也有保存，所以客户端仍然可以正常地进行锁操作，锁的数据也不会丢失。 </p>
@@ -1273,6 +1270,7 @@
 <p>​	<strong>条件二</strong>：客户端从大多数节点获取锁的总耗时（t2-t1）小于锁设置的过期时间。 </p>
 <p>加锁成功后，客户端需要重新计算这把锁的有效时间，计算的结果是<strong>「锁最初设置的过期时间」减去「客户端从大多数节点获取锁的总耗时（t2-t1）」</strong>。如果计算的结果已经来不及完成共享数据的操作了，我们可以释放锁，以免出现还没完成数据操作，锁就过期了的情况。 </p>
 <p>加锁失败后，客户端向<strong>所有 Redis 节点发起释放锁的操作</strong>，释放锁的操作和在单节点上释放锁的操作一样，只要执行释放锁的 Lua 脚本就可以了。</p>
+<h6 id="Redis数据结构的应用场景"><a href="#Redis数据结构的应用场景" class="headerlink" title="Redis数据结构的应用场景"></a>Redis数据结构的应用场景</h6><p><strong>Redis的数据结构:</strong><br>1.**字符串:**可以用来做最简单的数据，可以缓存某个简单的字符串，也可以缓存某个ison格式的字符串，Redis分布式锁的实现就利用了这种数据结构，还包括可以实现计数器、Session共享、分布式ID<br>2.**哈希表:**可以用来存储一些key-value对，更适合用来存储对象<br>3.**列表:**Redis的列表通过命令的组合，既可以当做栈，也可以当做队列来使用，可以用来缓存类似微信公众号、微博等消息流数据<br>4.**集合:**和列表类似，也可以存储多个元素，但是不能重复，集合可以进行交集、并集、差集操作，从而可以实现类似，我和某人共同关注的人、朋友圈点赞等功能<br>5.**有序集合(ZSet):**集合是无序的，有序集合可以设置顺序，可以用来实现排行榜功能</p>
 <h4 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h4><h5 id="MySQL执行流程"><a href="#MySQL执行流程" class="headerlink" title="MySQL执行流程"></a>MySQL执行流程</h5><img src="/2024/12/18/Java/image-20241222131241677.png" class="" title="image-20241222131241677">
 
 <p>MySQL的架构共分为两层：<strong>Server层和存储引擎层</strong></p>

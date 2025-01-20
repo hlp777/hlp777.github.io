@@ -554,6 +554,9 @@
 <p>3.使用连接池管理数据库连接</p>
 <p>4.使用数据压缩技术</p>
 <p>5.加机器，或者换成合适的数据库</p>
+<h5 id="RocketMQ的事务消息是如何实现的"><a href="#RocketMQ的事务消息是如何实现的" class="headerlink" title="RocketMQ的事务消息是如何实现的"></a>RocketMQ的事务消息是如何实现的</h5><img src="/2024/12/18/Java/image-20250120173237967.png" class="" title="image-20250120173237967">
+
+<p>1.生产者订单系统先发送一条half消息到Broker，half消息对消费者而言是不可见的<br>2.再创建订单，根据创建订单成功与否，向Broker发送commit或rollback<br>3.并且生产者订单系统还可以提供Broker回调接口，当Broker发现一段时间half消息没有收到任何操作命令，则会主动调此接口来查询订单是否创建成功<br>4.一旦half消息commit了，消费者库存系统就会来消费，如果消费成功，则消息销毁，分布式事务成功结束<br>5.如果消费失败，则根据重试策略进行重试，最后还失败则进入死信队列，等待进一步处理</p>
 <h4 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h4><h5 id="Redis是单线程吗？"><a href="#Redis是单线程吗？" class="headerlink" title="Redis是单线程吗？"></a>Redis是单线程吗？</h5><p>Redis单线程指的是**{接受客户端请求-&gt;解析请求-&gt;进行数据读写扽操作-&gt;发送数据给客户端}<strong>这个过程是由一个线程</strong>（主线程）**来完成的，这是我们常说Redis是单线程的原因</p>
 <p>但是，Redis程序并不是单线程的，Redis在启动的时候，是会启动<strong>后台线程 （BIO）</strong>的</p>
 <p><strong>2.6版本</strong>，会启动2个后台线程，分别处理关闭文件，AOF刷盘这两个任务</p>

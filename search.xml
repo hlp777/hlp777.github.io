@@ -809,6 +809,11 @@
 
 
 
+<h5 id="ReentrantLock中tryLock-和lock方法的区别"><a href="#ReentrantLock中tryLock-和lock方法的区别" class="headerlink" title="ReentrantLock中tryLock()和lock方法的区别"></a>ReentrantLock中tryLock()和lock方法的区别</h5><p>1.tryLock()表示尝试加锁，可能加到，也可能加不到，该方法不会阻塞线程，如果加到锁则返回true，没有加到则返回false</p>
+<p>2.lock()表示阻塞加锁，线程会阻塞直到加到锁，方法也没有返回值</p>
+<h5 id="ReentrantLock中的公平锁和非公平锁的底层实现"><a href="#ReentrantLock中的公平锁和非公平锁的底层实现" class="headerlink" title="ReentrantLock中的公平锁和非公平锁的底层实现"></a>ReentrantLock中的公平锁和非公平锁的底层实现</h5><p>首先不管是公平锁和非公平锁，它们的底层实现都会使用AQS来进行排队，它们的区别在于:线程在使用lock()方法加锁时，如果是公平锁，会先检查AQS队列中是否存在线程在排队，如果有线程在排队，则当前线程也进行排队，如果是非公平锁，则不会去检查是否有线程在排队，而是直接竞争锁。</p>
+<p>不管是公平锁还是非公平锁，一旦没竞争到锁，都会进行排队，当锁释放时，都是唤醒排在最前面的线程，所以非公平锁只是体现在了线程加锁阶段，而没有体现在线程被唤醒阶段。</p>
+<p>另外，<strong>ReentrantLock</strong>是可重入锁，不管是公平锁还是非公平锁都是可重入的。</p>
 <h5 id="类加载分几步？"><a href="#类加载分几步？" class="headerlink" title="类加载分几步？"></a>类加载分几步？</h5><p>按照Java虚拟机规范，从class文件到加载到内存中的类，到类卸载出内存为止，它的整个生命周期包括7个阶段</p>
 <p><strong>加载（Loading）-&gt; 链接（Linking） [ 验证(Verification)-&gt;准备(Preparation)-&gt;解析(Resolution) ] -&gt; 初始化(Initialization)-&gt;使用(Using)-&gt;卸载(Unloading)</strong></p>
 <p>其中</p>

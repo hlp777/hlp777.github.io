@@ -1049,6 +1049,8 @@
 
 
 
+<h5 id="SpringBoot是如何启动Tomcat的"><a href="#SpringBoot是如何启动Tomcat的" class="headerlink" title="SpringBoot是如何启动Tomcat的"></a>SpringBoot是如何启动Tomcat的</h5><p>1.首先，SpringBoot在启动时会先创建一个Spring容器<br>2.在创建Spring容器过程中，会利用@ConditionalOnClass技术来判断当前classpath中是否存在Tomcat依赖，如果存在则会生成一个启动Tomcat的Bean<br>3.Spring容器创建完之后，就会获取启动Tomcat的Bean，并创建Tomcat对象，并绑定端口等，然后启动Tomcat</p>
+<h5 id="SpringBoot中常用注解及其底层实现"><a href="#SpringBoot中常用注解及其底层实现" class="headerlink" title="SpringBoot中常用注解及其底层实现"></a>SpringBoot中常用注解及其底层实现</h5><p>1.@SpringBootApplication注解:这个注解标识了一个SpringBoot工程，它实际上是另外三个注解的组合，这三个注解是:<br>    a.@SpringBootConfiquration:这个注解实际就是一个@Configuration，表示启动类也是一个配置类<br>    b.@EnableAutoConfiguration:向Spring容器中导入了一个selector，用来加载Classpath下springFactories中所定义的自动配置类，将这些自动加载为配置Bean<br>    c.@ComponentScan:标识扫描路径，因为默认是没有配置实际扫描路径，所以SpringBoot扫描的路径是启动类所在的当前目录<br>2.@Bean注解:用来定义Bean，类似于XML中的&lt; bean &gt;标签，Spring在启动时，会对加了@Bean注解的方法进行解析，将方法的名字做为beanName，并通过执行方法得到bean对象<br>3.@Controller、@Service、@ResponseBody、@Autowired等常见注解</p>
 <h5 id="java反射的原理"><a href="#java反射的原理" class="headerlink" title="java反射的原理"></a>java反射的原理</h5><p>反射之中包含了一个「反」字，所以想要解释反射就必须先从「正」开始解释。</p>
 <p>一般情况下，我们使用某个类时必定知道它是什么类，是用来做什么的。于是我们直接对这个类进行实例化，之后使用这个类对象进行操作。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">Apple</span> <span class="variable">apple</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Apple</span>(); <span class="comment">//直接初始化，「正射」</span></span><br><span class="line">apple.setPrice(<span class="number">4</span>);</span><br></pre></td></tr></table></figure>

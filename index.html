@@ -314,6 +314,17 @@
 <p><strong>缺点:</strong><br>1.SQL语句的编写工作量较大，尤其当字段多、关联表多时，对开发人员编写SQL语句的功底有一定要求。<br>2.SQL语句依赖于数据库，导致数据库移植性差，不能随意更换数据库。</p>
 <h5 id="Redis和MySQL如何保证数据一致"><a href="#Redis和MySQL如何保证数据一致" class="headerlink" title="Redis和MySQL如何保证数据一致"></a>Redis和MySQL如何保证数据一致</h5><p>1.先更新Mysql，再更新Redis，如果更新Redis失败，可能仍然不一致<br>2.先删除Redis缓存数据，再更新Msl，再次查询的时候在将数据添加到缓存中，这种方案能解决1方案的问题，但是在高并发下性能较低，而且仍然会出现数据不一致的问题，比如线程1删除了Redis缓存数据，正在更新Mysgl，此时另外一个查询再查询，那么就会把Mvsal中老数据又查到Redis中<br>3.延时双删，步骤是:先删除Redis缓存数据，再更新Mysql，延迟几百毫秒再删除Redis缓存数据，这样就算在更新Mysql时，有其他线程读了Mysl，把老数据读到了Redis中，那么也会被删除掉，从而把数据保持一致</p>
 <h5 id="和-的区别是什么？"><a href="#和-的区别是什么？" class="headerlink" title="#{}和${}的区别是什么？"></a>#{}和${}的区别是什么？</h5><p><strong>#{}是预编译处理、是占位符，${}是字符串替换、是拼接符</strong><br>Mybatis在处理**#{}<strong>时，会将sql中的</strong>#{}<strong>替换为?号，调用 <strong>PreparedStatement</strong> 来赋值<br>Mybatis在处理</strong>${}<strong>时，会将sql中的</strong>${}**替换成变量的值，调用 <strong>Statement</strong> 来赋值<br><strong>使用#{}可以有效的防止 SQL注入，提高系统安全性</strong></p>
+<h5 id="Spring中的设计模式"><a href="#Spring中的设计模式" class="headerlink" title="Spring中的设计模式"></a>Spring中的设计模式</h5><ol>
+<li><strong>单例模式</strong><br>应用：Spring默认将Bean作为单例管理。<br>优点：节省资源，保证全局唯一性。</li>
+<li><strong>工厂模式</strong><br>应用：通过BeanFactory或ApplicationContext创建Bean。<br>优点：解耦Bean的创建和使用。</li>
+<li><strong>代理模式</strong><br>应用：AOP中使用动态代理（JDK或CGLIB）。<br>优点：不修改目标对象代码，扩展功能。</li>
+<li><strong>模板方法模式</strong><br>应用：JdbcTemplate等模板类封装底层操作。<br>优点：减少重复代码，提高复用性。</li>
+<li><strong>适配器模式</strong><br>应用：事件监听机制中适配器类分发事件。<br>优点：解耦事件发布和处理。</li>
+<li><strong>策略模式</strong><br>应用：事务管理中通过PlatformTransactionManager选择不同事务策略。<br>优点：解耦业务逻辑与事务管理。</li>
+<li><strong>观察者模式</strong><br>应用：事件驱动机制，ApplicationEventPublisher发布事件，ApplicationListener监听。<br>优点：低耦合，灵活的事件驱动。</li>
+<li><strong>装饰器模式</strong><br>应用：为数据访问或事务管理对象动态添加功能。<br>优点：动态扩展功能，不修改原代码。</li>
+<li><strong>组合模式</strong><br>应用：资源管理或配置管理中组合多个对象。<br>优点：简化客户端代码，便于统一操作。</li>
+</ol>
 <h5 id="Spring容器启动流程是怎样的"><a href="#Spring容器启动流程是怎样的" class="headerlink" title="Spring容器启动流程是怎样的"></a>Spring容器启动流程是怎样的</h5><p>1.在创建Spring容器，也就是启动Spring时<br>2.首先会进行扫描，扫描得到所有的BeanDefinition对象，并存在一个Map中<br>3.然后筛选出非懒加载的单例BeanDefinition进行创建Bean，对于多例Bean不需要在启动过程中去进行创建，对于多例Bean会在每次获取Bean时利用BeanDefinition去创建<br>4.利用BeanDefinition创建Bean就是Bean的创建生命周期，这期间包括了合并Beanlefinition、推断构造方法、实例化、属性填充、初始化前、初始化、初始化后等步骤，其中AOP就是发生在初始化后这一步骤中<br>5.单例Bean创建完了之后，Spring会发布一个容器启动事件<br>6.Spring启动结束<br>7.在源码中会更复杂，比如源码中会提供一些模板方法，让子类来实现，比如源码中还涉及到一些BeanFactoryPostProcessor和BeanPostProcessor的注册，Spring的扫描就是通过BenaFactoryPostProcessor来实现的，依赖注入就是通过BeanPostProcessor来实现的<br>8.在Spring启动过程中还会去处理@Import等注解</p>
 <h5 id="Spring事务传播机制"><a href="#Spring事务传播机制" class="headerlink" title="Spring事务传播机制"></a>Spring事务传播机制</h5><p><strong>多个事务方法相互调用时，事务如何在这些方法间传播，方法A是一个事务的方法，方法A执行过程中调用了方法B，那么方法B有无事务以及方法B对事务的要求不同都会对</strong><br><strong>方法A的事务具体执行造成影响，同时方法A的事务对方法B的事务执行也有影响，这种影响具体是什么就由两个方法所定义的事务传播类型所决定。</strong></p>
 <p>1.REQUIRED(Spring默认的事务传播类型):如果当前没有事务，则自己新建一个事务，如果当前存在事务，则加入这个事务<br>2.SUPPORTS:当前存在事务，则加入当前事务，如果当前没有事务，就以非事务方法执行<br>3.MANDATORY:当前存在事务，则加入当前事务，如果当前事务不存在，则抛出异常<br>4.REQUIRES NEW:创建一个新事务，如果存在当前事务，则挂起该事务<br>5.NOT_SUPPORTED:以非事务方式执行,如果当前存在事务，则挂起当前事务<br>6:NEVER:不使用事务，如果当前事务存在，则抛出异常<br>7.NESTED:如果当前事务存在，则在嵌套事务中执行，否则REQUIRED的操作一样(开启一个事务)</p>

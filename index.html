@@ -299,10 +299,6 @@
 <p>-Xmx 用于表示堆区的最大内存，等价于-XX：MaxHeapSize</p>
 <p><strong>超出堆区的内存最大时，将会抛出OutOfMemoryError：heap异常</strong></p>
 <p><strong>通常会将 -Xms和-Xmx两个参数配置相同的值，其目的是为了能够在java垃圾回收机制清理完堆区后不需要重新分隔计算堆区的大小，从而提高性能</strong></p>
-<h5 id="Java中有哪些类加载器"><a href="#Java中有哪些类加载器" class="headerlink" title="Java中有哪些类加载器"></a>Java中有哪些类加载器</h5><p><strong>JDK自带有三个类加载器:bootstrap ClassLoader、ExtClassLoader、AppClassLoader</strong></p>
-<p>BootstrapClassLoader是ExtClassLoader的父类加载器，默认负责加载%JAVA HOME%lib下的jar包和class文件</p>
-<p>ExtClassLoader是AppClassLoader的父类加载器，负责加载%JAVA HOME%&#x2F;lib&#x2F;ext文件夹下的jar包和class类。</p>
-<p>AppClassLoader是自定义类加载器的父类，负责加载classpath下的类文件。</p>
 <h5 id="如何排查JVM问题"><a href="#如何排查JVM问题" class="headerlink" title="如何排查JVM问题"></a>如何排查JVM问题</h5><p><strong>对于还在正常运行的系统:</strong><br>1.可以使用jmap来查看JVM中各个区域的使用情况</p>
 <p>2.可以通过jstack来查看线程的运行情况，比如哪些线程阻塞、是否出现了死锁</p>
 <p>3.可以通过jstat命令来查看垃圾回收的情况，特别是fullgc，如果发现fullgc比较频繁，那么就得 进行调优了</p>
@@ -343,6 +339,22 @@
 <p>6.改变哈希值</p>
 <p>7.缓存泄漏</p>
 <p>8.监听器和回调</p>
+<h5 id="Java面向对象的三大特征以及理解"><a href="#Java面向对象的三大特征以及理解" class="headerlink" title="Java面向对象的三大特征以及理解"></a>Java面向对象的三大特征以及理解</h5><p><strong>1.封装</strong></p>
+<p>Java中的封装是指一个类把自己内部的实现细节进行隐藏，只暴露对外的接口（setter和getter方法）。封装又分为属性的封装和方法的封装。把属性定义为私有的，它们通过setter和getter方法来对属性的值进行设定和获取。</p>
+<p><strong>2.继承</strong></p>
+<p>Java中的继承是指在一个现有类（父类）的基础上在构建一个新类（子类），子类可以拥有父类的成员变量以及成员方法（但是不一定能访问或调用，例如父类中private私有的成员变量以及方法不能访问和调用）。继承的作用就是能提高代码的复用性。子类拥有父类中的一切（拥有不一定能使用），它可以访问和使用父类中的非私有成员变量，以及重写父类中的非私有成员方法。</p>
+<p><strong>3.多态</strong></p>
+<p>多态就是指多种状态，就是说当一个操作在不同的对象时，会产生不同的结果。</p>
+<p>在Java中，实现多态的方式有两种，一种是编译时的多态，另外一种是运行时多态，编译时的多态是通过方法的重载实现的，而运行时多态是通过方法的重写实现的。</p>
+<p>方法的重载是指在同一个类中，有多个方法名相同的方法，但是这些方法有着不同的参数列表，在编译期我们就可以确定到底调用哪个方法。</p>
+<p>方法的重写，子类重写父类中的方法（包括接口的实现），父类的引用不仅可以指向父类的对象，而且还可以指向子类的对象。当父类的引用指向子类的引用时，只有在运行时才能确定调用哪个方法。</p>
+<p>其实在运行时的多态的实现，需要满足三个条件：1.继承（包括接口的实现）2.方法的重写 3.父类的引用指向子类对象</p>
+<h5 id="Java中有哪些类加载器"><a href="#Java中有哪些类加载器" class="headerlink" title="Java中有哪些类加载器"></a>Java中有哪些类加载器</h5><p><strong>JDK自带有三个类加载器:bootstrap ClassLoader、ExtClassLoader、AppClassLoader</strong></p>
+<p>BootstrapClassLoader是ExtClassLoader的父类加载器，默认负责加载%JAVA HOME%lib下的jar包和class文件</p>
+<p>ExtClassLoader是AppClassLoader的父类加载器，负责加载%JAVA HOME%&#x2F;lib&#x2F;ext文件夹下的jar包和class类。</p>
+<p>AppClassLoader是自定义类加载器的父类，负责加载classpath下的类文件。</p>
+<h5 id="在Java的异常处理机制中，什么时候应该抛出异常，什么时候捕获异常？"><a href="#在Java的异常处理机制中，什么时候应该抛出异常，什么时候捕获异常？" class="headerlink" title="在Java的异常处理机制中，什么时候应该抛出异常，什么时候捕获异常？"></a>在Java的异常处理机制中，什么时候应该抛出异常，什么时候捕获异常？</h5><p>异常相当于一种提示，如果我们抛出异常，就相当于告诉上层方法，我抛了一个异常，我处理不了这个异常，交给你来处理，而对于上层方法来说，它也需要决定自己能不能处理这个异常，是否也需要交给它的上层。</p>
+<p>所以我们在写一个方法时，我们需要考虑的就是，本方法能否合理的处理该异常，如果处理不了就继续向上抛出异常，包括本方法中在调用另外一个方法时，发现出现了异常，如果这个异常应该由自己来处理，那就捕获该异常并进行处理。</p>
 <h5 id="STW"><a href="#STW" class="headerlink" title="STW"></a>STW</h5><p>STW（Stop-The-World），指在GC事件发生过程中，会产生应用程序的停顿。停顿产生时整个应用程序线程都会被暂停，没有任何响应，有点像卡死的感觉，这个停顿称为STW。</p>
 <h5 id="GC评估指标"><a href="#GC评估指标" class="headerlink" title="GC评估指标"></a>GC评估指标</h5><p><strong>吞吐量：程序的运行时间（程序的运行时间+内存回收的时间）</strong></p>
 <p><strong>暂停时间：执行垃圾收集时，程序的工作线程被暂停的时间</strong></p>
@@ -428,16 +440,6 @@
 <p>4.<strong>私有方法。</strong>（私有方法，代理对象是无法调用的，所以 AOP 会失效）</p>
 <p>5.<strong>static 修饰的方法。</strong>（因为 static 修饰的方法属于类对象，而不属于对象实例，所以无法被代理对象调用。）</p>
 <p>6.<strong>final 修饰的方法。</strong>（因为被 final 修饰的方法是无法被重写的，所以代理对象也是无法调用的。）</p>
-<h5 id="Java面向对象的三大特征以及理解"><a href="#Java面向对象的三大特征以及理解" class="headerlink" title="Java面向对象的三大特征以及理解"></a>Java面向对象的三大特征以及理解</h5><p><strong>1.封装</strong></p>
-<p>Java中的封装是指一个类把自己内部的实现细节进行隐藏，只暴露对外的接口（setter和getter方法）。封装又分为属性的封装和方法的封装。把属性定义为私有的，它们通过setter和getter方法来对属性的值进行设定和获取。</p>
-<p><strong>2.继承</strong></p>
-<p>Java中的继承是指在一个现有类（父类）的基础上在构建一个新类（子类），子类可以拥有父类的成员变量以及成员方法（但是不一定能访问或调用，例如父类中private私有的成员变量以及方法不能访问和调用）。继承的作用就是能提高代码的复用性。子类拥有父类中的一切（拥有不一定能使用），它可以访问和使用父类中的非私有成员变量，以及重写父类中的非私有成员方法。</p>
-<p><strong>3.多态</strong></p>
-<p>多态就是指多种状态，就是说当一个操作在不同的对象时，会产生不同的结果。</p>
-<p>在Java中，实现多态的方式有两种，一种是编译时的多态，另外一种是运行时多态，编译时的多态是通过方法的重载实现的，而运行时多态是通过方法的重写实现的。</p>
-<p>方法的重载是指在同一个类中，有多个方法名相同的方法，但是这些方法有着不同的参数列表，在编译期我们就可以确定到底调用哪个方法。</p>
-<p>方法的重写，子类重写父类中的方法（包括接口的实现），父类的引用不仅可以指向父类的对象，而且还可以指向子类的对象。当父类的引用指向子类的引用时，只有在运行时才能确定调用哪个方法。</p>
-<p>其实在运行时的多态的实现，需要满足三个条件：1.继承（包括接口的实现）2.方法的重写 3.父类的引用指向子类对象</p>
 <h5 id="String-为什么不可变？不可变有什么好处？"><a href="#String-为什么不可变？不可变有什么好处？" class="headerlink" title="String 为什么不可变？不可变有什么好处？"></a>String 为什么不可变？不可变有什么好处？</h5><p><strong>为什么不可变？</strong></p>
 <p>1）value使用final修饰</p>
 <img src="/2024/12/18/Java/image-20240413154427443.png" class="" title="image-20240413154427443">
@@ -1079,7 +1081,8 @@
 <h6 id="MySQL锁有哪些，如何理解"><a href="#MySQL锁有哪些，如何理解" class="headerlink" title="MySQL锁有哪些，如何理解"></a>MySQL锁有哪些，如何理解</h6><p><strong>按锁粒度分类:</strong><br>1.行锁:锁某行数据，锁粒度最小，并发度高<br>2.表锁:锁整张表，锁粒度最大，并发度低<br>3.间隙锁:锁的是一个区间</p>
 <p><strong>还可以分为:</strong><br>1.共享锁:也就是读锁，一个事务给某行数据加了读锁，其他事务也可以读，但是不能写<br>2.排它锁:也就是写锁，一个事务给某行数据加了写锁，其他事务不能读（不能加读锁），也不能写</p>
 <p><strong>还可以分为:</strong><br>1.乐观锁:并不会真正的去锁某行记录，而是通过一个版本号来实现的<br>2.悲观锁:上面所的行锁、表锁等都是悲观锁</p>
-<p><strong>在事务的隔离级别实现中，就需要利用锁来解决幻读</strong>	</p>
+<p><strong>在事务的隔离级别实现中，就需要利用锁来解决幻读</strong></p>
+<h6 id="什么是MVCC"><a href="#什么是MVCC" class="headerlink" title="什么是MVCC"></a>什么是MVCC</h6><p>MVCC <strong>(Multi-version concuuency contol，多版本并发控制)</strong> 指的就是在使用<strong>READ  COMMITD,REPEATABLE  READ</strong>这种隔离级别的事务在执行营通的SELECT操作时访问记录的版本链的过程。可以使不同事务的读-写、写-读操作并发执行，从而提升系统性能。<strong>READ COMMITD、REPEATABLE  READ</strong>这两个隔离级别的一个很大不同就是:生成<strong>ReadView</strong>的时机不同，<strong>READ COMMITTD</strong>在每一次进行普通SELECT操作前都会生成一个<strong>ReadView</strong>，而REPEATABLE READ只在第一次进行普通SELECT操作前生成个<strong>ReadView</strong>，之后的查询操作都重复使用这个<strong>ReadView</strong>就好了</p>
  
       <!-- reward -->
       

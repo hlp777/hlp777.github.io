@@ -170,7 +170,7 @@
     <header class="article-header">
        
 <h2 itemprop="name">
-  <a class="article-title" href="/2024/12/18/Java/"
+  <a class="article-title" href="/2025/02/07/Java/"
     >Java</a> 
 </h2>
  
@@ -179,8 +179,8 @@
     </header>
      
     <div class="article-meta">
-      <a href="/2024/12/18/Java/" class="article-date">
-  <time datetime="2024-12-18T12:52:41.000Z" itemprop="datePublished">2024-12-18</time>
+      <a href="/2025/02/07/Java/" class="article-date">
+  <time datetime="2025-02-07T12:52:41.000Z" itemprop="datePublished">2025-02-07</time>
 </a>    
     </div>
       
@@ -211,8 +211,8 @@
 <li><strong>serializable 串行</strong>，一般是不会使用的，他会给每一行读取的数据加锁，会导致大量超时和锁竞争的问题</li>
 </ul>
 <h5 id="什么是分布式事务？有哪些实现方案？"><a href="#什么是分布式事务？有哪些实现方案？" class="headerlink" title="什么是分布式事务？有哪些实现方案？"></a>什么是分布式事务？有哪些实现方案？</h5><p><strong>在分布式系统中，一次业务处理可能需要多个应用来实现，比如用户发送一次下单请求，就涉及到订单系统创建订单、库存系统减库存，而对于一次下单，订单创建与减库存应该是要同时成功或同时失败的，但在分布式系统中，如果不做处理，就很有可能出现订单创建成功，但是减库存失败，那么解决这类问题，就需要用到分布式事务。常用解决方案有：</strong></p>
-<p>1.**本地消息表:**创建订单时，将减库存消息加入在本地事务中，一起提交到数据库存入本地消息表，然后调用库存系统，如果调用成功则修改本地消息状态为成功，如果调用库存系统失败，则由后台定时任务从本地消息表中取出未成功的消息，重试调用库存系统</p>
-<p>2.**消息队列:**目前RocketMQ中支持事务消息，它的工作原理是:</p>
+<p>1.<strong>本地消息表</strong>:创建订单时，将减库存消息加入在本地事务中，一起提交到数据库存入本地消息表，然后调用库存系统，如果调用成功则修改本地消息状态为成功，如果调用库存系统失败，则由后台定时任务从本地消息表中取出未成功的消息，重试调用库存系统</p>
+<p>2.<strong>消息队列</strong>:目前RocketMQ中支持事务消息，它的工作原理是:</p>
 <ul>
 <li>生产者订单系统先发送一条half消息到Broker，half消息对消费者而言是不可见的</li>
 <li>再创建订单，根据创建订单成功与否，向Broker发送commit或rollback</li>
@@ -220,7 +220,7 @@
 <li>一旦half消息commit了，消费者库存系统就会来消费，如果消费成功，则消息销毁，分布式事务成功结束</li>
 <li>如果消费失败，则根据重试策略进行重试，最后还失败则进入死信队列，等待进一步处理</li>
 </ul>
-<p>3.**Seata:**阿里开源的分布式事务框架，支持AT、TCC等多种模式，底层都是基于两阶段提交理论来实现的</p>
+<p>3.<strong>Seata</strong>:阿里开源的分布式事务框架，支持AT、TCC等多种模式，底层都是基于两阶段提交理论来实现的</p>
 <h5 id="TCC-分布式事务"><a href="#TCC-分布式事务" class="headerlink" title="TCC 分布式事务"></a>TCC 分布式事务</h5><p>你原本的一个接口，要改造为 3 个逻辑，Try（尝试）-Confirm（确定）-Cancel（取消）</p>
 <ul>
 <li>先是服务调用链路依次执行 Try 逻辑。</li>
@@ -234,13 +234,13 @@
 <li>那个服务的 Redis、Elasticsearch、MQ 等基础设施故障了。</li>
 <li>某些资源不足了，比如说库存不够这些。</li>
 </ul>
-<img src="/2024/12/18/Java/image-20231017203133785.png" class="" title="image-20231017203133785">
+<img src="/2025/02/07/Java/image-20231017203133785.png" class="" title="image-20231017203133785">
 
 <p><strong>TCC 分布式事务框架（国内）：ByteTCC，TCC-transaction，Himly。</strong></p>
 <h5 id="数据一致性模型有哪些？"><a href="#数据一致性模型有哪些？" class="headerlink" title="数据一致性模型有哪些？"></a>数据一致性模型有哪些？</h5><p>**强一致性:**当更新操作完成之后，任何多个后续进程的访问都会返回最新的更新过的值，这种是对用户最友好的，就是用户上一次写什么，下一次就保证能读到什<br>么。根据 CAP理论，这种实现需要牺牲可用性。</p>
 <p>**弱一致性:**系统在数据写入成功之后，不承诺立即可以读到最新写入的值，也不会具体的承诺多久之后可以读到。用户读到某一操作对系统数据的更新需要一段时<br>间，我们称这段时间为“不一致性窗口”。</p>
 <p>**最终一致性:**最终一致性是弱一致性的特例，强调的是所有的数据副本，在经过一段时间的同步之后,最终都能够达到一个一致的状态。因此，最终一致性的本质是<br>需要系统保证最终数据能够达到一致，而不需要实时保证系统数据的强一致性。到达最终一致性的时间 ，就是不一致窗口时间，在没有故障发生的前提下，不一致窗口的时间主要受通信延迟，系统负载和复制副本的个数影响。最终一致性模型根据其提供的不同保证可以划分为更多的模型，包括因果一致性和会话一致性等。</p>
-<h5 id="最终一致性分布式事务如何保障实际生产中-99-99-高可用？"><a href="#最终一致性分布式事务如何保障实际生产中-99-99-高可用？" class="headerlink" title="最终一致性分布式事务如何保障实际生产中 99.99% 高可用？"></a>最终一致性分布式事务如何保障实际生产中 99.99% 高可用？</h5><img src="/2024/12/18/Java/image-20231017203317652.png" class="" title="image-20231017203317652">
+<h5 id="最终一致性分布式事务如何保障实际生产中-99-99-高可用？"><a href="#最终一致性分布式事务如何保障实际生产中-99-99-高可用？" class="headerlink" title="最终一致性分布式事务如何保障实际生产中 99.99% 高可用？"></a>最终一致性分布式事务如何保障实际生产中 99.99% 高可用？</h5><img src="/2025/02/07/Java/image-20231017203317652.png" class="" title="image-20231017203317652">
 
 
 
@@ -268,8 +268,8 @@
 <p>2.<strong>数据同步阶段</strong>:集群中所有节点中的数据要和Leader节点保持一致，如果不一致则要进行同步</p>
 <p>3.<strong>请求广播阶段</strong>:当Leader节点接收到写请求时，会利用两阶段提交来广播该写请求，使得写请求像事务一样在其他节点上执行，达到节点上的数据实时一致</p>
 <p><strong>但值得注意的是，Zookeeper只是尽量的在达到强一致性，实际上仍然只是最终一致性的。</strong></p>
-<h5 id="Zookeeper和Eureka的区别"><a href="#Zookeeper和Eureka的区别" class="headerlink" title="Zookeeper和Eureka的区别"></a>Zookeeper和Eureka的区别</h5><p>**Zookeeper:CP设计(强一致性)**，目标是一个分布式的协调系统，用于进行资源的统一管理。当节点crash后，需要进行leader的选举，在这个期间内，zk服务是不可用的</p>
-<p>**Eureka:AP设计(高可用)**，目标是一个服务注册发现系统，专门用于微服务的服务发现注册</p>
+<h5 id="Zookeeper和Eureka的区别"><a href="#Zookeeper和Eureka的区别" class="headerlink" title="Zookeeper和Eureka的区别"></a>Zookeeper和Eureka的区别</h5><p><strong>Zookeeper</strong>:CP设计(强一致性)，目标是一个分布式的协调系统，用于进行资源的统一管理。当节点crash后，需要进行leader的选举，在这个期间内，zk服务是不可用的</p>
+<p><strong>Eureka</strong>:AP设计(高可用)，目标是一个服务注册发现系统，专门用于微服务的服务发现注册</p>
 <ul>
 <li><strong>Eureka</strong>各个节点都是平等的，几个节点挂掉不会影响正常节点的工作，剩余的节点依然可以提供注册和查询服务。而Eureka的客户端在向某个Eureka注册时如果发现连接失败，会自动切换至其他节点，只要有一台<strong>Eureka</strong>还在，就能保证注册服务可用**(保证可用性)<strong>，只不过查到的信息可能不是最新的</strong>(不保证强一致性)**</li>
 <li>同时当<strong>Eureka</strong>的服务端发现<strong>85%以上</strong>的服务都没有心跳的话，它就会认为自己的网络出了问题，就不会从服务列表中删除这些失去心跳的服务，同时<strong>Eureka</strong>的客户端也会缓存服务信息。<strong>Eureka</strong>对于服务注册发现来说是非常好的选择。</li>
@@ -373,9 +373,9 @@
 <p>2.<strong>复制算法</strong>:为了解决标记清除算法的内存碎片问题，就产生了复制算法。复制算法将内存分为大小相等的两半，每次只使用其中一半。垃圾回收时，将当前这一块的存活对象全部拷贝到另一半，然后当前这一半内存就可以直接清除。这种算法没有内存碎片，但是他的问题就在于浪费空间。而且，他的效率跟存活对象的个数有关。</p>
 <p>3.<strong>标记压缩算法</strong>:为了解:决复制算法的缺陷，就提出了标记压缩算法。这种算法在标记阶段跟标记清除算法是一样的，但是在完成标记之后，不是直接清理垃圾内存，而是将存活对象往一端移动，然后将边界以外的所有内存直接清除。</p>
 <h5 id="JVM中哪些是线程共享区"><a href="#JVM中哪些是线程共享区" class="headerlink" title="JVM中哪些是线程共享区"></a>JVM中哪些是线程共享区</h5><p><strong>堆区和方法区是所有线程共享的，栈，本地方法栈，程序计数器是每个线程独有的</strong></p>
-<img src="/2024/12/18/Java/image-20250118112127950.png" class="" title="image-20250118112127950">
+<img src="/2025/02/07/Java/image-20250118112127950.png" class="" title="image-20250118112127950">
 
-<img src="/2024/12/18/Java/image-20250118112202118.png" class="" title="image-20250118112202118">
+<img src="/2025/02/07/Java/image-20250118112202118.png" class="" title="image-20250118112202118">
 
 
 
@@ -430,20 +430,20 @@
 <h5 id="如何优雅关闭Spring-Boot？"><a href="#如何优雅关闭Spring-Boot？" class="headerlink" title="如何优雅关闭Spring Boot？"></a>如何优雅关闭Spring Boot？</h5><p>四种优雅关闭Spring Boot应用程序的方案。</p>
 <p>第一种是通过调用activator的shutdown接口，但需要配置认证和权限控制。</p>
 <p>需添加依赖</p>
-<img src="/2024/12/18/Java/image-20240224222824781.png" class="" title="image-20240224222824781">
+<img src="/2025/02/07/Java/image-20240224222824781.png" class="" title="image-20240224222824781">
 
 <p>shutdown接口默认关闭，需开启</p>
-<img src="/2024/12/18/Java/image-20240224222854114.png" class="" title="image-20240224222854114">
+<img src="/2025/02/07/Java/image-20240224222854114.png" class="" title="image-20240224222854114">
 
-<img src="/2024/12/18/Java/image-20240224222941669.png" class="" title="image-20240224222941669">
+<img src="/2025/02/07/Java/image-20240224222941669.png" class="" title="image-20240224222941669">
 
 <p>第二种是调用应用程序上下文的close方法，也需要处理认证和权限问题。</p>
-<img src="/2024/12/18/Java/image-20240224223012206.png" class="" title="image-20240224223012206">
+<img src="/2025/02/07/Java/image-20240224223012206.png" class="" title="image-20240224223012206">
 
 
 
 <p>第三种是调用Spring Application的方法来触发关闭钩子函数。</p>
-<img src="/2024/12/18/Java/image-20240224223048285.png" class="" title="image-20240224223048285">
+<img src="/2025/02/07/Java/image-20240224223048285.png" class="" title="image-20240224223048285">
 
 <p>第四种是直接杀进程，可以在启动时将进程ID写入固定文本文件，然后执行脚本自动关闭应用程序。</p>
 <h5 id="Mybatis的优缺点"><a href="#Mybatis的优缺点" class="headerlink" title="Mybatis的优缺点"></a>Mybatis的优缺点</h5><p><strong>优点:</strong><br>1.基于SQL 语句编程，相当灵活，不会对应用程序或者数据库的现有设计造成任何影响，SQL写在XML里，解除sql与程序代码的耦合，便于统一管理;提供XML 标<br>签，支持编写动态 SQL语句，并可重用。</p>
@@ -500,17 +500,17 @@
 <p>6.<strong>final 修饰的方法。</strong>（因为被 final 修饰的方法是无法被重写的，所以代理对象也是无法调用的。）</p>
 <h5 id="String-为什么不可变？不可变有什么好处？"><a href="#String-为什么不可变？不可变有什么好处？" class="headerlink" title="String 为什么不可变？不可变有什么好处？"></a>String 为什么不可变？不可变有什么好处？</h5><p><strong>为什么不可变？</strong></p>
 <p>1）value使用final修饰</p>
-<img src="/2024/12/18/Java/image-20240413154427443.png" class="" title="image-20240413154427443">
+<img src="/2025/02/07/Java/image-20240413154427443.png" class="" title="image-20240413154427443">
 
 <p>2）没有暴露成员变量</p>
-<img src="/2024/12/18/Java/image-20240413154522492.png" class="" title="image-20240413154522492">
+<img src="/2025/02/07/Java/image-20240413154522492.png" class="" title="image-20240413154522492">
 
 <p>3）内部方法不会改动 value</p>
-<img src="/2024/12/18/Java/image-20240413154545726.png" class="" title="image-20240413154545726">
+<img src="/2025/02/07/Java/image-20240413154545726.png" class="" title="image-20240413154545726">
 
 <p><strong>一旦初始化之后，String 类中的方法就不会去改动 value 中的元素，需要的话都是直接新建一个 String 对象。</strong></p>
 <p>4）类使用final修饰，不可继承</p>
-<img src="/2024/12/18/Java/image-20240413154620466.png" class="" title="image-20240413154620466">
+<img src="/2025/02/07/Java/image-20240413154620466.png" class="" title="image-20240413154620466">
 
 <p><strong>这个设计主要是避免有人定义一个子类继承 String，然后重写 String 的方法，将这个子类设计成可变对象。我们知道在 java 中，有父类引用指向子类对象这种用法，这种情况下，我们需要一个String 对象，可能返回的是String 子类的对象，这会导致 String 看起来是可变的。所以  java 直接将 String定义成不可继承，避免出现这种情况。</strong></p>
 <p><strong>不只是 String 类，其实所有的不可变类大致的设计思想都是按这四步来。后续如果我们自己想要设计一个不可变类，也可以按这四点来设计。</strong></p>
@@ -532,7 +532,7 @@
 <p><strong>3.IO流分类</strong><br>Java中的IO流可以按照数据的类型和流的方向进行分类。</p>
 <p><strong>1.按数据类型分类</strong><br>字节流（Byte Stream）：以字节为单位读写数据，适用于处理二进制数据，如图像、音频、视频等。常见的字节流类有InputStream和OutputStream。</p>
 <p>字符流（Character Stream）：以字符为单位读写数据，适用于处理文本数据。字符流会自动进行字符编码和解码，可以处理多国语言字符。常见的字符流类有Reader和Writer。</p>
-<img src="/2024/12/18/Java/image-20240413155749044.png" class="" title="image-20240413155749044">
+<img src="/2025/02/07/Java/image-20240413155749044.png" class="" title="image-20240413155749044">
 
 <p><strong>2 按流的方向分类</strong><br>输入流（Input Stream）：用于读取数据。输入流从数据源读取数据，如文件、网络连接等。常见的输入流类有FileInputStream、ByteArrayInputStream、SocketInputStream等。</p>
 <p>输出流（Output Stream）：用于写入数据。输出流将数据写入到目标地，如文件、数据库、网络等。常见的输出流类有FileOutputStream、ByteArrayOutputStream、SocketOutputStream等。</p>
@@ -559,11 +559,11 @@
 <p><strong>CopyOnWriteArrayList是一个线程安全的ArrayList,其实现原理是读写分离，其对写操作使用ReentrantLock来上锁，对读操作则不加锁；CopyOnWriteArrayList在写操作的时候，会将list中的数组拷贝一份副本，然后对其副本进行操作（如果此时其他线程需要读的事，那么其他线程读取的是原先的没有修改的数组，如果其他写操作的线程要进行写操作，需要等待正在写的线程操作完成，释放ReentrantLock后，去获取锁才能进行写操作），写操作完成后，会讲list中数组的地址引用指向修改后的新数组地址。</strong></p>
 <p><strong>总结</strong><br>1、本文介绍了ArrayList在多线程的情况下可能会出现的三种异常，并分析了原因，结尾给出了三种解决ArrayList线程不安全的方案，一和二两种方法都是将所有的方法都加锁，那会导致效率低下，只能一个线程操作完，下一个线程获取到锁才能操作。</p>
 <p>2、CopyOnWriteArrayList由于写时进行复制，内存里面同时存在两个对象占用内存，如果对象过大容易发送YongGc和FullGc，如果使用场景的写操作十分频繁的话，建议还是不要实现CopyOnWriteArrayList。</p>
-<h5 id="SpringMVC是如何处理一个请求"><a href="#SpringMVC是如何处理一个请求" class="headerlink" title="SpringMVC是如何处理一个请求"></a>SpringMVC是如何处理一个请求</h5><img src="/2024/12/18/Java/image-20240421151829116.png" class="" title="image-20240421151829116">
+<h5 id="SpringMVC是如何处理一个请求"><a href="#SpringMVC是如何处理一个请求" class="headerlink" title="SpringMVC是如何处理一个请求"></a>SpringMVC是如何处理一个请求</h5><img src="/2025/02/07/Java/image-20240421151829116.png" class="" title="image-20240421151829116">
 
 
 
-<h5 id="Spring中的Bean的生命周期有哪些步骤"><a href="#Spring中的Bean的生命周期有哪些步骤" class="headerlink" title="Spring中的Bean的生命周期有哪些步骤"></a>Spring中的Bean的生命周期有哪些步骤</h5><img src="/2024/12/18/Java/image-20240421152333603.png" class="" title="image-20240421152333603">
+<h5 id="Spring中的Bean的生命周期有哪些步骤"><a href="#Spring中的Bean的生命周期有哪些步骤" class="headerlink" title="Spring中的Bean的生命周期有哪些步骤"></a>Spring中的Bean的生命周期有哪些步骤</h5><img src="/2025/02/07/Java/image-20240421152333603.png" class="" title="image-20240421152333603">
 
 
 
@@ -811,7 +811,7 @@
 <li><strong>使用场景:</strong> 几乎是全场景</li>
 </ul>
 <h5 id="死信队列是什么？延时队列是什么？"><a href="#死信队列是什么？延时队列是什么？" class="headerlink" title="死信队列是什么？延时队列是什么？"></a>死信队列是什么？延时队列是什么？</h5><p>1.死信队列也是一个消息队列，它是用来存放那些没有成功消费的消息的，通常可以用来作为消息重试<br>2.延时队列就是用来存放需要在指定时间被处理的元素的队列，通常可以用来处理一些具有过期性操作的业务，比如十分钟内未支付则取消订单</p>
-<h5 id="RocketMQ的事务消息是如何实现的"><a href="#RocketMQ的事务消息是如何实现的" class="headerlink" title="RocketMQ的事务消息是如何实现的"></a>RocketMQ的事务消息是如何实现的</h5><img src="/2024/12/18/Java/image-20250120173237967.png" class="" title="image-20250120173237967">
+<h5 id="RocketMQ的事务消息是如何实现的"><a href="#RocketMQ的事务消息是如何实现的" class="headerlink" title="RocketMQ的事务消息是如何实现的"></a>RocketMQ的事务消息是如何实现的</h5><img src="/2025/02/07/Java/image-20250120173237967.png" class="" title="image-20250120173237967">
 
 <p>1.生产者订单系统先发送一条half消息到Broker，half消息对消费者而言是不可见的</p>
 <p>2.再创建订单，根据创建订单成功与否，向Broker发送commit或rollback</p>
@@ -839,13 +839,13 @@
 <h5 id="Redis集群"><a href="#Redis集群" class="headerlink" title="Redis集群"></a>Redis集群</h5><p><strong>如何是实现高可用</strong></p>
 <p><strong>主从复制</strong></p>
 <p>主从复制时Redis高可用服务的最基础的保证，实现方案就是将从前的一台Redis服务器，同步数据到多台从Redis服务器上，即<strong>一主多从</strong>的模式，且从服务器之间采用的时<strong>（读写分离）</strong>的方式</p>
-<img src="/2024/12/18/Java/image-20241220132200636.png" class="" title="image-20241220132200636">
+<img src="/2025/02/07/Java/image-20241220132200636.png" class="" title="image-20241220132200636">
 
 <p> <strong>注意，主从服务器之间的命令复制是异步进行的</strong></p>
 <p><strong>哨兵模式</strong></p>
 <p>在使用Redis主从服务的时候，会有一个问题，就是当Redis的主从服务器出现<strong>故障宕机</strong>时，需要手动进行恢复</p>
 <p>为了解决 这个问题，Redis增加了哨兵模式（Redis Sentinel），因为哨兵模式做到了可以监控主从服务器，并且提供主从节点故障转移的功能</p>
-<img src="/2024/12/18/Java/image-20241220133112317.png" class="" title="image-20241220133112317">
+<img src="/2025/02/07/Java/image-20241220133112317.png" class="" title="image-20241220133112317">
 
 <p><strong>切片集群模式</strong></p>
 <p>当Redis缓存数据量大到一台服务器无法缓存时，就需要使用<strong>Redis切片集群（Redis Cluster）</strong>方案，它将数据分布在不同的服务器上吗，以此来<strong>降低系统对单主节点的依赖</strong>，从而提高Redis服务的<strong>读写性能</strong></p>
@@ -865,21 +865,21 @@
 <p>难以确定删除操作执行的<strong>时长和频率</strong>。如果执行的太频繁，就会对<strong>CPU</strong>不友好，如果执行的太少，那又和惰性删除一样了，过期key占用的内存不会及时得到释放</p>
 <h5 id="Redis缓存设计"><a href="#Redis缓存设计" class="headerlink" title="Redis缓存设计"></a>Redis缓存设计</h5><p><strong>如何避免缓存雪崩？</strong></p>
 <p>大量缓存数据在同一时间过期（失效）时，如果此时有大量的用户的用户请求，都无法在Redis中处理，于是全部请求都直接访问数据库，从而导致数据库的压力骤增，严重的会造成数<strong>据库宕机</strong>，从而形成一系列连锁反应，造成整个系统崩溃，这就是<strong>缓存雪崩</strong></p>
-<img src="/2024/12/18/Java/image-20241220202957887.png" class="" title="image-20241220202957887">
+<img src="/2025/02/07/Java/image-20241220202957887.png" class="" title="image-20241220202957887">
 
 <p><strong>解决方案</strong></p>
 <p><strong>将缓存失效时间随机打散</strong>：我们可以在原有的失效时间基础上增加一个随机值（比如1到10分钟）这样每个缓存的过期时间都不重复了，也就降低了缓存集体失效的概率</p>
 <p><strong>设置缓存不过期</strong>：我们可以通过后台服务来更新缓存数据，从而避免因为缓存失效造成的缓存雪崩，也可以在一定程度上避免缓存并发问题</p>
 <p><strong>如何避免缓存击穿？</strong></p>
 <p>如果缓存中的某个热点数据过期了，此时大量的请求访问了该热点数据，就无法从缓存中读取，直接访问数据库，数据库很容易就被高并发的<strong>请求冲垮</strong>，这就是<strong>缓存击穿</strong>的问题</p>
-<img src="/2024/12/18/Java/image-20241220203808804.png" class="" title="image-20241220203808804">
+<img src="/2025/02/07/Java/image-20241220203808804.png" class="" title="image-20241220203808804">
 
 <p><strong>可以认为缓存击穿时缓存雪崩的一个子集，应对缓存击穿可以采取前面两种方案</strong></p>
 <p>1.互斥锁方案（<strong>Redis中使用setNX方法设置一个状态位，表示这是一种锁定状态）</strong>，保证同一时间只有一个业务线程请求缓存，未能获取互斥锁的请求，要么等待锁释放后重新读取缓存，要么就返回空值或者默认值</p>
 <p>2.不给热点数据设置过期时间，由后台异步更新缓存，或者在热点数据准备要过期时，提前通知后台线程更新缓存以及重新设置过期时间</p>
 <p><strong>如何避免缓存穿透？</strong></p>
 <p>当用户访问的数据，<strong>既不在缓存中，又不在数据库中</strong>，导致请求在访问缓存时，发现缓存缺失，再去访问数据库时，发现数据库中也没有要访问的数据，没办法构建缓存数据，来服务后续的请求，那么当有大量这样的请求到来时，数据库的压力骤增，这就是<strong>缓存穿透</strong>的问题</p>
-<img src="/2024/12/18/Java/image-20241220205146847.png" class="" title="image-20241220205146847">
+<img src="/2025/02/07/Java/image-20241220205146847.png" class="" title="image-20241220205146847">
 
 <p><strong>缓存穿透的发生 一般有这两种情况：</strong></p>
 <p>1.<strong>业务误操作</strong>：缓存中的数据和数据库中的数据都被误删除了，所有导致缓存和数据库中都没有数据</p>
@@ -896,7 +896,7 @@
 <p><strong>实际开发中，Redis和MySQL的更新策略用的是Cache Aside，另外两种策略应用不了</strong></p>
 <p><strong>Cache Aside（旁路缓存）策略</strong></p>
 <p>可以细分为<strong>读策略</strong>和<strong>写策略</strong></p>
-<img src="/2024/12/18/Java/image-20241221170840592.png" class="" title="image-20241221170840592">
+<img src="/2025/02/07/Java/image-20241221170840592.png" class="" title="image-20241221170840592">
 
 <p><strong>写策略步骤：</strong></p>
 <p>先更新数据库中的数据，再删除缓存中的数据</p>
@@ -909,16 +909,16 @@
 <p>3.点外卖的时候，如果商家在10分钟还没接单，就会自动取消订单</p>
 <p>在 Redis 可以使用<strong>有序集合（ZSet）</strong>的方式来实现延迟消息队列的，<strong>ZSet</strong> 有一个 <strong>Score 属性</strong>可以用来存储延迟执行的时间。 </p>
 <p>使用 <strong>zadd score1 value1</strong> 命令就可以一直往内存中生产消息。再利用 <strong>zrangebysocre</strong> 查询符合条件的所有待处理的任务， 通过循环执行队列任务即可。</p>
-<img src="/2024/12/18/Java/image-20241221193924630.png" class="" title="image-20241221193924630">
+<img src="/2025/02/07/Java/image-20241221193924630.png" class="" title="image-20241221193924630">
 
 <h6 id="Redis管道有什么用？"><a href="#Redis管道有什么用？" class="headerlink" title="Redis管道有什么用？"></a><strong>Redis管道有什么用？</strong></h6><p><strong>管道技术（Pipeline）</strong>是客户端提供的一种<strong>批处理技术</strong>，用于一次处理多个Redis命令，从而提高整个<strong>交互性能</strong></p>
-<img src="/2024/12/18/Java/image-20241221195035753.png" class="" title="image-20241221195035753">
+<img src="/2025/02/07/Java/image-20241221195035753.png" class="" title="image-20241221195035753">
 
 <p>使用<strong>管道技术可以解决多个命令执行时的网络等待</strong>，它是吧多个命令整合到一起发送给服务器端处理之后统一返回给客户端，这样就免去了每条命令执行后都要等待的情况，从而有效地提高了程序的执行效率。</p>
 <p>但使用管道技术也要注意避免发送的命令过大，或管道内的数据太多而导致的网络阻塞</p>
 <p>要注意的是，管道技术本质上是客户端提供的功能，而非Redis服务器的功能</p>
 <h6 id="如何用Redis实现分布式锁的？"><a href="#如何用Redis实现分布式锁的？" class="headerlink" title="如何用Redis实现分布式锁的？"></a><strong>如何用Redis实现分布式锁的？</strong></h6><p>分布式锁是用于<strong>分布式环境</strong>下并发控制的一种机制，用于控制某个<strong>资源</strong>在<strong>同一时刻只能被一个应用所使用</strong></p>
-<img src="/2024/12/18/Java/image-20241221200510970.png" class="" title="image-20241221200510970">
+<img src="/2025/02/07/Java/image-20241221200510970.png" class="" title="image-20241221200510970">
 
 <p><strong>Redis的SET命令有个NX参数可以实现（key不存在才插入），所以可以用它来实现分布式锁：</strong></p>
 <p>1.如果<strong>key不存在</strong>，则显示<strong>插入成功</strong>，可以用来表示加锁成功</p>
@@ -958,7 +958,7 @@
 <p>加锁成功后，客户端需要重新计算这把锁的有效时间，计算的结果是<strong>「锁最初设置的过期时间」减去「客户端从大多数节点获取锁的总耗时（t2-t1）」</strong>。如果计算的结果已经来不及完成共享数据的操作了，我们可以释放锁，以免出现还没完成数据操作，锁就过期了的情况。 </p>
 <p>加锁失败后，客户端向<strong>所有 Redis 节点发起释放锁的操作</strong>，释放锁的操作和在单节点上释放锁的操作一样，只要执行释放锁的 Lua 脚本就可以了。</p>
 <h6 id="Redis数据结构的应用场景"><a href="#Redis数据结构的应用场景" class="headerlink" title="Redis数据结构的应用场景"></a>Redis数据结构的应用场景</h6><p><strong>Redis的数据结构:</strong><br>1.**字符串:**可以用来做最简单的数据，可以缓存某个简单的字符串，也可以缓存某个ison格式的字符串，Redis分布式锁的实现就利用了这种数据结构，还包括可以实现计数器、Session共享、分布式ID<br>2.**哈希表:**可以用来存储一些key-value对，更适合用来存储对象<br>3.**列表:**Redis的列表通过命令的组合，既可以当做栈，也可以当做队列来使用，可以用来缓存类似微信公众号、微博等消息流数据<br>4.**集合:**和列表类似，也可以存储多个元素，但是不能重复，集合可以进行交集、并集、差集操作，从而可以实现类似，我和某人共同关注的人、朋友圈点赞等功能<br>5.**有序集合(ZSet):**集合是无序的，有序集合可以设置顺序，可以用来实现排行榜功能</p>
-<h4 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h4><h5 id="MySQL执行流程"><a href="#MySQL执行流程" class="headerlink" title="MySQL执行流程"></a>MySQL执行流程</h5><img src="/2024/12/18/Java/image-20241222131241677.png" class="" title="image-20241222131241677">
+<h4 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h4><h5 id="MySQL执行流程"><a href="#MySQL执行流程" class="headerlink" title="MySQL执行流程"></a>MySQL执行流程</h5><img src="/2025/02/07/Java/image-20241222131241677.png" class="" title="image-20241222131241677">
 
 <p>MySQL的架构共分为两层：<strong>Server层和存储引擎层</strong></p>
 <p><strong>Server 层负责建立连接、分析和执行 SQL。</strong>MySQL 大多数的核心功能模块都在这实现，主要包括连接器，查询缓存、解析器、预处理器、优化器、执行器等。另外，所有的内置函数（如日期、时间、数学和加密函数等）和所有跨存储引擎的功能（如存储过程、触发器、视图等）都在 Server 层实现。</p>
@@ -996,7 +996,7 @@
 </tr>
 </tbody></table>
 <p><strong>第二件事情，语法分析。</strong>根据词法分析的结果，语法解析器会根据语法规则，判断你输入的这个 SQL 语句是否满足 MySQL 语法，如果没问题就会构建出 <strong>SQL 语法树</strong>，这样方便后面模块获取 SQL 类型、表名、字段名、 where 条件等等。</p>
-<img src="/2024/12/18/Java/image-20241222135238338.png" class="" title="image-20241222135238338">
+<img src="/2025/02/07/Java/image-20241222135238338.png" class="" title="image-20241222135238338">
 
 
 

@@ -191,8 +191,8 @@
 <p>2.<strong>数据同步阶段</strong>:集群中所有节点中的数据要和Leader节点保持一致，如果不一致则要进行同步</p>
 <p>3.<strong>请求广播阶段</strong>:当Leader节点接收到写请求时，会利用两阶段提交来广播该写请求，使得写请求像事务一样在其他节点上执行，达到节点上的数据实时一致</p>
 <p><strong>但值得注意的是，Zookeeper只是尽量的在达到强一致性，实际上仍然只是最终一致性的。</strong></p>
-<h5 id="Zookeeper和Eureka的区别"><a href="#Zookeeper和Eureka的区别" class="headerlink" title="Zookeeper和Eureka的区别"></a>Zookeeper和Eureka的区别</h5><p><strong>Zookeeper</strong>: **CP设计(强一致性)**，目标是一个分布式的协调系统，用于进行资源的统一管理。当节点crash后，需要进行leader的选举，在这个期间内，zk服务是不可用的</p>
-<p><strong>Eureka</strong>: **AP设计(高可用)**，目标是一个服务注册发现系统，专门用于微服务的服务发现注册</p>
+<h5 id="Zookeeper和Eureka的区别"><a href="#Zookeeper和Eureka的区别" class="headerlink" title="Zookeeper和Eureka的区别"></a>Zookeeper和Eureka的区别</h5><p><strong>Zookeeper</strong>: CP设计(强一致性)，目标是一个分布式的协调系统，用于进行资源的统一管理。当节点crash后，需要进行leader的选举，在这个期间内，zk服务是不可用的</p>
+<p><strong>Eureka</strong>: AP设计(高可用)，目标是一个服务注册发现系统，专门用于微服务的服务发现注册</p>
 <ul>
 <li><strong>Eureka</strong>各个节点都是平等的，几个节点挂掉不会影响正常节点的工作，剩余的节点依然可以提供注册和查询服务。而Eureka的客户端在向某个Eureka注册时如果发现连接失败，会自动切换至其他节点，只要有一台<strong>Eureka</strong>还在，就能保证注册服务可用(保证可用性)，只不过查到的信息可能不是最新的(不保证强一致性)</li>
 <li>同时当<strong>Eureka</strong>的服务端发现<strong>85%以上</strong>的服务都没有心跳的话，它就会认为自己的网络出了问题，就不会从服务列表中删除这些失去心跳的服务，同时<strong>Eureka</strong>的客户端也会缓存服务信息。<strong>Eureka</strong>对于服务注册发现来说是非常好的选择。</li>

@@ -290,6 +290,12 @@
 <p>3.**并发(Concurrency:**两个任务整体看上去是同时执行，在底层，两个任务被拆成了很多份，然后一个一个执行，站在更高的角度看来两个任务是同时在执行的</p>
 <h5 id="对守护线程的理解"><a href="#对守护线程的理解" class="headerlink" title="对守护线程的理解"></a>对守护线程的理解</h5><p>线程分为用户线程和守护线程，用户线程就是普通线程，守护线程就是JVM的后台线程，比如垃圾回收线程就是一个守护线程，守护线程会在其他普通线程都停止运行之后自动关闭。我们可以通过设置thread.setDaemon(true)来把一个线程设置为守护线程。</p>
 <p><strong>eg：垃圾回收线程就是典型的守护线程</strong></p>
+<h5 id="线程池的底层工作原理"><a href="#线程池的底层工作原理" class="headerlink" title="线程池的底层工作原理"></a>线程池的底层工作原理</h5><p><strong>线程池内部是通过队列+线程实现的，当我们利用线程池执行任务时</strong>:</p>
+<p>1.如果此时线程池中的线程数量小于corePoolSize，即使线程池中的线程都处于空闲状态，也要创建新的线程来处理被添加的任务</p>
+<p>2.如果此时线程池中的线程数量等于corePoolSize，但是缓冲队列workQueue未满，那么任务被放入缓冲中队列</p>
+<p>3.如果此时线程池中的线程数量大于等于corePoolSize，缓冲队列workQueue满，并且线程池中的数量小于maximumPoolsize，建新的线程来处理被添加的任务</p>
+<p>4、如果此时线程池中的线程数量大于corePoolsize，缓冲以列workoueue满，并目线程池中的数量等于maximumPoosize，那么通过 bandler所指定的笛略来外理此任务</p>
+<p>5.当线程池中的线程数量大于corePoolSize时，如果某线程空闲时间超过keepAliveTime，线程将被终止。这样，线程池可以动态的调整池中的线程数</p>
 <h5 id="ThreadLocal的底层原理"><a href="#ThreadLocal的底层原理" class="headerlink" title="ThreadLocal的底层原理"></a>ThreadLocal的底层原理</h5><p>1.Threadlocal是Java中所提供的线程本地存储机制，可以利用该机制将数据<strong>缓存在某个线程内部</strong>，该线程可以在任意时刻、任意方法中获取缓存的数据</p>
 <p>2.ThreadLocal底层是通过<strong>ThreadlocalMap来实现的</strong>，每个Thread对象(注意不是Threadlocal对象)中都存在一个<strong>ThreadlocalMap</strong>,Map的key为<strong>Threadlocal</strong>对象，Map的value为需要缓存的值</p>
 <p>3.如果在线程池中使用ThreadLocal会造成内存泄漏，因为当Threadlocal对象使用完之后，应该要把设置的key，value，也就是Entry对象进行回收，但线程池中的线程不会回收，而线程对象是通过强引用指向<strong>ThreadlocalMap</strong>，ThreadlocaMap也是通过强引用指向Entry对象，线程不被回收，Entry对象也就不会被回收，从而出现内存池泄露，解决办法是，在使用了ThreadLocal对象之后，手动调用ThreadLocal的remove方法，手动清除Entry对象</p>
@@ -572,6 +578,33 @@
 <p>1.<strong>解祈切面</strong>:在Bean创建之前的第一个Bean后置处理器会去解析切面（解析切面中通知、切点，一个通知就会解析成一个advisor(通知、切点))</p>
 <p>2.<strong>创建动态代理</strong>：正常的Bean初始化后调用BeanPostProcessor 拿到之前缓存的advisor，再通过advisor中poitcut判断当前Bean是合微功点表达式业配，如果匹配，就会为Bean创建动态代理（创建方式1.jdk动态代理2.cglib)。</p>
 <p>3.<strong>调用</strong>:拿到动态代理对象，调用方法就会判断当前方法是否增强的方法，就会通过<strong>调用链</strong>的方式依次去执行通知.</p>
+<h5 id="IOC的定义"><a href="#IOC的定义" class="headerlink" title="IOC的定义"></a>IOC的定义</h5><p><strong>Spring IOC（Inversion of Control，控制反转）是Spring框架的核心思想之一，它通过将对象的创建、依赖注入和生命周期管理交给Spring容器来管理，从而降低了代码的耦合度，提高了程序的灵活性和可维护性。以下是对Spring IOC的解释</strong>：</p>
+<p><strong>什么是IOC？</strong></p>
+<p>IOC是一种设计原则，它将传统程序中由开发者手动控制的对象的创建和依赖关系交给容器来管理。</p>
+<ul>
+<li><strong>传统方式</strong>：开发者通过new关键字创建对象，并手动管理对象之间的依赖关系。</li>
+<li><strong>IOC方式</strong>：对象的创建和依赖关系由Spring容器负责，开发者只需通过配置或注解声明依赖关系。</li>
+</ul>
+<p><strong>IOC的核心思想</strong></p>
+<ul>
+<li><strong>控制反转</strong> : 将对象的控制权从开发者手中转移到Spring容器中。</li>
+<li><strong>依赖注入</strong> (DI) : Spring容器通过依赖注入的方式，将对象所需的依赖关系自动注入到对象中。</li>
+</ul>
+<p><strong>IOC的工作流程</strong></p>
+<ul>
+<li><p>加载配置：Spring容器加载配置文件或扫描注解，读取Bean的定义。</p>
+</li>
+<li><p>创建Bean实例：根据Bean的定义，通过反射创建Bean的实例。</p>
+</li>
+<li><p>依赖注入：根据Bean的依赖关系，将所需的依赖注入到Bean中。</p>
+</li>
+<li><p>初始化Bean：调用Bean的初始化方法（如@PostConstruct或init-method）。</p>
+</li>
+<li><p>使用Bean：将Bean提供给应用程序使用。</p>
+</li>
+<li><p>销毁Bean：在容器关闭时，调用Bean的销毁方法（如@PreDestroy或destroy-method）。</p>
+</li>
+</ul>
 <h5 id="SpringIOC容器的加载过程"><a href="#SpringIOC容器的加载过程" class="headerlink" title="SpringIOC容器的加载过程"></a>SpringIOC容器的加载过程</h5><p><strong>从概念态到定义态的过程（1-6）</strong></p>
 <p>1、实例化一个ApplicationContext的对象</p>
 <p>2、调用bean工厂后置处理器完成扫描</p>
@@ -600,7 +633,8 @@
 <p>3.加载BeanPostProcessor实现类**:在Bean的生命周期会调用9次Bean的后置处理器**</p>
 <h5 id="Spring-IOC的实现机制"><a href="#Spring-IOC的实现机制" class="headerlink" title="Spring IOC的实现机制"></a>Spring IOC的实现机制</h5><p>简单来说就是：简单工厂+反射</p>
 <p>什么是工厂模式：很简单，就是调用一个方法（工厂方法）根据传入的参数返回一个对象。</p>
-<p><strong>IOC的优点</strong><br>1、集中管理对象，方便维护</p>
+<p><strong>IOC的优点</strong></p>
+<p>1、集中管理对象，方便维护</p>
 <p>2、减低耦合度</p>
 <p>3、IOC容器支持懒汉式和饿汉式的方式加载， 默认单例</p>
 <h5 id="springboot项目哪里用到了-AOP？怎么用的？"><a href="#springboot项目哪里用到了-AOP？怎么用的？" class="headerlink" title="springboot项目哪里用到了 AOP？怎么用的？"></a>springboot项目哪里用到了 AOP？怎么用的？</h5><p>AOP(Aspect-Oriented Programming:面向切面编程) 能够将那些与业务无关，却为业务模块所共同调用的逻辑或责任（例如事务处理、日志管理、权限控制等）封装起来，便于减少系统的重复代码，降低模块间的耦合度，提高系统可拓展性和可维护性。</p>
@@ -932,7 +966,9 @@
 
 <p><strong>lock_key</strong> 就是 key 键<br><strong>unique_value</strong> 是客户端生成的唯一的标识，区分来自不同客户端的锁操作<br><strong>NX</strong> 代表只在 lock_key 不存在时，才对 lock_key 进行设置操作<br><strong>PX 10000</strong> 表示设置 lock_key 的过期时间为 10s，这是为了避免客户端发生异常而无法释放锁</p>
 <p>而解锁的过程就是将 <strong>lock_key</strong> 键删除<strong>（del lock_key）</strong>，但不能乱删，要保证执行操作的客户端就是加锁的客户端。所以，解锁的时候，我们要先判断锁的 <strong>unique_value</strong> 是否为加锁客户端，是的话，才将 <strong>lock_key</strong> 键删除。</p>
-<p><strong>基于 Redis 实现分布式锁的优点：</strong><br>1.性能高效（这是选择缓存实现分布式锁最核心的出发点）。<br>2.实现方便。很多研发工程师选择使用 Redis 来实现分布式锁，很大成分上是因为 Redis 提供了 setnx 方法，实现分布式锁很方便。<br>3.避免单点故障（因为 Redis 是跨集群部署的，自然就避免了单点故障）。</p>
+<p><strong>基于 Redis 实现分布式锁的优点：</strong><br>1.性能高效（这是选择缓存实现分布式锁最核心的出发点）。</p>
+<p>2.实现方便。很多研发工程师选择使用 Redis 来实现分布式锁，很大成分上是因为 Redis 提供了 setnx 方法，实现分布式锁很方便。</p>
+<p>3.避免单点故障（因为 Redis 是跨集群部署的，自然就避免了单点故障）。</p>
 <p><strong>基于 Redis 实现分布式锁的缺点：</strong><br>1.<strong>超时时间不好设置。</strong>如果锁的超时时间设置过长，会影响性能，如果设置的超时时间过短会保护不到共享资源。比如在有些场景中，一个线程 A 获取到了锁之后，由于业务代码执行时间可能比较长，导致超过了锁的超时时间，自动失效，注意 A 线程没执行完，后续线程 B 又意外的持有了锁，意味着可以操作共享资源，那么两个线程之间的共享资源就没办法进行保护了。</p>
 <ul>
 <li><strong>那么如何合理设置超时时间呢？</strong>我们可以基于续约的方式设置超时时间：先给锁设置一个超时时间，然后启动一个守护线程，让守护线程在一段时间后，重新设置这个锁的超时时间。实现方式就是：写一个守护线程，然后去判断锁的情况，当锁快失效的时候，再次进行续约加锁，当主线程执行完成后，销毁续约锁即可，不过这种方式实现起来相对复杂。</li>
@@ -957,7 +993,12 @@
 <p>​	<strong>条件二</strong>：客户端从大多数节点获取锁的总耗时（t2-t1）小于锁设置的过期时间。 </p>
 <p>加锁成功后，客户端需要重新计算这把锁的有效时间，计算的结果是<strong>「锁最初设置的过期时间」减去「客户端从大多数节点获取锁的总耗时（t2-t1）」</strong>。如果计算的结果已经来不及完成共享数据的操作了，我们可以释放锁，以免出现还没完成数据操作，锁就过期了的情况。 </p>
 <p>加锁失败后，客户端向<strong>所有 Redis 节点发起释放锁的操作</strong>，释放锁的操作和在单节点上释放锁的操作一样，只要执行释放锁的 Lua 脚本就可以了。</p>
-<h6 id="Redis数据结构的应用场景"><a href="#Redis数据结构的应用场景" class="headerlink" title="Redis数据结构的应用场景"></a>Redis数据结构的应用场景</h6><p><strong>Redis的数据结构</strong>:<br>1.<strong>字符串</strong>:可以用来做最简单的数据，可以缓存某个简单的字符串，也可以缓存某个ison格式的字符串，Redis分布式锁的实现就利用了这种数据结构，还包括可以实现计数器、Session共享、分布式ID<br>2.<strong>哈希表</strong>:可以用来存储一些key-value对，更适合用来存储对象<br>3.**列表:**Redis的列表通过命令的组合，既可以当做栈，也可以当做队列来使用，可以用来缓存类似微信公众号、微博等消息流数据<br>4.<strong>集合</strong>:和列表类似，也可以存储多个元素，但是不能重复，集合可以进行交集、并集、差集操作，从而可以实现类似，我和某人共同关注的人、朋友圈点赞等功能<br>5.<strong>有序集合(ZSet)</strong>:集合是无序的，有序集合可以设置顺序，可以用来实现排行榜功能</p>
+<h6 id="Redis数据结构的应用场景"><a href="#Redis数据结构的应用场景" class="headerlink" title="Redis数据结构的应用场景"></a>Redis数据结构的应用场景</h6><p><strong>Redis的数据结构</strong>:</p>
+<p>1.<strong>字符串</strong>:可以用来做最简单的数据，可以缓存某个简单的字符串，也可以缓存某个ison格式的字符串，Redis分布式锁的实现就利用了这种数据结构，还包括可以实现计数器、Session共享、分布式ID</p>
+<p>2.<strong>哈希表</strong>:可以用来存储一些key-value对，更适合用来存储对象</p>
+<p>3.**列表:**Redis的列表通过命令的组合，既可以当做栈，也可以当做队列来使用，可以用来缓存类似微信公众号、微博等消息流数据</p>
+<p>4.<strong>集合</strong>:和列表类似，也可以存储多个元素，但是不能重复，集合可以进行交集、并集、差集操作，从而可以实现类似，我和某人共同关注的人、朋友圈点赞等功能</p>
+<p>5.<strong>有序集合(ZSet)</strong>:集合是无序的，有序集合可以设置顺序，可以用来实现排行榜功能</p>
 <h4 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h4><h5 id="MySQL执行流程"><a href="#MySQL执行流程" class="headerlink" title="MySQL执行流程"></a>MySQL执行流程</h5><img src="/2024/12/18/Java/image-20241222131241677.png" class="" title="image-20241222131241677">
 
 <p>MySQL的架构共分为两层：<strong>Server层和存储引擎层</strong></p>

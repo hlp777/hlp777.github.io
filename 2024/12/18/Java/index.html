@@ -85,7 +85,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">33k</span>
+            <span class="post-count">33.9k</span>
         </span>
     </span>
 
@@ -94,7 +94,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">116 分钟</span>
+            <span class="post-count">119 分钟</span>
         </span>
     </span>
 </div>
@@ -113,8 +113,24 @@
 <p>源码</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * ParameterizedType 表示参数化类型，例如 Collection&lt;String&gt;。</span></span><br><span class="line"><span class="comment"> * 参数化类型在反射方法第一次需要时创建，如本包中所指定。 创建参数化类型 p 时，解析 p 实例化的泛型类型声明，并递归创建 p 的所有类型参数。 有关类型变量创建过程的详细信息，请参阅TypeVariable 。 重复创建参数化类型无效。</span></span><br><span class="line"><span class="comment"> * 实现此接口的类的实例必须实现一个 equals() 方法，该方法等同于共享相同泛型类型声明并具有相同类型参数的任何两个实例。</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span>：1.5</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">ParameterizedType</span> <span class="keyword">extends</span> <span class="title class_">Type</span> &#123;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 返回一个Type对象数组，表示该类型的实际类型参数。</span></span><br><span class="line"><span class="comment">     * 请注意，在某些情况下，返回的数组为空。 如果此类型表示嵌套在参数化类型中的非参数化类型，则会发生这种情况。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span>: 表示此类型的实际类型参数的Type对象数组</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> TypeNotPresentException 如果任何实际类型参数引用不存在的类型声明</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> MalformedParameterizedTypeException 如果任何实际类型参数引用了由于任何原因无法实例化的参数化类型</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@since</span> 1.5</span></span><br><span class="line"><span class="comment">     */</span>    </span><br><span class="line">    Type[] getActualTypeArguments();</span><br><span class="line"> </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 返回表示声明此类型的类或接口的Type对象。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 表示声明此类型的类或接口的Type对象</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@since</span> 1.5</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    Type <span class="title function_">getRawType</span><span class="params">()</span>;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 返回一个Type对象，表示该类型所属的类型。 例如，如果此类型为O&lt;T&gt;.I&lt;S&gt; ，则返回O&lt;T&gt; 。</span></span><br><span class="line"><span class="comment">     * 如果此类型是顶级类型，则返回null 。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 一个Type对象，表示该类型所属的类型。 如果此类型是顶级类型，则返回null。</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> 如果所有者类型引用不存在的类型声明</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> 如果所有者类型引用了由于任何原因无法实例化的参数化类型</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@since</span> 1.5</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    Type <span class="title function_">getOwnerType</span><span class="params">()</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-
-
+<h5 id=""><a href="#" class="headerlink" title=""></a></h5><h5 id="CAP"><a href="#CAP" class="headerlink" title="CAP"></a>CAP</h5><p><strong>CAP理论是分布式系统设计中的一个基本原则，由计算机科学家Eric Brewer在2000年提出。该理论指出，在分布式系统中，以下三个特性无法同时满足，最多只能实现其中两个</strong>：</p>
+<p><strong>一致性</strong>（Consistency）：所有节点在同一时间看到的数据是一致的。即，任何读操作都能获取最新的写操作结果。</p>
+<p><strong>可用性</strong>（Availability）：每个请求都能在合理时间内得到响应，即使部分节点出现故障。</p>
+<p><strong>分区容错性</strong>（Partition Tolerance）：系统在网络分区（节点间通信中断）的情况下仍能继续运行。</p>
+<p><strong>CAP理论的权衡</strong></p>
+<ul>
+<li><p>CA（一致性和可用性）：放弃分区容错性，适合单点系统或网络稳定的环境。</p>
+</li>
+<li><p>CP（一致性和分区容错性）：放弃可用性，确保数据一致性，适合对一致性要求高的场景，如金融系统。</p>
+</li>
+<li><p>AP（可用性和分区容错性）：放弃一致性，确保系统可用性，适合对实时性要求高的场景，如社交网络。</p>
+</li>
+</ul>
+<p><strong>实际应用</strong></p>
+<ul>
+<li>CP系统：如ZooKeeper，优先保证一致性和分区容错性。</li>
+<li>AP系统：如Cassandra，优先保证可用性和分区容错性。</li>
+</ul>
 <h5 id="什么是BASE柔性事务？"><a href="#什么是BASE柔性事务？" class="headerlink" title="什么是BASE柔性事务？"></a>什么是BASE柔性事务？</h5><p><strong>BASE是基于可用、柔性状态和最终一致性这三个要素</strong></p>
 <ul>
 <li><strong>基本可用</strong>（Basically Available）保证分布式事务参与方不一定要同时在线；</li>
@@ -201,7 +217,8 @@
 <h5 id="TCP的三次握手和四次挥手"><a href="#TCP的三次握手和四次挥手" class="headerlink" title="TCP的三次握手和四次挥手"></a>TCP的三次握手和四次挥手</h5><p><strong>TCP协议是7层网络协议中的传输层协议，负责数据的可靠传输。</strong><br><strong>在建立TCP连接时，需要通过三次握手来建立，过程是</strong><br>1.客户端向服务端发送一个SYN</p>
 <p>2.服务端接收到SYN后，给客户端发送一个SYNACK</p>
 <p>3.客户端接收到SYN ACK后，再给服务端发送一个ACK</p>
-<p><strong>在断开TCP连接时，需要通过四次挥手来断开，过程是</strong>:<br>1.客户端向服务端发送FIN</p>
+<p><strong>在断开TCP连接时，需要通过四次挥手来断开，过程是</strong>:</p>
+<p>1.客户端向服务端发送FIN</p>
 <p>2.服务端接收FIN后，向客户端发送ACK，表示我接收到了断开连接的请求，客户端你可以不发数据了，不过服务端这边可能还有数据正在处理</p>
 <p>3.服务端处理完所有数据后，向客户端发送FIN，表示服务端现在可以断开连接</p>
 <p>4.客户端收到服务端的FIN，向服务端发送ACK，表示客户端也会断开连接了</p>
@@ -219,6 +236,8 @@
 <p>3.如果此时线程池中的线程数量大于等于corePoolSize，缓冲队列workQueue满，并且线程池中的数量小于maximumPoolsize，建新的线程来处理被添加的任务</p>
 <p>4、如果此时线程池中的线程数量大于corePoolsize，缓冲以列workoueue满，并目线程池中的数量等于maximumPoosize，那么通过 bandler所指定的笛略来外理此任务</p>
 <p>5.当线程池中的线程数量大于corePoolSize时，如果某线程空闲时间超过keepAliveTime，线程将被终止。这样，线程池可以动态的调整池中的线程数</p>
+<h5 id="线程池为什么是先添加队列而不是先创建最大线程"><a href="#线程池为什么是先添加队列而不是先创建最大线程" class="headerlink" title="线程池为什么是先添加队列而不是先创建最大线程"></a>线程池为什么是先添加队列而不是先创建最大线程</h5><p><strong>当线程池中的核心线程都在忙时，如果继续往线程池中添加任务，那么任务会先放入队列，队列满了之后，才会新开线程。</strong></p>
+<p>这就相当于，一个公司本来有10个程序员，本来这10个程序员能正常的处理各种需求，但是随着公司的发展，需求在慢慢的增加，但是一开始这些需求只会增加在待开发列表中，然后这10个程序员加班加点的从待开发列表中获取需求并进行处理，但是某一天待开发列表满了，公司发现现有的10个程序员是真的处理不过来了，所以就开始新招员工了。</p>
 <h5 id="ThreadLocal的底层原理"><a href="#ThreadLocal的底层原理" class="headerlink" title="ThreadLocal的底层原理"></a>ThreadLocal的底层原理</h5><p>1.Threadlocal是Java中所提供的线程本地存储机制，可以利用该机制将数据<strong>缓存在某个线程内部</strong>，该线程可以在任意时刻、任意方法中获取缓存的数据</p>
 <p>2.ThreadLocal底层是通过<strong>ThreadlocalMap来实现的</strong>，每个Thread对象(注意不是Threadlocal对象)中都存在一个<strong>ThreadlocalMap</strong>,Map的key为<strong>Threadlocal</strong>对象，Map的value为需要缓存的值</p>
 <p>3.如果在线程池中使用ThreadLocal会造成内存泄漏，因为当Threadlocal对象使用完之后，应该要把设置的key，value，也就是Entry对象进行回收，但线程池中的线程不会回收，而线程对象是通过强引用指向<strong>ThreadlocalMap</strong>，ThreadlocaMap也是通过强引用指向Entry对象，线程不被回收，Entry对象也就不会被回收，从而出现内存池泄露，解决办法是，在使用了ThreadLocal对象之后，手动调用ThreadLocal的remove方法，手动清除Entry对象</p>
@@ -336,7 +355,7 @@
 <p>方法的重载是指在同一个类中，有多个方法名相同的方法，但是这些方法有着不同的参数列表，在编译期我们就可以确定到底调用哪个方法。</p>
 <p>方法的重写，子类重写父类中的方法（包括接口的实现），父类的引用不仅可以指向父类的对象，而且还可以指向子类的对象。当父类的引用指向子类的引用时，只有在运行时才能确定调用哪个方法。</p>
 <p>其实在运行时的多态的实现，需要满足三个条件：1.继承（包括接口的实现）2.方法的重写 3.父类的引用指向子类对象</p>
-<h5 id="Java中有哪些类加载器"><a href="#Java中有哪些类加载器" class="headerlink" title="Java中有哪些类加载器"></a>Java中有哪些类加载器</h5><p><strong>JDK自带有三个类加载器:bootstrap ClassLoader、ExtClassLoader、AppClassLoader</strong></p>
+<h5 id="Java中有哪些类加载器"><a href="#Java中有哪些类加载器" class="headerlink" title="Java中有哪些类加载器"></a>Java中有哪些类加载器</h5><p><strong>JDK自带有三个类加载器:Bootstrap ClassLoader、ExtClassLoader、AppClassLoader</strong></p>
 <p>BootstrapClassLoader 是 ExtClassLoader 的父类加载器，默认负责加载 %JAVA HOME%lib 下的jar包和class文件</p>
 <p>ExtClassLoader 是 AppClassLoader 的父类加载器，负责加载 %JAVA HOME%&#x2F;lib&#x2F;ext 文件夹下的jar包和class类。</p>
 <p>AppClassLoader 是自定义类加载器的父类，负责加载 classpath 下的类文件。</p>
@@ -377,9 +396,11 @@
 <p>第四种是直接杀进程，可以在启动时将进程ID写入固定文本文件，然后执行脚本自动关闭应用程序。</p>
 <h5 id="Mybatis的优缺点"><a href="#Mybatis的优缺点" class="headerlink" title="Mybatis的优缺点"></a>Mybatis的优缺点</h5><p><strong>优点</strong>:<br>1.基于SQL 语句编程，相当灵活，不会对应用程序或者数据库的现有设计造成任何影响，SQL写在XML里，解除sql与程序代码的耦合，便于统一管理;提供XML 标<br>签，支持编写动态 SQL语句，并可重用。</p>
 <p>2.与JDBC 相比，减少了 50%以上的代码量，消除了JDBC大量冗余的代码，不需要手动开关连接</p>
-<p>3.很好的与各种数据库兼容**(因为 MyBatis 使用JDBC 来连接数据库，所以只要JDBC 支持的数据库 MyBatis 都支持)**<br>4.能够与 Spring 很好的集成</p>
+<p>3.很好的与各种数据库兼容**(因为 MyBatis 使用JDBC 来连接数据库，所以只要JDBC 支持的数据库 MyBatis 都支持)**</p>
+<p>4.能够与 Spring 很好的集成</p>
 <p>5.提供映射标签，支持对象与数据库的 ORM 字段关系映射; 提供对象关系映射标签， 支持对象关系组件维护</p>
-<p><strong>缺点</strong>:<br>1.SQL语句的编写工作量较大，尤其当字段多、关联表多时，对开发人员编写SQL语句的功底有一定要求。</p>
+<p><strong>缺点</strong>:</p>
+<p>1.SQL语句的编写工作量较大，尤其当字段多、关联表多时，对开发人员编写SQL语句的功底有一定要求。</p>
 <p>2.SQL语句依赖于数据库，导致数据库移植性差，不能随意更换数据库。</p>
 <h5 id="Redis和MySQL如何保证数据一致"><a href="#Redis和MySQL如何保证数据一致" class="headerlink" title="Redis和MySQL如何保证数据一致"></a>Redis和MySQL如何保证数据一致</h5><p>1.先更新Mysql，再更新Redis，如果更新Redis失败，可能仍然不一致</p>
 <p>2.先删除Redis缓存数据，再更新Msl，再次查询的时候在将数据添加到缓存中，这种方案能解决1方案的问题，但是在高并发下性能较低，而且仍然会出现数据不一致的问题，比如线程1删除了Redis缓存数据，正在更新Mysgl，此时另外一个查询再查询，那么就会把Mvsal中老数据又查到Redis中</p>
@@ -410,7 +431,17 @@
 <p>6.Spring启动结束</p>
 <p>7.在源码中会更复杂，比如源码中会提供一些模板方法，让子类来实现，比如源码中还涉及到一些BeanFactoryPostProcessor和BeanPostProcessor的注册，Spring的扫描就是通过BenaFactoryPostProcessor来实现的，依赖注入就是通过BeanPostProcessor来实现的</p>
 <p>8.在Spring启动过程中还会去处理@Import等注解</p>
-<h5 id="Spirng中的事务是如何实现的"><a href="#Spirng中的事务是如何实现的" class="headerlink" title="Spirng中的事务是如何实现的"></a>Spirng中的事务是如何实现的</h5><p>1.Spring事务底层是基于数据库事务和AOP机制的<br>2.首先对于使用了@Transactional注解的Bean，Spring会创建一个代理对象作为Beal<br>3.当调用代理对象的方法时，会先判断该方法上是否加了@Transactional注解<br>4.如果加了，那么则利用事务管理器创建一个数据库连接<br>5.并且修改数据库连接的autocommit属性为false，禁止此连接的自动提交，这是实现Spring事务非常重要的一步<br>6.然后执行当前方法，方法中会执行sql<br>7.执行完当前方法后，如果没有出现异常就直接提交事务<br>8.如果出现了异常，并且这个异常是需要回滚的就会回滚事务，否则仍然提交事务<br>9.Spring事务的隔离级别对应的就是数据库的隔离级别<br>10.Spring事务的传播机制是Spring事务自己实现的，也是Spring事务中最复杂的<br>11.Spring事务的传播机制是基于数据库连接来做的，一个数据库连接一个事务，如果传播机制配置为需要新开一个事务，那么实际上就是先建立一个数据库连接，在此新数据库连接上执行sql</p>
+<h5 id="Spirng中的事务是如何实现的"><a href="#Spirng中的事务是如何实现的" class="headerlink" title="Spirng中的事务是如何实现的"></a>Spirng中的事务是如何实现的</h5><p>1.Spring事务底层是基于数据库事务和AOP机制的</p>
+<p>2.首先对于使用了@Transactional注解的Bean，Spring会创建一个代理对象作为Beal</p>
+<p>3.当调用代理对象的方法时，会先判断该方法上是否加了@Transactional注解</p>
+<p>4.如果加了，那么则利用事务管理器创建一个数据库连接</p>
+<p>5.并且修改数据库连接的autocommit属性为false，禁止此连接的自动提交，这是实现Spring事务非常重要的一步</p>
+<p>6.然后执行当前方法，方法中会执行sql</p>
+<p>7.执行完当前方法后，如果没有出现异常就直接提交事务</p>
+<p>8.如果出现了异常，并且这个异常是需要回滚的就会回滚事务，否则仍然提交事务</p>
+<p>9.Spring事务的隔离级别对应的就是数据库的隔离级别</p>
+<p>10.Spring事务的传播机制是Spring事务自己实现的，也是Spring事务中最复杂的</p>
+<p>11.Spring事务的传播机制是基于数据库连接来做的，一个数据库连接一个事务，如果传播机制配置为需要新开一个事务，那么实际上就是先建立一个数据库连接，在此新数据库连接上执行sql</p>
 <h5 id="Spring事务传播机制"><a href="#Spring事务传播机制" class="headerlink" title="Spring事务传播机制"></a>Spring事务传播机制</h5><p><strong>多个事务方法相互调用时，事务如何在这些方法间传播，方法A是一个事务的方法，方法A执行过程中调用了方法B，那么方法B有无事务以及方法B对事务的要求不同都会对</strong><br><strong>方法A的事务具体执行造成影响，同时方法A的事务对方法B的事务执行也有影响，这种影响具体是什么就由两个方法所定义的事务传播类型所决定。</strong></p>
 <p>1.REQUIRED(Spring默认的事务传播类型):如果当前没有事务，则自己新建一个事务，如果当前存在事务，则加入这个事务</p>
 <p>2.SUPPORTS:当前存在事务，则加入当前事务，如果当前没有事务，就以非事务方法执行</p>
@@ -767,6 +798,13 @@
 <li><strong>缺点</strong>: 开源版功能不如云上商业版。官方文档和周边生态还不够成熟。客户端只支持java</li>
 <li><strong>使用场景</strong>: 几乎是全场景</li>
 </ul>
+<h5 id="消息队列如何保证消息可靠传输"><a href="#消息队列如何保证消息可靠传输" class="headerlink" title="消息队列如何保证消息可靠传输"></a>消息队列如何保证消息可靠传输</h5><p><strong>消息可靠传输代表了两层意思，既不能多也不能少。</strong></p>
+<p>1.为了保证消息不多，也就是消息不能重复，也就是生产者不能重复生产消息，或者消费者不能重复消费消息</p>
+<p>2.首先要确保消息不多发，这个不常出现，也比较难控制，因为如果出现了多发，很大的原因是生产者自己的原因，如果要避免出现问题，就需要在消费端做控制</p>
+<p>3.要避免不重复消费，最保险的机制就是消费者实现幂等性，保证就算重复消费，也不会有问题，通过幂等性，也能解决生产者重复发送消息的问题</p>
+<p>4.消息不能少，意思就是消息不能丢失，生产者发送的消息，消费者一定要能消费到，对于这个问题，就要考虑两个方面</p>
+<p>5、生产者发送消息时，要确认broker确实收到并持久化了这条消息，比如RabbityO的confirm机制，Kafka的ack机制都可以保证生产者能正确的将消息发送给broke</p>
+<p>6.broker要等待消费者真正确认消费到了消息时才删除掉消息，这里通常就是消费端ac机制，消费者接收到一条消息后，如果确认没问题了，就可以给broker发送一个ack，broker接收到ack后才会删除消息</p>
 <h5 id="死信队列是什么？延时队列是什么？"><a href="#死信队列是什么？延时队列是什么？" class="headerlink" title="死信队列是什么？延时队列是什么？"></a>死信队列是什么？延时队列是什么？</h5><p>1.死信队列也是一个消息队列，它是用来存放那些没有成功消费的消息的，通常可以用来作为消息重试<br>2.延时队列就是用来存放需要在指定时间被处理的元素的队列，通常可以用来处理一些具有过期性操作的业务，比如十分钟内未支付则取消订单</p>
 <h5 id="RocketMQ的事务消息是如何实现的"><a href="#RocketMQ的事务消息是如何实现的" class="headerlink" title="RocketMQ的事务消息是如何实现的"></a>RocketMQ的事务消息是如何实现的</h5><img src="/2024/12/18/Java/image-20250120173237967.png" class="" title="image-20250120173237967">
 

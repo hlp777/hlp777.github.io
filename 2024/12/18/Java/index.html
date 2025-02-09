@@ -85,7 +85,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">33.9k</span>
+            <span class="post-count">34k</span>
         </span>
     </span>
 
@@ -94,7 +94,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">119 分钟</span>
+            <span class="post-count">120 分钟</span>
         </span>
     </span>
 </div>
@@ -780,6 +780,9 @@
 <p>3.使用连接池管理数据库连接</p>
 <p>4.使用数据压缩技术</p>
 <p>5.加机器，或者换成合适的数据库</p>
+<h5 id="消息队列的作用"><a href="#消息队列的作用" class="headerlink" title="消息队列的作用"></a>消息队列的作用</h5><p>1.<strong>解耦</strong>:使用消息队列来作为两个系统之间的通讯方式，两个系统不需要相互依赖了</p>
+<p>2.<strong>异步</strong>:系统A给消息队列发送完消息之后，就可以继续做其他事情了</p>
+<p>3.<strong>流量削峰</strong>:如果使用消息队列的方式来调用某个系统，那么消息将在队列中排队，由消费者自己控制消费速度</p>
 <h5 id="如何进行消息队列的选型？"><a href="#如何进行消息队列的选型？" class="headerlink" title="如何进行消息队列的选型？"></a>如何进行消息队列的选型？</h5><p><strong>Kafka:</strong></p>
 <ul>
 <li><strong>优点</strong>:吞吐量非常大，性能非常好，集群高可用</li>

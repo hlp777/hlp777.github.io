@@ -85,7 +85,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">34k</span>
+            <span class="post-count">34.3k</span>
         </span>
     </span>
 
@@ -94,7 +94,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">120 分钟</span>
+            <span class="post-count">121 分钟</span>
         </span>
     </span>
 </div>
@@ -113,7 +113,9 @@
 <p>源码</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * ParameterizedType 表示参数化类型，例如 Collection&lt;String&gt;。</span></span><br><span class="line"><span class="comment"> * 参数化类型在反射方法第一次需要时创建，如本包中所指定。 创建参数化类型 p 时，解析 p 实例化的泛型类型声明，并递归创建 p 的所有类型参数。 有关类型变量创建过程的详细信息，请参阅TypeVariable 。 重复创建参数化类型无效。</span></span><br><span class="line"><span class="comment"> * 实现此接口的类的实例必须实现一个 equals() 方法，该方法等同于共享相同泛型类型声明并具有相同类型参数的任何两个实例。</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span>：1.5</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">ParameterizedType</span> <span class="keyword">extends</span> <span class="title class_">Type</span> &#123;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 返回一个Type对象数组，表示该类型的实际类型参数。</span></span><br><span class="line"><span class="comment">     * 请注意，在某些情况下，返回的数组为空。 如果此类型表示嵌套在参数化类型中的非参数化类型，则会发生这种情况。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span>: 表示此类型的实际类型参数的Type对象数组</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> TypeNotPresentException 如果任何实际类型参数引用不存在的类型声明</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> MalformedParameterizedTypeException 如果任何实际类型参数引用了由于任何原因无法实例化的参数化类型</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@since</span> 1.5</span></span><br><span class="line"><span class="comment">     */</span>    </span><br><span class="line">    Type[] getActualTypeArguments();</span><br><span class="line"> </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 返回表示声明此类型的类或接口的Type对象。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 表示声明此类型的类或接口的Type对象</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@since</span> 1.5</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    Type <span class="title function_">getRawType</span><span class="params">()</span>;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 返回一个Type对象，表示该类型所属的类型。 例如，如果此类型为O&lt;T&gt;.I&lt;S&gt; ，则返回O&lt;T&gt; 。</span></span><br><span class="line"><span class="comment">     * 如果此类型是顶级类型，则返回null 。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 一个Type对象，表示该类型所属的类型。 如果此类型是顶级类型，则返回null。</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> 如果所有者类型引用不存在的类型声明</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> 如果所有者类型引用了由于任何原因无法实例化的参数化类型</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@since</span> 1.5</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    Type <span class="title function_">getOwnerType</span><span class="params">()</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h5 id=""><a href="#" class="headerlink" title=""></a></h5><h5 id="CAP"><a href="#CAP" class="headerlink" title="CAP"></a>CAP</h5><p><strong>CAP理论是分布式系统设计中的一个基本原则，由计算机科学家Eric Brewer在2000年提出。该理论指出，在分布式系统中，以下三个特性无法同时满足，最多只能实现其中两个</strong>：</p>
+
+
+<h5 id="CAP"><a href="#CAP" class="headerlink" title="CAP"></a>CAP</h5><p><strong>CAP理论是分布式系统设计中的一个基本原则，由计算机科学家Eric Brewer在2000年提出。该理论指出，在分布式系统中，以下三个特性无法同时满足，最多只能实现其中两个</strong>：</p>
 <p><strong>一致性</strong>（Consistency）：所有节点在同一时间看到的数据是一致的。即，任何读操作都能获取最新的写操作结果。</p>
 <p><strong>可用性</strong>（Availability）：每个请求都能在合理时间内得到响应，即使部分节点出现故障。</p>
 <p><strong>分区容错性</strong>（Partition Tolerance）：系统在网络分区（节点间通信中断）的情况下仍能继续运行。</p>
@@ -225,6 +227,10 @@
 <h5 id="SOA、分布式、微服务之间的关系和区别"><a href="#SOA、分布式、微服务之间的关系和区别" class="headerlink" title="SOA、分布式、微服务之间的关系和区别"></a>SOA、分布式、微服务之间的关系和区别</h5><p>1.分布式架构是指将单体架构中的各个部分拆分，然后部署不同的机器或进程中去，SOA和微服务基本上都是分布式架构的</p>
 <p>2.SOA是一种面向服务的架构，系统的所有服务都注册在总线上，当调用服务时，从总线上查找服务信息，然后调用</p>
 <p>3.微服务是一种更彻底的面向服务的架构，将系统中各个功能个体抽成一个个小的应用程序，基本保持一个应用对应的一个服务的架构</p>
+<h5 id="如何拆分微服务？"><a href="#如何拆分微服务？" class="headerlink" title="如何拆分微服务？"></a>如何拆分微服务？</h5><p><strong>拆分微服务的时候，为了尽量保证微服务的稳定，会有一些基本的准则</strong>:</p>
+<p>1.微服务之间尽量不要有业务交叉。</p>
+<p>2.微服务之前只能通过接口进行服务调用，而不能绕过接口直接访问对方的数据。</p>
+<p>3.高内聚，低耦合。</p>
 <h5 id="并发，并行，串行之间的区别"><a href="#并发，并行，串行之间的区别" class="headerlink" title="并发，并行，串行之间的区别"></a>并发，并行，串行之间的区别</h5><p>1.<strong>串行</strong>:一个任务执行完，才能执行下一个任务</p>
 <p>2.<strong>并行(Parallelism)</strong>:两个任务同时执行</p>
 <p>3.<strong>并发 (Concurrency）</strong>:两个任务整体看上去是同时执行，在底层，两个任务被拆成了很多份，然后一个一个执行，站在更高的角度看来两个任务是同时在执行的</p>
@@ -327,6 +333,11 @@
 
 
 
+<h5 id="一个对象从加载到JVM，再到被GC清除，都经历了什么过程"><a href="#一个对象从加载到JVM，再到被GC清除，都经历了什么过程" class="headerlink" title="一个对象从加载到JVM，再到被GC清除，都经历了什么过程"></a>一个对象从加载到JVM，再到被GC清除，都经历了什么过程</h5><p>1.首先把字节码文件内容加载到方法区</p>
+<p>2.然后再根据类信息在堆区创建对象</p>
+<p>3.对象首先会分配在堆区中年轻代的Eden区，经过一次 Minor GC 后，对象如果存活，就会进入Suvvor区，在后续的每次 Minor GC中，如果对象一直存活，就会在Suvivor 区来回拷贝，每移动一次，年龄加1</p>
+<p>4.当年龄超过15后，对象依然存活，对象就会进入老年代</p>
+<p>5.如果经过FuIl GC，被标记为垃圾对象，那么就会被 GC 线程清理掉</p>
 <h5 id="Java语言中，GC-Roots-包括那些元素"><a href="#Java语言中，GC-Roots-包括那些元素" class="headerlink" title="Java语言中，GC Roots 包括那些元素"></a>Java语言中，GC Roots 包括那些元素</h5><p><strong>1.虚拟机栈中引用的对象</strong></p>
 <p><strong>2.类静态属性引用的对象</strong></p>
 <p><strong>3.方法区中常量引用的对象</strong></p>

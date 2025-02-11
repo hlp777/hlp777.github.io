@@ -540,12 +540,6 @@
 <p>7.NESTED:如果当前事务存在，则在嵌套事务中执行，否则REQUIRED的操作一样(开启一个事务)</p>
 <h5 id="Spring事务什么时候会失效？"><a href="#Spring事务什么时候会失效？" class="headerlink" title="Spring事务什么时候会失效？"></a>Spring事务什么时候会失效？</h5><p><strong>spring事务的原理是AOP，进行了切面增强，那么失效的根本原因是这个AOP不起作用了!常见情况有如下几种</strong></p>
 <p>1.发生自调用，类里面使用this调用本类的方法(this通常省略)，此时这个this对象不是代理类，而是UserService对象本身 ! 解决方法很简单，让那个this变成Userservice的代理类即可!<br>2.方法不是public的:@Transactional只能用于 public 的方法上，否则事务不会失效，如果要用在非 public 方法上，可以开启 Aspect 代理模式<br>3.数据库不支持事务<br>4.没有被spring管理<br>5.异常被吃掉，事务不会回滚(或者抛出的异常没有被定义，默认为RuntimeException)</p>
-<h5 id="Spring-AOP常见的失效场景"><a href="#Spring-AOP常见的失效场景" class="headerlink" title="Spring AOP常见的失效场景"></a>Spring AOP常见的失效场景</h5><p>1.当前类没有被 Spring 容器所管理。Spring 的 AOP 是在 Bean 创建的初始化后阶段进行的，如果当前类没有被 Spring 容器所管<br>理，那么它的 Spring AOP 功能肯定会失效。</p>
-<p>2.同一个类中方法的调用</p>
-<p>3.<strong>内部类方法的调用。</strong>（该方式会直接调用内部类实例对象的方法，同样没有使用代理对象，所以 AOP 会失效）</p>
-<p>4.<strong>私有方法。</strong>（私有方法，代理对象是无法调用的，所以 AOP 会失效）</p>
-<p>5.<strong>static 修饰的方法。</strong>（因为 static 修饰的方法属于类对象，而不属于对象实例，所以无法被代理对象调用。）</p>
-<p>6.<strong>final 修饰的方法。</strong>（因为被 final 修饰的方法是无法被重写的，所以代理对象也是无法调用的。）</p>
 <h5 id="String-为什么不可变？不可变有什么好处？"><a href="#String-为什么不可变？不可变有什么好处？" class="headerlink" title="String 为什么不可变？不可变有什么好处？"></a>String 为什么不可变？不可变有什么好处？</h5><p><strong>为什么不可变？</strong></p>
 <p>1）value使用final修饰</p>
 <img src="/2024/12/18/Java/image-20240413154427443.png" class="" title="image-20240413154427443">
@@ -615,6 +609,32 @@
 
 
 
+<h5 id="What-is-AOP？"><a href="#What-is-AOP？" class="headerlink" title="What is AOP？"></a>What is AOP？</h5><p><strong>AOP（Aspect OrientedProgramming）：面向切面编程，面向切面编程（也叫面向方面编程），是目前软件开发中的一个热点，也是Spring框架中的一个重要内容。利用AOP可以对业务逻辑的各个部分进行隔离，从而使得业务逻辑各部分之间的耦合度降低，提高程序的可重用性，同时提高了开发的效率。</strong></p>
+<p><strong>为什么需要面向切面编程</strong></p>
+<p>面向对象编程（OOP）的好处是显而易见的，缺点也同样明显。当需要为多个不具有继承关系的对象添加一个公共的方法的时候，例如日志记录、性能监控等，如果采用面向对象编程的方法，需要在每个对象里面都添加相同的方法，这样就产生了较大的重复工作量和大量的重复代码，不利于维护。面向切面编程（AOP）是面向对象编程的补充，简单来说就是统一处理某一“切面”的问题的编程思想。如果使用AOP的方式进行日志的记录和处理，所有的日志代码都集中于一处，不需要再每个方法里面都去添加，极大减少了重复代码。</p>
+<p><strong>技术要点</strong></p>
+<ol>
+<li>通知（Advice）包含了需要用于多个应用对象的横切行为，完全听不懂，没关系，通俗一点说就是定义了“什么时候”和“做什么”。</li>
+<li>连接点（Join Point）是程序执行过程中能够应用通知的所有点。</li>
+<li>切点（Poincut）是定义了在“什么地方”进行切入，哪些连接点会得到通知。显然，切点一定是连接点。</li>
+<li>切面（Aspect）是通知和切点的结合。通知和切点共同定义了切面的全部内容——是什么，何时，何地完成功能。</li>
+<li>引入（Introduction）允许我们向现有的类中添加新方法或者属性。</li>
+<li>织入（Weaving）是把切面应用到目标对象并创建新的代理对象的过程，分为编译期织入、类加载期织入和运行期织入。</li>
+</ol>
+<p><strong>通知类型</strong></p>
+<ol>
+<li>前置通知（@Before）：在目标方法调用之前调用通知</li>
+<li>后置通知（@After）：在目标方法完成之后调用通知</li>
+<li>环绕通知（@Around）：在被通知的方法调用之前和调用之后执行自定义的方法</li>
+<li>返回通知（@AfterReturning）：在目标方法成功执行之后调用通知</li>
+<li>异常通知（@AfterThrowing）：在目标方法抛出异常之后调用通知</li>
+</ol>
+<h5 id="Spring-AOP常见的失效场景"><a href="#Spring-AOP常见的失效场景" class="headerlink" title="Spring AOP常见的失效场景"></a>Spring AOP常见的失效场景</h5><p>1.当前类没有被 Spring 容器所管理。Spring 的 AOP 是在 Bean 创建的初始化后阶段进行的，如果当前类没有被 Spring 容器所管<br>理，那么它的 Spring AOP 功能肯定会失效。</p>
+<p>2.同一个类中方法的调用</p>
+<p>3.<strong>内部类方法的调用。</strong>（该方式会直接调用内部类实例对象的方法，同样没有使用代理对象，所以 AOP 会失效）</p>
+<p>4.<strong>私有方法。</strong>（私有方法，代理对象是无法调用的，所以 AOP 会失效）</p>
+<p>5.<strong>static 修饰的方法。</strong>（因为 static 修饰的方法属于类对象，而不属于对象实例，所以无法被代理对象调用。）</p>
+<p>6.<strong>final 修饰的方法。</strong>（因为被 final 修饰的方法是无法被重写的，所以代理对象也是无法调用的。）</p>
 <h5 id="Spring的Aop的完整实现流程"><a href="#Spring的Aop的完整实现流程" class="headerlink" title="Spring的Aop的完整实现流程"></a>Spring的Aop的完整实现流程</h5><p><strong>以 JavaConfig为主</strong></p>
 <p>当@EnableAspectJAutoProxy 会通过@Import注册一个BeanPostProcessor处理AOP</p>
 <p>1.<strong>解祈切面</strong>:在Bean创建之前的第一个Bean后置处理器会去解析切面（解析切面中通知、切点，一个通知就会解析成一个advisor(通知、切点))</p>
@@ -681,7 +701,9 @@
 <p>3、IOC容器支持懒汉式和饿汉式的方式加载， 默认单例</p>
 <h5 id="springboot项目哪里用到了-AOP？怎么用的？"><a href="#springboot项目哪里用到了-AOP？怎么用的？" class="headerlink" title="springboot项目哪里用到了 AOP？怎么用的？"></a>springboot项目哪里用到了 AOP？怎么用的？</h5><p>AOP(Aspect-Oriented Programming:面向切面编程) 能够将那些与业务无关，却为业务模块所共同调用的逻辑或责任（例如事务处理、日志管理、权限控制等）封装起来，便于减少系统的重复代码，降低模块间的耦合度，提高系统可拓展性和可维护性。</p>
 <p><strong>一般项目主要有下面这些地方用到了 AOP</strong></p>
-<p>1.基于 AOP 实现统一的日志管理。<br>2.基于 Redisson + AOP 实现了接口防刷，一个注解即可限制接口指定时间内单个用户可以请求的次数。<br>3.基于 Spring Security 提供的 @PreAuthorize 实现权限控制，其底层也是基于 AOP。</p>
+<p>1.基于 AOP 实现统一的日志管理。</p>
+<p>2.基于 Redisson + AOP 实现了接口防刷，一个注解即可限制接口指定时间内单个用户可以请求的次数。</p>
+<p>3.基于 Spring Security 提供的 @PreAuthorize 实现权限控制，其底层也是基于 AOP。</p>
 <p><strong>日志记录</strong><br>利用 AOP 方式记录日志，只需要在 Controller 的方法上使用自定义 @Log 日志注解，就可以将用户操作记录到数据库。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Log(description = &quot;新增用户&quot;)</span></span><br><span class="line"><span class="meta">@PostMapping(value = &quot;/users&quot;)</span></span><br><span class="line"><span class="keyword">public</span> ResponseEntity <span class="title function_">create</span><span class="params">(<span class="meta">@Validated</span> <span class="meta">@RequestBody</span> User resources)</span>&#123;</span><br><span class="line">    checkLevel(resources);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">ResponseEntity</span>(userService.create(resources),HttpStatus.CREATED);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -694,7 +716,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 该接口 60 秒内最多只能访问 10 次，保存到 redis 的键名为 limit_test，</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RateLimit(key = &quot;test&quot;, period = 60, count = 10, name = &quot;testLimit&quot;, prefix = &quot;limit&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="type">int</span> <span class="title function_">test</span><span class="params">()</span> &#123;</span><br><span class="line">     <span class="keyword">return</span> ATOMIC_INTEGER.incrementAndGet();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>AOP 切面类 RateLimitAspect用来拦截带有 @RateLimit 注解的方法并处理：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="meta">@Aspect</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RateLimitAspect</span> &#123;</span><br><span class="line">      <span class="comment">// 拦截所有带有 @RateLimit 注解的方法</span></span><br><span class="line">      <span class="meta">@Around(&quot;@annotation(rateLimit)&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> Object <span class="title function_">around</span><span class="params">(ProceedingJoinPoint joinPoint, RateLimit rateLimit)</span> <span class="keyword">throws</span> Throwable &#123;</span><br><span class="line">      <span class="comment">//...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="meta">@Aspect</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RateLimitAspect</span> &#123;</span><br><span class="line">    <span class="comment">// 拦截所有带有 @RateLimit 注解的方法</span></span><br><span class="line">    <span class="meta">@Around(&quot;@annotation(rateLimit)&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> Object <span class="title function_">around</span><span class="params">(ProceedingJoinPoint joinPoint, RateLimit rateLimit)</span> <span class="keyword">throws</span> Throwable &#123;</span><br><span class="line">      <span class="comment">//...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p><strong>关于限流实现，并没有自己写 Redis Lua 限流脚本，而是利用 Redisson 中的 RRateLimiter 来实现分布式限流，其底层实现就是基于 Lua 代码+令牌桶算法。</strong></p>
 <p><strong>权限控制</strong><br>Spring Security 使用 AOP 进行方法拦截。在实际调用 update 方法之前，Spring 会检查当前用户的权限，只有用户权限满足对应的条件才能执行。</p>

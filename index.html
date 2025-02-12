@@ -159,6 +159,66 @@
     
     
     <article
+  id="post-Java开发场景问题分析"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2025/02/12/Java%E5%BC%80%E5%8F%91%E5%9C%BA%E6%99%AF%E9%97%AE%E9%A2%98%E5%88%86%E6%9E%90/"
+    >Java开发场景问题分析</a> 
+</h2>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2025/02/12/Java%E5%BC%80%E5%8F%91%E5%9C%BA%E6%99%AF%E9%97%AE%E9%A2%98%E5%88%86%E6%9E%90/" class="article-date">
+  <time datetime="2025-02-12T03:16:06.000Z" itemprop="datePublished">2025-02-12</time>
+</a>    
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h4 id="OOM原因"><a href="#OOM原因" class="headerlink" title="OOM原因"></a>OOM原因</h4><p><strong>1.一次性申请的太多资源</strong></p>
+<p>更改申请对象数量</p>
+<p><strong>2.内存资源耗尽未释放</strong></p>
+<p>找到未释放的对象进行释放</p>
+<p><strong>3.本身资源不够</strong></p>
+<p>jmap -heap 查看堆信息</p>
+<p><strong>4.通过dump定位</strong></p>
+<p><strong>系统已经OOM挂了</strong></p>
+<p>提前设置 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath&#x3D;(设置导出路径)</p>
+<p><strong>系统运行中还未OOM</strong></p>
+<p>导出dump文件：jmap -dump:format&#x3D;b,file&#x3D;dump.hprof 777 (pid) </p>
+<p><strong>结合 jvisualvm 进行调试</strong></p>
+<p>查看最多跟业务有关对象 -&gt; 找到GCRoot -&gt; 查看线程栈</p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+    </footer>
+  </div>
+
+   
+   
+  
+</article>
+
+    
+    <article
   id="post-Java"
   class="article article-type-post"
   itemscope

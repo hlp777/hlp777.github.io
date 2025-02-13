@@ -1921,6 +1921,18 @@
 <p>导出dump文件：jmap -dump:format&#x3D;b,file&#x3D;dump.hprof 777 (pid) </p>
 <p><strong>结合 jvisualvm 进行调试</strong></p>
 <p>查看最多跟业务有关对象 -&gt; 找到GCRoot -&gt; 查看线程栈</p>
+<h4 id="线上发生死锁定位-amp-避免"><a href="#线上发生死锁定位-amp-避免" class="headerlink" title="线上发生死锁定位 &amp; 避免"></a>线上发生死锁定位 &amp; 避免</h4><p><strong>定位</strong></p>
+<p>使用 <strong>jstack</strong> 命令进行定位死锁位置 </p>
+<p>使用 <strong>VisualVM</strong> 工具自动检测并显示死锁的线程</p>
+<p><strong>避免</strong></p>
+<p><strong>产生死锁的四大因素</strong></p>
+<ul>
+<li>互斥</li>
+<li>占有且等待</li>
+<li>不可抢占</li>
+<li>循环等待</li>
+</ul>
+<p><strong>根据以上四大原因进行死锁的避免，可以尝试破坏上述条件中的一个或者多个</strong></p>
 ]]></content>
   </entry>
 </search>

@@ -1939,11 +1939,19 @@
 <li><strong>缺点</strong> ：占用内存大</li>
 </ul>
 <p>2.RocketMQ的定时消息</p>
-<p><strong>优点</strong> ：使用简单，支持分布式，精度高，支持任意时刻</p>
-<p><strong>缺点</strong> ：定时时长最 	大值24小时，成本高，</p>
+<ul>
+<li><p><strong>优点</strong> ：使用简单，支持分布式，精度高，支持任意时刻</p>
+</li>
+<li><p><strong>缺点</strong> ：定时时长最 	大值24小时，成本高，</p>
+</li>
+</ul>
 <p>3.Redis的过期监听</p>
-<p><strong>优点</strong> ：使用简单，支持分布式</p>
-<p><strong>缺点</strong>  : 不可靠，有可能丢失数据，维护成本高</p>
+<ul>
+<li><p><strong>优点</strong> ：使用简单，支持分布式</p>
+</li>
+<li><p><strong>缺点</strong>  : 不可靠，有可能丢失数据，维护成本高</p>
+</li>
+</ul>
 <p>4.定时任务分布式批处理</p>
 ]]></content>
   </entry>

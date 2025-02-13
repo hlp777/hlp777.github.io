@@ -85,7 +85,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">239</span>
+            <span class="post-count">375</span>
         </span>
     </span>
 
@@ -134,6 +134,18 @@
 <li>循环等待</li>
 </ul>
 <p><strong>根据以上四大原因进行死锁的避免，可以尝试破坏上述条件中的一个或者多个</strong></p>
+<h4 id="订单超时自动取消实现方案"><a href="#订单超时自动取消实现方案" class="headerlink" title="订单超时自动取消实现方案"></a>订单超时自动取消实现方案</h4><p>1.JDK自带的延时队列（DelayQueue）</p>
+<ul>
+<li><strong>优点</strong> ：简单，不需要借组其他第三方组件，成本低</li>
+<li><strong>缺点</strong> ：占用内存大</li>
+</ul>
+<p>2.RocketMQ的定时消息</p>
+<p><strong>优点</strong> ：使用简单，支持分布式，精度高，支持任意时刻</p>
+<p><strong>缺点</strong> ：定时时长最 	大值24小时，成本高，</p>
+<p>3.Redis的过期监听</p>
+<p><strong>优点</strong> ：使用简单，支持分布式</p>
+<p><strong>缺点</strong>  : 不可靠，有可能丢失数据，维护成本高</p>
+<p>4.定时任务分布式批处理</p>
  
       <!-- reward -->
       

@@ -1953,6 +1953,10 @@
 </li>
 </ul>
 <p>4.定时任务分布式批处理</p>
+<h4 id="实现幂等性方案"><a href="#实现幂等性方案" class="headerlink" title="实现幂等性方案"></a>实现幂等性方案</h4><ol>
+<li>前端限制（防君子，不防小人）</li>
+<li>使用redis的setnx</li>
+</ol>
 ]]></content>
   </entry>
 </search>

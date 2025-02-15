@@ -1204,6 +1204,26 @@
 <p>3.**列表:**Redis的列表通过命令的组合，既可以当做栈，也可以当做队列来使用，可以用来缓存类似微信公众号、微博等消息流数据</p>
 <p>4.<strong>集合</strong>:和列表类似，也可以存储多个元素，但是不能重复，集合可以进行交集、并集、差集操作，从而可以实现类似，我和某人共同关注的人、朋友圈点赞等功能</p>
 <p>5.<strong>有序集合(ZSet)</strong>:集合是无序的，有序集合可以设置顺序，可以用来实现排行榜功能</p>
+<h6 id="Redis-hotkey（热-Key）"><a href="#Redis-hotkey（热-Key）" class="headerlink" title="Redis hotkey（热 Key）"></a>Redis hotkey（热 Key）</h6><p><strong>什么是 hotkey？</strong></p>
+<p>如果一个 key 的访问次数比较多且明显多于其他 key 的话，那这个 key 就可以看作是 hotkey（热 Key）。例如在 Redis 实例的每秒处理请求达到 5000 次，而其中某个 key 的每秒访问量就高达 2000 次，那这个 key 就可以看作是 hotkey。</p>
+<p>hotkey 出现的原因主要是某个热点数据访问量暴增，如重大的热搜事件、参与秒杀的商品。</p>
+<p><strong>hotkey 有什么危害？</strong></p>
+<p>处理 hotkey 会占用大量的 CPU 和带宽，可能会影响 Redis 实例对其他请求的正常处理。此外，如果突然访问 hotkey 的请求超出了 Redis 的处理能力，Redis 就会直接宕机。这种情况下，大量请求将落到后面的数据库上，可能会导致数据库崩溃。</p>
+<p>因此，hotkey 很可能成为系统性能的瓶颈点，需要单独对其进行优化，以确保系统的高可用性和稳定性。</p>
+<p><strong>如何发现 hotkey？</strong></p>
+<p><strong>1、使用 Redis 自带的 –hotkeys 参数来查找。</strong></p>
+<p>Redis 4.0.3 版本中新增了 hotkeys 参数，该参数能够返回所有 key 的被访问次数。</p>
+<p>使用该方案的前提条件是 Redis Server 的 maxmemory-policy 参数设置为 LFU 算法。</p>
+<p>Redis 中有两种 LFU 算法：</p>
+<ol>
+<li><p>volatile-lfu（least frequently used）：从已设置过期时间的数据集（server.db[i].expires）中挑选最不经常使用的数据淘汰。</p>
+</li>
+<li><p>allkeys-lfu（least frequently used）：当内存不足以容纳新写入数据时，在键空间中，移除最不经常使用的 key。</p>
+</li>
+</ol>
+<p><strong>2、使用MONITOR 命令。</strong></p>
+<p>MONITOR 命令是 Redis 提供的一种实时查看 Redis 的所有操作的方式，可以用于临时监控 Redis 实例的操作情况，包括读写、删除等操作。</p>
+<p>由于该命令对 Redis 性能的影响比较大，因此禁止长时间开启 MONITOR（生产环境中建议谨慎使用该命令）。</p>
 <h4 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h4><h5 id="MySQL执行流程"><a href="#MySQL执行流程" class="headerlink" title="MySQL执行流程"></a>MySQL执行流程</h5><img src="/2024/12/18/Java/image-20241222131241677.png" class="" title="image-20241222131241677">
 
 <p>MySQL的架构共分为两层：<strong>Server层和存储引擎层</strong></p>

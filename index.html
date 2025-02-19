@@ -1481,6 +1481,19 @@
 <li><strong>Undo Log</strong>：用于事务回滚和 MVCC，记录事务执行前的数据状态。</li>
 </ul>
 <p>这三大日志共同协作，确保 MySQL 数据库的事务性、持久性和一致性，是数据库高可用性和数据安全的重要保障。</p>
+<h5 id="MySQL日期类型选择建议"><a href="#MySQL日期类型选择建议" class="headerlink" title="MySQL日期类型选择建议"></a>MySQL日期类型选择建议</h5><p><strong>不要用字符串存储日期</strong></p>
+<p>和绝大部分对数据库不太了解的新手一样，我在大学的时候就这样干过，甚至认为这样是一个不错的表示日期的方法。毕竟简单直白，容易上手。</p>
+<p>但是，这是不正确的做法，主要会有下面两个问题：	</p>
+<ol>
+<li>字符串占用的空间更大！</li>
+<li>字符串存储的日期效率比较低（逐个字符进行比对），无法用日期相关的 API 进行计算和比较。</li>
+</ol>
+<p><strong>Datetime 和 Timestamp 之间的抉择</strong></p>
+<p>Datetime 和 Timestamp 是 MySQL 提供的两种比较相似的保存时间的数据类型，可以精确到秒。他们两者究竟该如何选择呢？</p>
+<p>下面我们来简单对比一下二者。</p>
+<p><strong>时区信息</strong></p>
+<p><strong>DateTime 类型是没有时区信息的（时区无关）</strong> ，DateTime 类型保存的时间都是当前会话所设置的时区对应的时间。这样就会有什么问题呢？当你的时区更换之后，比如你的服务器更换地址或者更换客户端连接时区设置的话，就会导致你从数据库中读出的时间错误。</p>
+<p><strong>Timestamp 和时区有关</strong>。Timestamp 类型字段的值会随着服务器时区的变化而变化，自动换算成相应的时间，说简单点就是在不同时区，查询到同一个条记录此字段的值会不一样。</p>
 <h5 id="常见面试题"><a href="#常见面试题" class="headerlink" title="常见面试题"></a>常见面试题</h5><hr>
 <h6 id="索引的分类"><a href="#索引的分类" class="headerlink" title="索引的分类"></a>索引的分类</h6><p><strong>按照四个角度来分类索引</strong></p>
 <p><strong>按「数据结构」分类：</strong>B+tree索引、Hash索引、Full-text索引。<br><strong>按「物理存储」分类：</strong>聚簇索引（主键索引）、二级索引（辅助索引）。<br><strong>按「字段特性」分类：</strong>主键索引、唯一索引、普通索引、前缀索引。<br><strong>按「字段个数」分类：</strong>单列索引、联合索引。</p>

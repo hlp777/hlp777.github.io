@@ -85,7 +85,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">37.5k</span>
+            <span class="post-count">38.7k</span>
         </span>
     </span>
 
@@ -94,7 +94,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">132 分钟</span>
+            <span class="post-count">136 分钟</span>
         </span>
     </span>
 </div>
@@ -858,10 +858,126 @@
 <p>7.然后servlet来处理这个请求，如果是SpringMVC中的Dispatcherserlet，那么则会找到对应的controller中的方法，并执行该方法得到结果</p>
 <p>8.Tomcat得到响应结果后封装成HTTP响应的格式，并再次通过网络发送给浏览器所在的服务器</p>
 <p>9.浏览器所在的服务器拿到结果后再传递给浏览器，浏览器则负责解析并渲染</p>
-<h5 id="RabbitMQ"><a href="#RabbitMQ" class="headerlink" title="RabbitMQ"></a><strong>RabbitMQ</strong></h5><p>RabbitMQ是实现了高级消息队列协议（<code>AMQP</code>）的开源消息代理软件（亦称面向消息的中间件）。RabbitMQ服务器是用Erlang语言编写的，而群集和故障转移是构建在开放电信平台框架上的。所有主要的编程语言均有与代理接口通讯的客户端库。</p>
-<p><strong>AMQP</strong></p>
-<p>AMQP 协议的 <code>Erlang</code> 的实现(当然 RabbitMQ 还支持 <code>STOMP2</code>、 <code>MQTT3</code> 等协议 ) AMQP 的模型架构 和 RabbitMQ 的模型架构是一样的，生产者将消息发送给交换器，交换器和队列绑定 。</p>
+<h4 id="RabbitMQ"><a href="#RabbitMQ" class="headerlink" title="RabbitMQ"></a><strong>RabbitMQ</strong></h4><p>RabbitMQ是实现了高级消息队列协议（<code>AMQP</code>）的开源消息代理软件（亦称面向消息的中间件）。RabbitMQ服务器是用Erlang语言编写的，而群集和故障转移是构建在开放电信平台框架上的。所有主要的编程语言均有与代理接口通讯的客户端库。</p>
+<h6 id="AMQP"><a href="#AMQP" class="headerlink" title="AMQP"></a><strong>AMQP</strong></h6><p>AMQP 协议的 <code>Erlang</code> 的实现(当然 RabbitMQ 还支持 <code>STOMP2</code>、 <code>MQTT3</code> 等协议 ) AMQP 的模型架构 和 RabbitMQ 的模型架构是一样的，生产者将消息发送给交换器，交换器和队列绑定 。</p>
 <p>RabbitMQ 中的交换器、交换器类型、队列、绑定、路由键等都是遵循的 AMQP 协议中相 应的概念。</p>
+<p><strong>AMQP的三层协议</strong></p>
+<p><strong>Module Layer</strong> : 协议最高层，主要定义了一些客户端调用的命令，客户端可以用这些命令实现自己的业务逻辑。</p>
+<p><strong>Session Layer</strong> : 中间层，主要负责客户端命令发送给服务器，再将服务端应答返回客户端，提供可靠性同步机制和错误处理。</p>
+<p><strong>TransportLayer</strong> : 最底层，主要传输二进制数据流，提供帧的处理、信道服用、错误检测和数据表示等。</p>
+<p><strong>AMQP模型的几大组件</strong></p>
+<ul>
+<li>交换器 (Exchange)：消息代理服务器中用于把消息路由到队列的组件。</li>
+<li>队列 (Queue)：用来存储消息的数据结构，位于硬盘或内存中。</li>
+<li>绑定 (Binding)：一套规则，告知交换器消息应该将消息投递给哪个队列。</li>
+</ul>
+<p><strong>什么是RoutingKey路由键</strong> </p>
+<p>生产者将消息发送给交换器的时候，会指定一个<code>RoutingKey</code>,用来指定这个消息的路由规则，这个<code>RoutingKey</code>需要与交换器类型和绑定键(<code>BindingKey</code>)联合使用才能最终生效。</p>
+<p><strong>死信队列</strong> </p>
+<p>DLX，全称为 <code>Dead-Letter-Exchange</code>，死信交换器，死信邮箱。当消息在一个队列中变成死信 (<code>dead message</code>) 之后，它能被重新被发送到另一个交换器中，这个交换器就是 DLX，绑定 DLX 的队列就称之为死信队列。</p>
+<p><strong>导致的死信的几种原因</strong> </p>
+<ul>
+<li>消息被拒（<code>Basic.Reject /Basic.Nack</code>) 且 <code>requeue = false</code>。</li>
+<li>消息TTL过期。</li>
+<li>队列满了，无法再添加。</li>
+</ul>
+<h6 id="交换机类型（Exchange-Types）"><a href="#交换机类型（Exchange-Types）" class="headerlink" title="交换机类型（Exchange Types）"></a><strong>交换机类型（Exchange Types）</strong></h6><p>交换机是消息路由的核心组件，根据规则将消息分发到不同队列。RabbitMQ 支持以下 4 种标准交换机类型：</p>
+<ol>
+<li><strong>Direct Exchange（直连交换机）</strong><ul>
+<li><strong>路由规则</strong>：精确匹配 <code>Routing Key</code>。</li>
+<li><strong>场景</strong>：点对点通信（如订单处理）。</li>
+<li><strong>示例</strong>：<br>生产者发送消息时指定 <code>Routing Key=&quot;order.create&quot;</code>，交换机将消息投递到绑定 <code>Routing Key=&quot;order.create&quot;</code> 的队列。</li>
+</ul>
+</li>
+<li><strong>Topic Exchange（主题交换机）</strong><ul>
+<li><strong>路由规则</strong>：模糊匹配 <code>Routing Key</code>（支持通配符 <code>*</code> 和 <code>#</code>）。</li>
+<li><strong>场景</strong>：多订阅者的消息分类（如日志分级）。</li>
+<li><strong>示例</strong>：<br><code>Routing Key=&quot;order.*.paid&quot;</code> 可匹配 <code>&quot;order.123.paid&quot;</code> 或 <code>&quot;order.456.paid&quot;</code>。</li>
+</ul>
+</li>
+<li><strong>Fanout Exchange（扇出交换机）</strong><ul>
+<li><strong>路由规则</strong>：忽略 <code>Routing Key</code>，广播到所有绑定的队列。</li>
+<li><strong>场景</strong>：发布订阅模式（如新闻推送）。</li>
+<li><strong>示例</strong>：<br>发送一条消息，所有绑定到该交换机的队列都会收到副本。</li>
+</ul>
+</li>
+<li><strong>Headers Exchange（头交换机）</strong><ul>
+<li><strong>路由规则</strong>：根据消息头（Headers）的键值对匹配，而非 <code>Routing Key</code>。</li>
+<li><strong>场景</strong>：复杂条件路由（如根据设备类型过滤消息）。</li>
+<li><strong>示例</strong>：<br>绑定队列时设置匹配条件 <code>&#123;&quot;x-match&quot;: &quot;all&quot;, &quot;device&quot;: &quot;mobile&quot;&#125;</code>，仅接收 <code>Headers</code> 中包含 <code>device: mobile</code> 的消息。</li>
+</ul>
+</li>
+<li><strong>默认交换机（Default Exchange）</strong><ul>
+<li>每个 RabbitMQ 实例自带一个无名默认交换机（类型为 Direct）。</li>
+<li>生产者可直接通过队列名作为 <code>Routing Key</code> 发送消息到指定队列。</li>
+</ul>
+</li>
+</ol>
+<h6 id="队列类型（Queue-Types）"><a href="#队列类型（Queue-Types）" class="headerlink" title="队列类型（Queue Types）"></a><strong>队列类型（Queue Types）</strong></h6><p>RabbitMQ 3.8+ 引入了多种队列类型，针对不同场景优化：</p>
+<ol>
+<li><strong>Classic Queue（经典队列）</strong><ul>
+<li>默认队列类型，依赖 Erlang 的分布式能力。</li>
+<li><strong>缺点</strong>：集群中队列数据仅存在于单个节点（非镜像时），可靠性依赖镜像队列配置。</li>
+</ul>
+</li>
+<li><strong>Quorum Queue（仲裁队列）</strong><ul>
+<li>基于 Raft 协议实现，数据在集群多数节点同步后确认写入，保证高可用。</li>
+<li><strong>场景</strong>：需要强一致性和故障恢复的场景（如金融交易）。</li>
+<li><strong>特性</strong>：自动故障转移，支持消息持久化，但性能略低于 Classic。</li>
+</ul>
+</li>
+<li><strong>Stream Queue（流式队列）</strong><ul>
+<li>为高吞吐量、顺序消费设计的队列类型（类似 Kafka）。</li>
+<li><strong>场景</strong>：日志处理、事件溯源等需顺序消费的场景。</li>
+<li><strong>特性</strong>：支持消息分段存储、消费者按偏移量读取。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h6 id="消息类型（Message-Types）"><a href="#消息类型（Message-Types）" class="headerlink" title="消息类型（Message Types）"></a><strong>消息类型（Message Types）</strong></h6><p>严格来说，RabbitMQ 消息本身没有类型，但可通过属性控制行为：</p>
+<ul>
+<li><strong>持久化消息</strong>：<br>消息标记为 <code>delivery_mode=2</code>，配合持久化队列，确保重启后不丢失。</li>
+<li><strong>临时消息</strong>：<br>默认 <code>delivery_mode=1</code>，仅存于内存，重启后丢失。</li>
+</ul>
+<hr>
+<h6 id="其他类型"><a href="#其他类型" class="headerlink" title="其他类型"></a><strong>其他类型</strong></h6><ol>
+<li><strong>插件扩展类型</strong><ul>
+<li><strong>延迟消息</strong>：通过插件（<code>rabbitmq-delayed-message-exchange</code>）实现延迟交换机。</li>
+<li><strong>其他协议</strong>：如 MQTT、STOMP 等协议对应的消息类型。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h6 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h6><table>
+<thead>
+<tr>
+<th align="left"><strong>类型分类</strong></th>
+<th align="left"><strong>核心类型</strong></th>
+<th align="left"><strong>典型场景</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">交换机（Exchange）</td>
+<td align="left">Direct, Topic, Fanout, Headers</td>
+<td align="left">精确路由、模糊匹配、广播、复杂条件路由</td>
+</tr>
+<tr>
+<td align="left">队列（Queue）</td>
+<td align="left">Classic, Quorum, Stream</td>
+<td align="left">通用场景、强一致性、顺序流处理</td>
+</tr>
+<tr>
+<td align="left">消息属性</td>
+<td align="left">持久化 vs 非持久化</td>
+<td align="left">可靠性要求高低</td>
+</tr>
+</tbody></table>
+<p><strong>根据业务需求选择合适类型</strong> ：</p>
+<ul>
+<li>需要灵活路由 ➜ <strong>Topic Exchange</strong></li>
+<li>要求高可用 ➜ <strong>Quorum Queue</strong></li>
+<li>顺序消费流数据 ➜ <strong>Stream Queue</strong></li>
+</ul>
 <h4 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h4><h5 id="Redis是单线程吗？"><a href="#Redis是单线程吗？" class="headerlink" title="Redis是单线程吗？"></a>Redis是单线程吗？</h5><p>Redis单线程指的是**{接受客户端请求-&gt;解析请求-&gt;进行数据读写扽操作-&gt;发送数据给客户端}<strong>这个过程是由一个线程</strong>（主线程）**来完成的，这是我们常说Redis是单线程的原因</p>
 <p>但是，Redis程序并不是单线程的，Redis在启动的时候，是会启动<strong>后台线程 （BIO）</strong>的</p>
 <p><strong>2.6版本</strong>，会启动2个后台线程，分别处理关闭文件，AOF刷盘这两个任务</p>

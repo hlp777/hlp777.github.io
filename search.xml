@@ -1526,6 +1526,10 @@
 <p>7.然后servlet来处理这个请求，如果是SpringMVC中的Dispatcherserlet，那么则会找到对应的controller中的方法，并执行该方法得到结果</p>
 <p>8.Tomcat得到响应结果后封装成HTTP响应的格式，并再次通过网络发送给浏览器所在的服务器</p>
 <p>9.浏览器所在的服务器拿到结果后再传递给浏览器，浏览器则负责解析并渲染</p>
+<h5 id="RabbitMQ"><a href="#RabbitMQ" class="headerlink" title="RabbitMQ"></a><strong>RabbitMQ</strong></h5><p>RabbitMQ是实现了高级消息队列协议（<code>AMQP</code>）的开源消息代理软件（亦称面向消息的中间件）。RabbitMQ服务器是用Erlang语言编写的，而群集和故障转移是构建在开放电信平台框架上的。所有主要的编程语言均有与代理接口通讯的客户端库。</p>
+<p><strong>AMQP</strong></p>
+<p>AMQP 协议的 <code>Erlang</code> 的实现(当然 RabbitMQ 还支持 <code>STOMP2</code>、 <code>MQTT3</code> 等协议 ) AMQP 的模型架构 和 RabbitMQ 的模型架构是一样的，生产者将消息发送给交换器，交换器和队列绑定 。</p>
+<p>RabbitMQ 中的交换器、交换器类型、队列、绑定、路由键等都是遵循的 AMQP 协议中相 应的概念。</p>
 <h4 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h4><h5 id="Redis是单线程吗？"><a href="#Redis是单线程吗？" class="headerlink" title="Redis是单线程吗？"></a>Redis是单线程吗？</h5><p>Redis单线程指的是**{接受客户端请求-&gt;解析请求-&gt;进行数据读写扽操作-&gt;发送数据给客户端}<strong>这个过程是由一个线程</strong>（主线程）**来完成的，这是我们常说Redis是单线程的原因</p>
 <p>但是，Redis程序并不是单线程的，Redis在启动的时候，是会启动<strong>后台线程 （BIO）</strong>的</p>
 <p><strong>2.6版本</strong>，会启动2个后台线程，分别处理关闭文件，AOF刷盘这两个任务</p>

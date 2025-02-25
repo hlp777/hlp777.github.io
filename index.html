@@ -1195,6 +1195,13 @@
 <p><strong>2.6版本</strong>，会启动2个后台线程，分别处理关闭文件，AOF刷盘这两个任务</p>
 <p><strong>4.0版本</strong>之后，新增了一个新的后台线程，用来异步释放Redis内存，也就是lazyfree线程</p>
 <p><strong>6.0版本</strong>之后，采用了<strong>多个I&#x2F;O线程</strong>来处理网络请求，这是因为随着网络硬件的性能提升，Redis的性能瓶颈有时会出现在网络I&#x2F;O的处理上。但是对于<strong>命令的执行</strong>，Redis仍然使用<strong>单线程</strong>来处理。</p>
+<h5 id="Redis-为什么这么快？"><a href="#Redis-为什么这么快？" class="headerlink" title="Redis 为什么这么快？"></a><strong>Redis 为什么这么快？</strong></h5><p><strong>Redis 内部做了非常多的性能优化，比较重要的有下面 3 点</strong> ：</p>
+<ol>
+<li>Redis 基于内存，内存的访问速度比磁盘快很多；</li>
+<li>Redis 基于 Reactor 模式设计开发了一套高效的事件处理模型，主要是单线程事件循环和 IO 多路复用（Redis 线程模式后面会详细介绍到）；</li>
+<li>Redis 内置了多种优化过后的数据类型&#x2F;结构实现，性能非常高。</li>
+<li>Redis 通信协议实现简单且解析高效。</li>
+</ol>
 <h5 id="Redis持久化"><a href="#Redis持久化" class="headerlink" title="Redis持久化"></a>Redis持久化</h5><p><strong>方式：</strong></p>
 <p><strong>AOF日志</strong>：每执行一条写操作命令，就把该命令以追加的方式写入到一个文件里</p>
 <p><strong>RDB快照</strong>：将某一时刻的内存数据，以二进制的方式写入磁盘</p>

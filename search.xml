@@ -1729,7 +1729,15 @@
 <p><strong>读策略步骤</strong></p>
 <p>如何读取的数据命中了缓存，则直接返回数据</p>
 <p>如果读取的数据没有命中缓存，则从数据库中读取数据，然后将数据写入到缓存，并且返回给用户</p>
-<h5 id="Redis实战"><a href="#Redis实战" class="headerlink" title="Redis实战"></a>Redis实战</h5><h6 id="Redis-如何实现延迟队列？"><a href="#Redis-如何实现延迟队列？" class="headerlink" title="Redis 如何实现延迟队列？"></a><strong>Redis 如何实现延迟队列？</strong></h6><p>延迟队列是指把当前要做的事情，往后推迟一段时间再做。延迟队列的常见使用场景有以下几种： </p>
+<h5 id="Redis实战"><a href="#Redis实战" class="headerlink" title="Redis实战"></a>Redis实战</h5><h6 id="Redis-除了做缓存，还能做什么？"><a href="#Redis-除了做缓存，还能做什么？" class="headerlink" title="Redis 除了做缓存，还能做什么？"></a>Redis 除了做缓存，还能做什么？</h6><ul>
+<li><strong>分布式锁</strong> ：通过 Redis 来做分布式锁是一种比较常见的方式。通常情况下，我们都是基于 Redisson 来实现分布式锁。</li>
+<li><strong>限流</strong> ：一般是通过 Redis + Lua 脚本的方式来实现限流。如果不想自己写 Lua 脚本的话，也可以直接利用 Redisson 中的 <code>RRateLimiter</code> 来实现分布式限流，其底层实现就是基于 Lua 代码+令牌桶算法。</li>
+<li><strong>消息队列</strong>  ：Redis 自带的 List 数据结构可以作为一个简单的队列使用。Redis 5.0 中增加的 Stream 类型的数据结构更加适合用来做消息队列。它比较类似于 Kafka，有主题和消费组的概念，支持消息持久化以及 ACK 机制。</li>
+<li><strong>延时队列</strong> ：Redisson 内置了延时队列（基于 Sorted Set 实现的）。</li>
+<li><strong>分布式 Session</strong> ：利用 String 或者 Hash 数据类型保存 Session 数据，所有的服务器都可以访问。</li>
+<li><strong>复杂业务场景</strong> ：通过 Redis 以及 Redis 扩展（比如 Redisson）提供的数据结构，我们可以很方便地完成很多复杂的业务场景比如通过 Bitmap 统计活跃用户、通过 Sorted Set 维护排行榜。</li>
+</ul>
+<h6 id="Redis-如何实现延迟队列？"><a href="#Redis-如何实现延迟队列？" class="headerlink" title="Redis 如何实现延迟队列？"></a><strong>Redis 如何实现延迟队列？</strong></h6><p>延迟队列是指把当前要做的事情，往后推迟一段时间再做。延迟队列的常见使用场景有以下几种： </p>
 <p>1.在淘宝、京东等购物平台上下单，超过一定时间未付款，订单会自动取消</p>
 <p>2.打车的时候，在规定时间没有车主接单，平台会取消你的单并提醒你暂时没有车主接单</p>
 <p>3.点外卖的时候，如果商家在10分钟还没接单，就会自动取消订单</p>

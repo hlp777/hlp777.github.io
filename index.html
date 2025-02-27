@@ -159,6 +159,232 @@
     
     
     <article
+  id="post-Linux常用命令"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2025/02/27/Linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/"
+    >Linux常用命令</a> 
+</h2>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2025/02/27/Linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/" class="article-date">
+  <time datetime="2025-02-27T14:34:33.000Z" itemprop="datePublished">2025-02-27</time>
+</a>    
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="Linux常用命令"><a href="#Linux常用命令" class="headerlink" title="Linux常用命令"></a>Linux常用命令</h1><h3 id="一、系统信息与监控"><a href="#一、系统信息与监控" class="headerlink" title="一、系统信息与监控"></a><strong>一、系统信息与监控</strong></h3><h4 id="1-uptime"><a href="#1-uptime" class="headerlink" title="1. uptime"></a>1. <strong><code>uptime</code></strong></h4><p>查看系统运行时间及负载情况。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">uptime</span></span><br><span class="line"> 10:30:01 up 15 days,  3:22,  2 <span class="built_in">users</span>,  load average: 0.08, 0.03, 0.05</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>输出说明</strong>：当前时间、运行时间、登录用户数、1&#x2F;5&#x2F;15分钟的平均负载（CPU 负载）。</li>
+</ul>
+<h4 id="2-top-x2F-htop"><a href="#2-top-x2F-htop" class="headerlink" title="2. top &#x2F; htop"></a>2. <strong><code>top</code> &#x2F; <code>htop</code></strong></h4><p>实时监控系统资源使用情况。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ top</span><br><span class="line">PID USER  PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND</span><br><span class="line">1234 root  20   0  245628  45892   2344 R  45.3  2.1   0:15.89 java</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>关键操作</strong>：按 <code>P</code>（CPU 排序）、<code>M</code>（内存排序）、<code>q</code> 退出。</li>
+</ul>
+<h4 id="3-df-x2F-du"><a href="#3-df-x2F-du" class="headerlink" title="3. df &#x2F; du"></a>3. <strong><code>df</code> &#x2F; <code>du</code></strong></h4><ul>
+<li>**<code>df -h</code>**：查看磁盘空间使用情况。  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">df</span> -h</span><br><span class="line">Filesystem      Size  Used Avail Use% Mounted on</span><br><span class="line">/dev/sda1        50G   32G   16G  67% /</span><br></pre></td></tr></table></figure></li>
+<li>**<code>du -sh /path</code>**：统计目录大小。  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">du</span> -sh /var/log</span><br><span class="line">1.2G    /var/log</span><br></pre></td></tr></table></figure></li>
+</ul>
+<hr>
+<h3 id="二、文件与目录操作"><a href="#二、文件与目录操作" class="headerlink" title="二、文件与目录操作"></a><strong>二、文件与目录操作</strong></h3><h4 id="4-ls"><a href="#4-ls" class="headerlink" title="4. ls"></a>4. <strong><code>ls</code></strong></h4><p>列出目录内容。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">ls</span> -alh  <span class="comment"># -a显示隐藏文件，-l详细信息，-h人类可读大小</span></span><br><span class="line">drwxr-xr-x 2 root root 4.0K Jun 10 10:00 logs</span><br></pre></td></tr></table></figure>
+
+<h4 id="5-find"><a href="#5-find" class="headerlink" title="5. find"></a>5. <strong><code>find</code></strong></h4><p>查找文件。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ find /home -name <span class="string">&quot;*.log&quot;</span> -mtime +7  <span class="comment"># 查找7天前的日志文件</span></span><br><span class="line">$ find /var -size +100M              <span class="comment"># 查找大于100MB的文件</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="6-grep"><a href="#6-grep" class="headerlink" title="6. grep"></a>6. <strong><code>grep</code></strong></h4><p>文本搜索工具。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ grep <span class="string">&quot;ERROR&quot;</span> /var/log/syslog       <span class="comment"># 搜索包含&quot;ERROR&quot;的行</span></span><br><span class="line">$ ps aux | grep nginx                <span class="comment"># 过滤进程</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="7-tar-x2F-gzip"><a href="#7-tar-x2F-gzip" class="headerlink" title="7. tar &#x2F; gzip"></a>7. <strong><code>tar</code> &#x2F; <code>gzip</code></strong></h4><p>压缩与解压文件。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ tar -czvf backup.tar.gz /data      <span class="comment"># 压缩</span></span><br><span class="line">$ tar -xzvf backup.tar.gz            <span class="comment"># 解压</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="三、网络管理"><a href="#三、网络管理" class="headerlink" title="三、网络管理"></a><strong>三、网络管理</strong></h3><h4 id="8-netstat-x2F-ss"><a href="#8-netstat-x2F-ss" class="headerlink" title="8. netstat &#x2F; ss"></a>8. <strong><code>netstat</code> &#x2F; <code>ss</code></strong></h4><p>查看网络连接状态。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ netstat -tulnp | grep 80           <span class="comment"># 查看80端口占用</span></span><br><span class="line">$ ss -ltn                            <span class="comment"># 更高效的替代命令</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="9-curl-x2F-wget"><a href="#9-curl-x2F-wget" class="headerlink" title="9. curl &#x2F; wget"></a>9. <strong><code>curl</code> &#x2F; <code>wget</code></strong></h4><p>网络请求与下载。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ curl -I http://example.com         <span class="comment"># 获取HTTP头信息</span></span><br><span class="line">$ wget http://example.com/file.zip   <span class="comment"># 下载文件</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="10-tcpdump"><a href="#10-tcpdump" class="headerlink" title="10. tcpdump"></a>10. <strong><code>tcpdump</code></strong></h4><p>抓包分析网络流量。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ tcpdump -i eth0 port 80 -w capture.pcap  <span class="comment"># 抓取80端口的流量</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="四、进程管理"><a href="#四、进程管理" class="headerlink" title="四、进程管理"></a><strong>四、进程管理</strong></h3><h4 id="11-ps"><a href="#11-ps" class="headerlink" title="11. ps"></a>11. <strong><code>ps</code></strong></h4><p>查看进程状态。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ps aux | grep nginx                <span class="comment"># 显示所有进程详细信息</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="12-kill"><a href="#12-kill" class="headerlink" title="12. kill"></a>12. <strong><code>kill</code></strong></h4><p>终止进程。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">kill</span> -9 1234                       <span class="comment"># 强制终止PID为1234的进程</span></span><br><span class="line">$ pkill -f <span class="string">&quot;python script.py&quot;</span>        <span class="comment"># 按名称终止进程</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="13-systemctl"><a href="#13-systemctl" class="headerlink" title="13. systemctl"></a>13. <strong><code>systemctl</code></strong></h4><p>管理系统服务。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ systemctl start nginx              <span class="comment"># 启动服务</span></span><br><span class="line">$ systemctl status nginx             <span class="comment"># 查看服务状态</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="五、权限管理"><a href="#五、权限管理" class="headerlink" title="五、权限管理"></a><strong>五、权限管理</strong></h3><h4 id="14-chmod"><a href="#14-chmod" class="headerlink" title="14. chmod"></a>14. <strong><code>chmod</code></strong></h4><p>修改文件权限。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">chmod</span> 755 script.sh                <span class="comment"># 设置权限为rwxr-xr-x</span></span><br><span class="line">$ <span class="built_in">chmod</span> +x script.sh                 <span class="comment"># 添加可执行权限</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="15-chown"><a href="#15-chown" class="headerlink" title="15. chown"></a>15. <strong><code>chown</code></strong></h4><p>修改文件所有者。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">chown</span> user:group file.txt          <span class="comment"># 修改所有者和组</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="六、日志分析"><a href="#六、日志分析" class="headerlink" title="六、日志分析"></a><strong>六、日志分析</strong></h3><h4 id="16-tail-x2F-head"><a href="#16-tail-x2F-head" class="headerlink" title="16. tail &#x2F; head"></a>16. <strong><code>tail</code> &#x2F; <code>head</code></strong></h4><p>查看文件首尾内容。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">tail</span> -f /var/log/nginx/access.log  <span class="comment"># 实时跟踪日志</span></span><br><span class="line">$ <span class="built_in">head</span> -n 100 file.log               <span class="comment"># 显示前100行</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="17-journalctl"><a href="#17-journalctl" class="headerlink" title="17. journalctl"></a>17. <strong><code>journalctl</code></strong></h4><p>查看系统日志（Systemd 系统）。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ journalctl -u nginx --since <span class="string">&quot;2023-06-10&quot;</span>  <span class="comment"># 按时间和服务过滤</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="七、软件包管理"><a href="#七、软件包管理" class="headerlink" title="七、软件包管理"></a><strong>七、软件包管理</strong></h3><h4 id="18-APT-x2F-YUM-x2F-DNF"><a href="#18-APT-x2F-YUM-x2F-DNF" class="headerlink" title="18. APT&#x2F;YUM&#x2F;DNF"></a>18. <strong>APT&#x2F;YUM&#x2F;DNF</strong></h4><p>包管理工具（Debian&#x2F;RedHat 系）。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ apt update &amp;&amp; apt install nginx    <span class="comment"># Debian/Ubuntu</span></span><br><span class="line">$ yum install httpd                  <span class="comment"># CentOS/RHEL</span></span><br><span class="line">$ dnf remove php                     <span class="comment"># Fedora/CentOS 8+</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="八、高级工具"><a href="#八、高级工具" class="headerlink" title="八、高级工具"></a><strong>八、高级工具</strong></h3><h4 id="19-awk-x2F-sed"><a href="#19-awk-x2F-sed" class="headerlink" title="19. awk &#x2F; sed"></a>19. <strong><code>awk</code> &#x2F; <code>sed</code></strong></h4><p>文本处理工具。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;&#123;print $1&#125;&#x27;</span> access.log        <span class="comment"># 提取日志第一列（IP地址）</span></span><br><span class="line">$ sed -i <span class="string">&#x27;s/old/new/g&#x27;</span> file.txt      <span class="comment"># 替换文件中的文本</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="20-crontab"><a href="#20-crontab" class="headerlink" title="20. crontab"></a>20. <strong><code>crontab</code></strong></h4><p>定时任务管理。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ crontab -e                        <span class="comment"># 编辑定时任务</span></span><br><span class="line"><span class="comment"># 每天凌晨备份</span></span><br><span class="line">0 0 * * * /bin/bash /backup.sh</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="九、安全相关"><a href="#九、安全相关" class="headerlink" title="九、安全相关"></a><strong>九、安全相关</strong></h3><h4 id="21-sudo-x2F-su"><a href="#21-sudo-x2F-su" class="headerlink" title="21. sudo &#x2F; su"></a>21. <strong><code>sudo</code> &#x2F; <code>su</code></strong></h4><p>权限切换。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo -u user <span class="built_in">command</span>              <span class="comment"># 以指定用户身份执行命令</span></span><br><span class="line">$ su - username                     <span class="comment"># 切换用户</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><p>以上命令覆盖了运维工程师日常工作的核心场景，包括系统监控、文件操作、网络调试、服务管理等。建议结合以下技巧提升效率：</p>
+<ul>
+<li>**管道符 <code>|</code>**：组合命令，如 <code>cat file | grep &quot;error&quot;</code>。</li>
+<li>**通配符 <code>*</code> &#x2F; <code>?</code>**：快速匹配文件，如 <code>rm *.tmp</code>。</li>
+<li><strong>Tab 补全</strong>：减少输入错误。</li>
+<li><strong>命令历史</strong>：<code>Ctrl+R</code> 搜索历史命令。</li>
+</ul>
+<h1 id="进阶使用"><a href="#进阶使用" class="headerlink" title="进阶使用"></a>进阶使用</h1><h3 id="一、性能分析与调试"><a href="#一、性能分析与调试" class="headerlink" title="一、性能分析与调试"></a><strong>一、性能分析与调试</strong></h3><h4 id="1-strace"><a href="#1-strace" class="headerlink" title="1. strace"></a>1. <strong><code>strace</code></strong></h4><p>追踪进程的系统调用（调试程序行为）。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ strace -p &lt;PID&gt;               <span class="comment"># 追踪正在运行的进程</span></span><br><span class="line">$ strace -e trace=open,<span class="built_in">read</span> <span class="built_in">ls</span>  <span class="comment"># 仅追踪文件的打开和读取操作</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="2-lsof"><a href="#2-lsof" class="headerlink" title="2. lsof"></a>2. <strong><code>lsof</code></strong></h4><p>列出系统打开的文件和网络连接。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ lsof -i :80                   <span class="comment"># 查看占用80端口的进程</span></span><br><span class="line">$ lsof /var/log/nginx           <span class="comment"># 查看谁在访问该目录</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="3-sar"><a href="#3-sar" class="headerlink" title="3. sar"></a>3. <strong><code>sar</code></strong></h4><p>系统性能历史数据分析（需安装 <code>sysstat</code>）。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sar -u 1 5                   <span class="comment"># 每1秒采样CPU使用率，共5次</span></span><br><span class="line">$ sar -n DEV                   <span class="comment"># 查看网络接口流量历史</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="4-perf"><a href="#4-perf" class="headerlink" title="4. perf"></a>4. <strong><code>perf</code></strong></h4><p>性能分析工具（需安装 <code>linux-tools-common</code>）。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ perf top                     <span class="comment"># 实时查看系统性能事件</span></span><br><span class="line">$ perf record -g ./program     <span class="comment"># 记录程序运行时的调用栈</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="二、文件与存储高级操作"><a href="#二、文件与存储高级操作" class="headerlink" title="二、文件与存储高级操作"></a><strong>二、文件与存储高级操作</strong></h3><h4 id="5-rsync"><a href="#5-rsync" class="headerlink" title="5. rsync"></a>5. <strong><code>rsync</code></strong></h4><p>高效同步文件（支持增量、排除文件）。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ rsync -avz --delete /source/ user@remote:/dest/  <span class="comment"># 同步并删除目标多余文件</span></span><br><span class="line">$ rsync -avz --exclude=<span class="string">&quot;*.tmp&quot;</span> src/ dst/           <span class="comment"># 排除临时文件</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="6-dd"><a href="#6-dd" class="headerlink" title="6. dd"></a>6. <strong><code>dd</code></strong></h4><p>磁盘读写与备份（谨慎使用！）。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">dd</span> <span class="keyword">if</span>=/dev/sda of=disk.img bs=4M status=progress  <span class="comment"># 备份整个磁盘</span></span><br><span class="line">$ <span class="built_in">dd</span> <span class="keyword">if</span>=/dev/zero of=/swapfile bs=1G count=4        <span class="comment"># 创建4GB交换文件</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="7-mount-x2F-umount"><a href="#7-mount-x2F-umount" class="headerlink" title="7. mount &#x2F; umount"></a>7. <strong><code>mount</code> &#x2F; <code>umount</code></strong></h4><p>挂载与卸载文件系统。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ mount -t nfs 192.168.1.100:/data /mnt  <span class="comment"># 挂载NFS共享</span></span><br><span class="line">$ mount -o remount,rw /                  <span class="comment"># 以读写模式重新挂载根目录</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="8-ln"><a href="#8-ln" class="headerlink" title="8. ln"></a>8. <strong><code>ln</code></strong></h4><p>创建硬链接与软链接。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">ln</span> -s /path/to/file link_name          <span class="comment"># 创建软链接（快捷方式）</span></span><br><span class="line">$ <span class="built_in">ln</span> /path/to/file hard_link            <span class="comment"># 创建硬链接（同一文件实体）</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="三、网络进阶工具"><a href="#三、网络进阶工具" class="headerlink" title="三、网络进阶工具"></a><strong>三、网络进阶工具</strong></h3><h4 id="9-nmap"><a href="#9-nmap" class="headerlink" title="9. nmap"></a>9. <strong><code>nmap</code></strong></h4><p>网络扫描与端口探测。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ nmap -sV 192.168.1.1         <span class="comment"># 扫描目标主机的服务版本</span></span><br><span class="line">$ nmap -p 1-1000 192.168.1.10  <span class="comment"># 扫描指定端口范围</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="10-mtr"><a href="#10-mtr" class="headerlink" title="10. mtr"></a>10. <strong><code>mtr</code></strong></h4><p>结合 <code>traceroute</code> 和 <code>ping</code> 的网络诊断工具。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mtr -r google.com            <span class="comment"># 持续分析网络路径的丢包情况</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="11-iptables-x2F-nftables"><a href="#11-iptables-x2F-nftables" class="headerlink" title="11. iptables &#x2F; nftables"></a>11. <strong><code>iptables</code> &#x2F; <code>nftables</code></strong></h4><p>防火墙规则管理。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ iptables -A INPUT -p tcp --dport 22 -j ACCEPT  <span class="comment"># 允许SSH访问</span></span><br><span class="line">$ iptables -L -v -n                             <span class="comment"># 列出所有规则</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="12-nc-netcat"><a href="#12-nc-netcat" class="headerlink" title="12. nc (netcat)"></a>12. <strong><code>nc</code> (netcat)</strong></h4><p>网络调试瑞士军刀。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ nc -zv 192.168.1.1 80        <span class="comment"># 检查端口是否开放</span></span><br><span class="line">$ nc -l 1234 &gt; file.txt        <span class="comment"># 监听端口接收文件</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="四、进程与资源控制"><a href="#四、进程与资源控制" class="headerlink" title="四、进程与资源控制"></a><strong>四、进程与资源控制</strong></h3><h4 id="13-nohup"><a href="#13-nohup" class="headerlink" title="13. nohup"></a>13. <strong><code>nohup</code></strong></h4><p>让进程在后台持久运行（忽略挂断信号）。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">nohup</span> ./script.sh &gt; output.log 2&gt;&amp;1 &amp;  <span class="comment"># 后台运行并重定向日志</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="14-cgroups"><a href="#14-cgroups" class="headerlink" title="14. cgroups"></a>14. <strong><code>cgroups</code></strong></h4><p>限制进程资源使用（CPU&#x2F;内存&#x2F;磁盘等）。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用systemd创建cgroup限制内存</span></span><br><span class="line">$ systemd-run --scope -p MemoryLimit=500M ./memory_hungry_app</span><br></pre></td></tr></table></figure>
+
+<h4 id="15-taskset"><a href="#15-taskset" class="headerlink" title="15. taskset"></a>15. <strong><code>taskset</code></strong></h4><p>绑定进程到特定CPU核心。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ taskset -c 0,1 ./program     <span class="comment"># 将程序绑定到CPU0和CPU1</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="五、文本处理与脚本"><a href="#五、文本处理与脚本" class="headerlink" title="五、文本处理与脚本"></a><strong>五、文本处理与脚本</strong></h3><h4 id="16-jq"><a href="#16-jq" class="headerlink" title="16. jq"></a>16. <strong><code>jq</code></strong></h4><p>JSON数据处理工具。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ curl api.example.com | jq <span class="string">&#x27;.data[].name&#x27;</span>  <span class="comment"># 提取JSON中的特定字段</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="17-xargs"><a href="#17-xargs" class="headerlink" title="17. xargs"></a>17. <strong><code>xargs</code></strong></h4><p>将输入转换为命令参数。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ find /tmp -name <span class="string">&quot;*.log&quot;</span> | xargs <span class="built_in">rm</span> -f     <span class="comment"># 批量删除文件</span></span><br><span class="line">$ <span class="built_in">ls</span> *.csv | xargs -I &#123;&#125; <span class="built_in">mv</span> &#123;&#125; /backup/     <span class="comment"># 批量移动文件</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="18-cut-x2F-paste"><a href="#18-cut-x2F-paste" class="headerlink" title="18. cut &#x2F; paste"></a>18. <strong><code>cut</code> &#x2F; <code>paste</code></strong></h4><p>按列切割或合并文本。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cut</span> -d<span class="string">&#x27;,&#x27;</span> -f1,3 data.csv      <span class="comment"># 提取CSV文件第1、3列</span></span><br><span class="line">$ <span class="built_in">paste</span> file1.txt file2.txt     <span class="comment"># 并排合并两个文件</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="六、安全与审计"><a href="#六、安全与审计" class="headerlink" title="六、安全与审计"></a><strong>六、安全与审计</strong></h3><h4 id="19-openssl"><a href="#19-openssl" class="headerlink" title="19. openssl"></a>19. <strong><code>openssl</code></strong></h4><p>SSL&#x2F;TLS证书管理。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ openssl s_client -connect example.com:443  <span class="comment"># 检查SSL证书详情</span></span><br><span class="line">$ openssl req -x509 -newkey rsa:4096 -nodes -keyout key.pem -out cert.pem -days 365  <span class="comment"># 生成自签名证书</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="20-auditctl"><a href="#20-auditctl" class="headerlink" title="20. auditctl"></a>20. <strong><code>auditctl</code></strong></h4><p>审计系统调用（需安装 <code>auditd</code>）。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ auditctl -a always,<span class="built_in">exit</span> -S open -F path=/etc/passwd  <span class="comment"># 监控对/etc/passwd的访问</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="七、容器与虚拟化"><a href="#七、容器与虚拟化" class="headerlink" title="七、容器与虚拟化"></a><strong>七、容器与虚拟化</strong></h3><h4 id="21-docker"><a href="#21-docker" class="headerlink" title="21. docker"></a>21. <strong><code>docker</code></strong></h4><p>容器管理（非原生Linux命令但广泛使用）。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ docker ps -a                    <span class="comment"># 列出所有容器</span></span><br><span class="line">$ docker <span class="built_in">exec</span> -it nginx bash      <span class="comment"># 进入运行中的容器</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="22-virsh"><a href="#22-virsh" class="headerlink" title="22. virsh"></a>22. <strong><code>virsh</code></strong></h4><p>管理KVM虚拟机。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ virsh list --all               <span class="comment"># 列出所有虚拟机</span></span><br><span class="line">$ virsh start centos7            <span class="comment"># 启动指定虚拟机</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="八、高级技巧与组合命令"><a href="#八、高级技巧与组合命令" class="headerlink" title="八、高级技巧与组合命令"></a><strong>八、高级技巧与组合命令</strong></h3><h4 id="1-快速分析日志"><a href="#1-快速分析日志" class="headerlink" title="1. 快速分析日志"></a>1. <strong>快速分析日志</strong></h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 统计HTTP状态码出现次数</span></span><br><span class="line">$ awk <span class="string">&#x27;&#123;print $9&#125;&#x27;</span> access.log | <span class="built_in">sort</span> | <span class="built_in">uniq</span> -c | <span class="built_in">sort</span> -nr</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查找访问量最高的IP</span></span><br><span class="line">$ awk <span class="string">&#x27;&#123;print $1&#125;&#x27;</span> access.log | <span class="built_in">sort</span> | <span class="built_in">uniq</span> -c | <span class="built_in">sort</span> -nr | <span class="built_in">head</span> -10</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-批量重命名文件"><a href="#2-批量重命名文件" class="headerlink" title="2. 批量重命名文件"></a>2. <strong>批量重命名文件</strong></h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ rename <span class="string">&#x27;s/\.old$/.new/&#x27;</span> *.old    <span class="comment"># 将后缀.old改为.new</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="3-实时监控多个日志文件"><a href="#3-实时监控多个日志文件" class="headerlink" title="3. 实时监控多个日志文件"></a>3. <strong>实时监控多个日志文件</strong></h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">tail</span> -f /var/log/nginx/*.<span class="built_in">log</span>    <span class="comment"># 同时跟踪多个日志</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="4-SSH-隧道与端口转发"><a href="#4-SSH-隧道与端口转发" class="headerlink" title="4. SSH 隧道与端口转发"></a>4. <strong>SSH 隧道与端口转发</strong></h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 本地端口转发（访问本地8000即访问远程数据库）</span></span><br><span class="line">$ ssh -L 8000:localhost:3306 user@remote_host</span><br><span class="line"></span><br><span class="line"><span class="comment"># 动态端口转发（本地SOCKS代理）</span></span><br><span class="line">$ ssh -D 1080 user@remote_host</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a><strong>总结</strong></h3><p>掌握以上命令和技巧后，可应对以下场景：</p>
+<ul>
+<li><strong>性能瓶颈分析</strong>：<code>strace</code> + <code>perf</code> + <code>sar</code>  </li>
+<li><strong>复杂文本处理</strong>：<code>awk</code> + <code>jq</code> + <code>xargs</code>  </li>
+<li><strong>网络故障排查</strong>：<code>tcpdump</code> + <code>mtr</code> + <code>nmap</code>  </li>
+<li><strong>自动化运维</strong>：<code>crontab</code> + <code>rsync</code> + 脚本组合</li>
+</ul>
+<p><strong>效率提升建议</strong>：</p>
+<ol>
+<li>将常用命令封装为别名（<code>alias</code>），例如：  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">alias</span> ll=<span class="string">&#x27;ls -alh&#x27;</span></span><br><span class="line"><span class="built_in">alias</span> myip=<span class="string">&#x27;curl ipinfo.io/ip&#x27;</span></span><br></pre></td></tr></table></figure></li>
+<li>使用 <code>tmux</code> 或 <code>screen</code> 管理远程会话，防止断开连接后任务终止。  </li>
+<li>结合 <code>ansible</code> 或 <code>puppet</code> 实现批量服务器管理。</li>
+</ol>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+    </footer>
+  </div>
+
+   
+   
+  
+</article>
+
+    
+    <article
   id="post-Java开发场景问题分析"
   class="article article-type-post"
   itemscope

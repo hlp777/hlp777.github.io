@@ -752,6 +752,99 @@
 <p>7.然后servlet来处理这个请求，如果是SpringMVC中的Dispatcherserlet，那么则会找到对应的controller中的方法，并执行该方法得到结果</p>
 <p>8.Tomcat得到响应结果后封装成HTTP响应的格式，并再次通过网络发送给浏览器所在的服务器</p>
 <p>9.浏览器所在的服务器拿到结果后再传递给浏览器，浏览器则负责解析并渲染</p>
+<h4 id="等保三级（2026版）合规实战指南"><a href="#等保三级（2026版）合规实战指南" class="headerlink" title="等保三级（2026版）合规实战指南"></a>等保三级（2026版）合规实战指南</h4><p>等保三级（网络安全等级保护第三级）是国家对非涉密信息系统的<strong>最高安全等级认证</strong>，其核心目标是防范对<strong>社会秩序、公共利益造成严重损害</strong>的安全风险，是政府、金融、医疗、能源及大型互联网平台等关键信息基础设施的合规“硬门槛”。</p>
+<p>随着2025年新规的落地，等保体系已从“静态合规”全面转向“动态运营”与“精准防控”。以下为您梳理最新的核心要求与实施要点。</p>
+<h5 id="一，适用对象：谁必须过等保三级？"><a href="#一，适用对象：谁必须过等保三级？" class="headerlink" title="一，适用对象：谁必须过等保三级？"></a>一，适用对象：谁必须过等保三级？</h5><p>系统一旦遭破坏，可能对公共利益或国家安全造成损害的，均需定级为等保三级。典型场景包括：</p>
+<ul>
+<li><strong>政务与公共服务</strong>：社保、医保、税务平台，政府门户。</li>
+<li><strong>金融核心</strong>：银行支付、证券交易系统。</li>
+<li><strong>医疗健康</strong>：三甲医院HIS系统、电子病历、区域医疗平台。</li>
+<li><strong>关键基础设施</strong>：能源、电力、交通控制系统。</li>
+<li><strong>大型互联网</strong>：头部电商、社交平台、云平台。</li>
+</ul>
+<h5 id="二，核心要求：211项控制点的“精华版”"><a href="#二，核心要求：211项控制点的“精华版”" class="headerlink" title="二，核心要求：211项控制点的“精华版”"></a>二，核心要求：211项控制点的“精华版”</h5><p>等保三级的技术与管理要求，旨在构建<strong>纵深防御体系</strong>与<strong>安全运营闭环</strong>。</p>
+<table>
+<thead>
+<tr>
+<th align="left"><strong>类别</strong></th>
+<th align="left"><strong>维度</strong></th>
+<th align="left"><strong>2026年核心指标与最新要求</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong>技术要求</strong></td>
+<td align="left"><strong>物理与环境</strong></td>
+<td align="left">机房须达<strong>GB 50174 B级&#x2F;A级标准</strong>（双路供电、气体灭火）；门禁采用<strong>双因素认证</strong>，记录保存<strong>≥180天</strong>。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left"><strong>网络与通信</strong></td>
+<td align="left"><strong>生产网、办公网、互联网严格物理&#x2F;逻辑隔离</strong>；边界部署<strong>下一代防火墙（NGFW）+ 入侵防御系统（IPS）</strong>；远程接入强制<strong>双因素认证</strong>。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left"><strong>设备与计算</strong></td>
+<td align="left">服务器、终端部署<strong>EDR（终端检测与响应）</strong>；管理员账号启用<strong>双因素认证</strong>；遵循<strong>最小权限</strong>原则，关闭非必要端口与服务。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left"><strong>应用与数据</strong></td>
+<td align="left">应用系统上线前需通过<strong>代码审计</strong>与<strong>渗透测试</strong>；敏感数据存储必须加密（推荐国密算法），数据传输采用<strong>TLS 1.2以上</strong>加密协议。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left"><strong>数据安全</strong></td>
+<td align="left"><strong>核心数据与重要数据备份</strong>：要求<strong>异地实时备份</strong>，<strong>恢复时间目标（RTO）≤30分钟，恢复点目标（RPO）≤5分钟</strong>；部署<strong>DLP（数据防泄露）</strong> 系统监控敏感数据流转。</td>
+</tr>
+<tr>
+<td align="left"><strong>管理要求</strong></td>
+<td align="left"><strong>安全制度</strong></td>
+<td align="left">建立覆盖系统全生命周期的<strong>22类管理制度</strong>，包括安全开发、供应商管理、数据安全等，并<strong>每年评审更新</strong>。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left"><strong>机构与人员</strong></td>
+<td align="left">设立专门的安全部门，落实“三权分立”（系统管理、安全审计、安全监管）；安全团队<strong>持证上岗率（如CISP）建议≥70%<strong>；</strong>第三方人员操作全程可追溯</strong>。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left"><strong>建设与运维</strong></td>
+<td align="left">系统定级、备案、测评、整改形成闭环。<strong>高危漏洞修复周期≤15天</strong>；<strong>每年至少一次</strong>全面的渗透测试，<strong>每半年</strong>开展实战化应急演练。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left"><strong>供应链安全</strong></td>
+<td align="left">明确外包开发、云服务商的安全责任；采购的产品和服务需通过安全性评估，避免使用已知存在风险的开源组件。</td>
+</tr>
+</tbody></table>
+<h5 id="三，2025-2026年新规重大变化与行动点"><a href="#三，2025-2026年新规重大变化与行动点" class="headerlink" title="三，2025-2026年新规重大变化与行动点"></a>三，2025-2026年新规重大变化与行动点</h5><ol>
+<li><strong>测评结论改革</strong>：废除百分制，实行<strong>三级定性结论</strong>（符合&#x2F;基本符合&#x2F;不符合）。<strong>即使总分高，只要存在重大风险（如关键数据无备份、无异地容灾），直接判定为“不符合”</strong>。<strong>行动点</strong>：重点关注高风险项的彻底整改。</li>
+<li><strong>测评频率加密</strong>：三级系统测评频率从“两年一次”<strong>改为“每年一次”</strong>，且新系统需在<strong>上线后30日内</strong>完成首次测评备案。<strong>行动点</strong>：将年度测评费用纳入固定预算，建立常态化测评机制。</li>
+<li><strong>数据安全强化</strong>：强制要求<strong>重要数据异地备份</strong>（同城≥30公里或跨地域），并对恢复能力（RTO&#x2F;RPO）提出量化指标。<strong>行动点</strong>：检查备份策略，验证备份数据的可恢复性。</li>
+<li><strong>覆盖范围扩展</strong>：明确将<strong>云计算、物联网、工业互联网、AI大模型</strong>等纳入评估范围。<strong>行动点</strong>：确认所有系统组件（含云上资产）均已纳入定级范围。</li>
+<li><strong>整改时限收紧</strong>：高危漏洞修复周期从<strong>30天缩短至15天</strong>；重大风险整改需在<strong>30日内</strong>完成。<strong>行动点</strong>：建立应急响应与漏洞修复的SOP（标准作业程序），确保时限达标。</li>
+</ol>
+<h5 id="四，实施路线图：从0到1过等保"><a href="#四，实施路线图：从0到1过等保" class="headerlink" title="四，实施路线图：从0到1过等保"></a>四，实施路线图：从0到1过等保</h5><p>建议周期为6-8个月，关键步骤如下：</p>
+<ol>
+<li><strong>定级备案</strong>：确定系统等级，组织专家评审，向公安机关提交备案材料（系统上线后30日内）。</li>
+<li><strong>差距分析</strong>：对照等保三级<strong>211个控制点</strong>，进行自查与工具扫描，生成整改清单。</li>
+<li><strong>安全整改</strong>：<strong>技术整改</strong>（补齐缺失设备、优化安全策略）+ <strong>管理整改</strong>（完善制度、组织培训）。<strong>优先修复高危风险</strong>。</li>
+<li><strong>等级测评</strong>：选择具备<strong>公安部第三研究所认证资质</strong>的测评机构进行现场测评。</li>
+<li><strong>持续运营</strong>：获取测评报告后，保持常态化安全监测，准备迎接年度复评与监督检查。</li>
+</ol>
+<h4 id="五，成本估算与避坑指南"><a href="#五，成本估算与避坑指南" class="headerlink" title="五，成本估算与避坑指南"></a>五，成本估算与避坑指南</h4><ul>
+<li><strong>成本构成</strong>：<ul>
+<li><strong>测评服务费</strong>：一个系统约 <strong>12-16万元&#x2F;年</strong>（含首次测评及年度复评费用）。</li>
+<li><strong>整改建设费</strong>：取决于现有基础，包括采购防火墙、堡垒机、EDR、数据库审计等硬件&#x2F;软件，以及数据备份系统建设，总投入可能在 <strong>几十万至数百万元</strong>。</li>
+</ul>
+</li>
+<li><strong>常见误区</strong>：<ul>
+<li><strong>重硬轻软</strong>：认为买了安全设备就达标，却忽视了<strong>管理制度</strong>的完善和<strong>人员能力</strong>的建设。</li>
+<li><strong>一劳永逸</strong>：认为过了一次测评就永久合规。网络安全是动态过程，<strong>持续监测、定期演练、年度复评</strong>才是合规常态。</li>
+<li><strong>忽视云上合规</strong>：使用云服务时，需明确<strong>责任共担模型</strong>，确保云上资产的测评由具备资质的云服务商配合完成。</li>
+</ul>
+</li>
+</ul>
 <h4 id="RabbitMQ"><a href="#RabbitMQ" class="headerlink" title="RabbitMQ"></a><strong>RabbitMQ</strong></h4><p>RabbitMQ是实现了高级消息队列协议（<code>AMQP</code>）的开源消息代理软件（亦称面向消息的中间件）。RabbitMQ服务器是用Erlang语言编写的，而群集和故障转移是构建在开放电信平台框架上的。所有主要的编程语言均有与代理接口通讯的客户端库。</p>
 <h6 id="AMQP"><a href="#AMQP" class="headerlink" title="AMQP"></a><strong>AMQP</strong></h6><p>AMQP 协议的 <code>Erlang</code> 的实现(当然 RabbitMQ 还支持 <code>STOMP2</code>、 <code>MQTT3</code> 等协议 ) AMQP 的模型架构 和 RabbitMQ 的模型架构是一样的，生产者将消息发送给交换器，交换器和队列绑定 。</p>
 <p>RabbitMQ 中的交换器、交换器类型、队列、绑定、路由键等都是遵循的 AMQP 协议中相 应的概念。</p>

@@ -85,7 +85,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">40.7k</span>
+            <span class="post-count">43.1k</span>
         </span>
     </span>
 
@@ -94,7 +94,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">143 分钟</span>
+            <span class="post-count">152 分钟</span>
         </span>
     </span>
 </div>
@@ -938,7 +938,7 @@
 <li><strong>等级测评</strong>：选择具备<strong>公安部第三研究所认证资质</strong>的测评机构进行现场测评。</li>
 <li><strong>持续运营</strong>：获取测评报告后，保持常态化安全监测，准备迎接年度复评与监督检查。</li>
 </ol>
-<h4 id="五，成本估算与避坑指南"><a href="#五，成本估算与避坑指南" class="headerlink" title="五，成本估算与避坑指南"></a>五，成本估算与避坑指南</h4><ul>
+<h5 id="五，成本估算与避坑指南"><a href="#五，成本估算与避坑指南" class="headerlink" title="五，成本估算与避坑指南"></a>五，成本估算与避坑指南</h5><ul>
 <li><strong>成本构成</strong>：<ul>
 <li><strong>测评服务费</strong>：一个系统约 <strong>12-16万元&#x2F;年</strong>（含首次测评及年度复评费用）。</li>
 <li><strong>整改建设费</strong>：取决于现有基础，包括采购防火墙、堡垒机、EDR、数据库审计等硬件&#x2F;软件，以及数据备份系统建设，总投入可能在 <strong>几十万至数百万元</strong>。</li>
@@ -1244,6 +1244,111 @@
 <p><strong>2、使用MONITOR 命令。</strong></p>
 <p>MONITOR 命令是 Redis 提供的一种实时查看 Redis 的所有操作的方式，可以用于临时监控 Redis 实例的操作情况，包括读写、删除等操作。</p>
 <p>由于该命令对 Redis 性能的影响比较大，因此禁止长时间开启 MONITOR（生产环境中建议谨慎使用该命令）。</p>
+<h6 id="Redis-Top-K-的具体实现"><a href="#Redis-Top-K-的具体实现" class="headerlink" title="Redis Top-K 的具体实现"></a>Redis Top-K 的具体实现</h6><p>Redis的Top-K功能是基于<strong>HeavyKeeper算法</strong>实现的一种概率性数据结构，专门用于从无限数据流中实时、低内存地识别出出现频率最高的<strong>前K个</strong>元素。它不像传统方法那样精确计数所有元素，而是通过巧妙的近似算法，在极小的内存开销下，实现对“重量级”元素的精准捕捉。</p>
+<p>Redis将HeavyKeeper算法封装为几个直观的命令，使得在应用中集成这一功能变得非常简单。其核心是结合了<strong>二维计数数组</strong>（类似Count-Min Sketch）和<strong>最小堆</strong>两种数据结构。</p>
+<ol>
+<li><strong>核心操作命令</strong></li>
+</ol>
+<p>以下是Redis Top-K功能最常用的几个命令及其作用：</p>
+<ul>
+<li><strong><code>TOPK.RESERVE key k width depth decay_constant</code></strong>: 初始化一个名为 <code>key</code> 的Top-K草图。你需要指定想要跟踪的顶部元素数量 <code>k</code>，以及其他算法参数（<code>width</code>、<code>depth</code>、<code>decay_constant</code>）。如果不指定，Redis会使用 <code>k*log(k)</code> 的<code>width</code>、<code>max(log(k), 5)</code> 的<code>depth</code>和 <code>0.9</code> 的<code>decay</code>作为默认值。</li>
+<li><strong><code>TOPK.ADD key item [item ...]</code></strong>: 向草图中添加一个或多个元素。这是最核心的操作，用于更新元素的频次信息。如果某个元素因新元素的加入而被挤出前K名，该命令会返回这个被淘汰的元素，从而实现<strong>实时驱逐通知</strong>。</li>
+<li><strong><code>TOPK.LIST key</code></strong>: 返回当前排名前K的所有元素列表，按频次降序排列。</li>
+<li><strong><code>TOPK.QUERY key item [item ...]</code></strong>: 查询一个或多个元素当前是否位于前K名中。返回 <code>1</code> 表示在，<code>0</code> 表示不在。</li>
+</ul>
+<ol start="2">
+<li><strong>一个简单的示例</strong></li>
+</ol>
+<p>假设我们想跟踪一个论坛中最热门的5个话题标签：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. 初始化一个草图，准备跟踪前5个热门标签</span></span><br><span class="line">&gt; TOPK.RESERVE trending_topics 5</span><br><span class="line">OK</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 模拟添加一些话题标签</span></span><br><span class="line">&gt; TOPK.ADD trending_topics <span class="string">&quot;Redis&quot;</span> <span class="string">&quot;AI&quot;</span> <span class="string">&quot;Database&quot;</span> <span class="string">&quot;Redis&quot;</span> <span class="string">&quot;Cloud&quot;</span> <span class="string">&quot;AI&quot;</span> <span class="string">&quot;Redis&quot;</span></span><br><span class="line">1) (nil)    <span class="comment"># &quot;Redis&quot; 首次添加</span></span><br><span class="line">2) (nil)    <span class="comment"># &quot;AI&quot; 首次添加</span></span><br><span class="line">3) (nil)    <span class="comment"># &quot;Database&quot; 首次添加</span></span><br><span class="line">4) (nil)    <span class="comment"># &quot;Redis&quot; 再次添加</span></span><br><span class="line">5) (nil)    <span class="comment"># &quot;Cloud&quot; 首次添加</span></span><br><span class="line">6) (nil)    <span class="comment"># &quot;AI&quot; 再次添加</span></span><br><span class="line">7) (nil)    <span class="comment"># &quot;Redis&quot; 第三次添加 (此时Redis频次最高)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 添加一个新标签 &quot;Serverless&quot;，可能将原有的某个标签挤出前5</span></span><br><span class="line">&gt; TOPK.ADD trending_topics <span class="string">&quot;Serverless&quot;</span></span><br><span class="line">1) <span class="string">&quot;Database&quot;</span>  <span class="comment"># 返回 &quot;Database&quot;，意味着它被挤出前5名了</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. 查看当前的热门前5</span></span><br><span class="line">&gt; TOPK.LIST trending_topics</span><br><span class="line">1) <span class="string">&quot;Redis&quot;</span></span><br><span class="line">2) <span class="string">&quot;AI&quot;</span></span><br><span class="line">3) <span class="string">&quot;Cloud&quot;</span></span><br><span class="line">4) <span class="string">&quot;Serverless&quot;</span></span><br><span class="line">5) ... <span class="comment"># 第五个可能是之前存在的其他标签</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 5. 查询 &quot;Database&quot; 是否还在榜上</span></span><br><span class="line">&gt; TOPK.QUERY trending_topics <span class="string">&quot;Database&quot;</span></span><br><span class="line">1) (<span class="built_in">integer</span>) 0  <span class="comment"># 返回0，表示已不在榜</span></span><br></pre></td></tr></table></figure>
+
+<p>HeavyKeeper <strong>算法深度解析</strong></p>
+<p>HeavyKeeper算法的精妙之处在于它如何平衡<strong>准确性</strong>、<strong>内存效率</strong>和<strong>处理速度</strong>。它不像传统方法那样记录所有元素，而是采用了一种 <strong>“指数衰减计数”</strong> 策略，主动过滤掉小流量，聚焦于大流量。</p>
+<ol>
+<li>核心思想：<strong>指数衰减计数</strong></li>
+</ol>
+<p>这个策略的设计理念是：对于数据流中的“老鼠流”（即出现次数很少的元素），我们不必精确记录它们；而对于“大象流”（即出现次数很多的元素），我们要尽可能准确地记录，并确保它们能被保留在Top-K列表中。<br>当一个元素到来时，如果它与当前计数桶中的元素发生冲突（即哈希位置被占用），它不会简单地增加计数器，而是以一个<strong>概率</strong>决定是否增加自己的计数。这个概率会随着当前计数的增大而指数级衰减。这意味着，计数越大的“大象流”越难被“小老鼠流”挤出，保证了高频元素的稳定性。</p>
+<ol start="2">
+<li><strong>工作原理</strong></li>
+</ol>
+<p>HeavyKeeper主要由两部分协同工作：</p>
+<ol>
+<li><strong>一个二维的计数数组（类似Count-Min Sketch）</strong>：这个数组有 <code>depth</code> 行，每行有 <code>width</code> 个桶。当一个元素 <code>item</code> 到来时，会通过 <code>depth</code> 个不同的哈希函数，计算出它在每一行中对应的桶的位置。算法会尝试更新这些桶中的计数器。</li>
+<li><strong>一个最小堆</strong>：这个堆的大小固定为 <code>k</code>，用于维护当前频次最高的 <code>k</code> 个元素的列表。堆顶始终是这 <code>k</code> 个元素中频次最低的那个。</li>
+</ol>
+<p>算法的整体流程可以概括为下图：</p>
+<img src="/2024/12/18/Java/deepseek_mermaid_20260317_06cc99.png" class="" title="deepseek_mermaid_20260317_06cc99">
+
+<p><strong>具体步骤拆解</strong>：</p>
+<ul>
+<li><strong>步骤1：计数</strong>。当一个元素 <code>x</code> 到来时，它首先会去更新那个二维数组中的 <code>depth</code> 个计数器。更新逻辑遵循“指数衰减”原则：对于数组中的每一个桶，如果桶里记录的元素ID就是 <code>x</code>，那么计数器直接加1；如果不是，则以概率 <code>P = (1/decay)^(counter)</code> （<code>decay</code> 是一个小于1的常数，如0.9）决定是否将计数器加1。这个概率随着当前计数器的值 <code>counter</code> 增大而指数级下降，所以一个计数很大的“大象流”很难被一个“小老鼠流”偶然撞上来增加计数。</li>
+<li><strong>步骤2：维护堆</strong>。更新完计数后，我们就得到了元素 <code>x</code> 在当前所有 <code>depth</code> 个桶中的最小计数，作为其估算频次 <code>f_est</code>。然后，检查最小堆：<ul>
+<li>如果 <code>x</code> 已经在堆中，就更新它在堆中的频次。</li>
+<li>如果 <code>x</code> 不在堆中，但 <code>f_est</code> 大于堆顶元素（即当前第K大的频次），那么就把堆顶元素驱逐出去，将 <code>x</code> 插入堆中，并重新调整堆。</li>
+</ul>
+</li>
+</ul>
+<ol start="3">
+<li><strong>关键特性与优势</strong></li>
+</ol>
+<p>通过这种设计，HeavyKeeper算法获得了以下显著优势：</p>
+<ul>
+<li><strong>内存效率极高</strong>：只需要维护一个二维数组和一个K大小的最小堆，内存占用远小于存储所有元素的精确方法。官方数据显示，相比有序集合（Sorted Set），在某些场景下可节省高达99%的内存。</li>
+<li><strong>处理速度快</strong>：每次插入操作的时间复杂度为 <code>O(K + depth)</code>，由于 <code>K</code> 和 <code>depth</code> 通常是常数或较小的数，因此可以视为常量级操作，非常适合处理高吞吐量的数据流。</li>
+<li><strong>准确性有保证</strong>：通过“指数衰减”策略，有效减少了哈希冲突对“大象流”的干扰。实验结果表明，在很小的内存下，其精度可达99.99%。</li>
+<li><strong>实时驱逐通知</strong>：通过 <code>TOPK.ADD</code> 命令的返回值，应用可以实时感知哪些元素被挤出了Top-K列表，这为动态响应（如触发告警或调整策略）提供了可能。</li>
+</ul>
+<p><strong>算法对比与参数调优建议</strong></p>
+<p>为了更清晰地理解HeavyKeeper的优势，我们可以将其与一些传统方法进行对比：</p>
+<table>
+<thead>
+<tr>
+<th align="left">维度</th>
+<th align="left">传统方法（如哈希表+排序）</th>
+<th align="left">Count-Min Sketch</th>
+<th align="left"><strong>HeavyKeeper (Redis Top-K)</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong>核心策略</strong></td>
+<td align="left">全量计数，精确统计</td>
+<td align="left">概率计数，仅估算频次</td>
+<td align="left"><strong>指数衰减计数 + 最小堆维护Top-K</strong></td>
+</tr>
+<tr>
+<td align="left"><strong>内存占用</strong></td>
+<td align="left">极高，与数据量成正比</td>
+<td align="left">低，可预分配</td>
+<td align="left"><strong>极低，且与K值相关，固定可控</strong></td>
+</tr>
+<tr>
+<td align="left"><strong>实时性</strong></td>
+<td align="left">差，需收集完数据后离线处理</td>
+<td align="left">好，支持在线流式处理</td>
+<td align="left"><strong>好，支持在线流式处理，并可实时驱逐</strong></td>
+</tr>
+<tr>
+<td align="left"><strong>主要输出</strong></td>
+<td align="left">精确的频次和排名</td>
+<td align="left">元素的近似频次</td>
+<td align="left"><strong>直接输出前K个元素及其排名</strong></td>
+</tr>
+<tr>
+<td align="left"><strong>适用场景</strong></td>
+<td align="left">数据量小的离线统计</td>
+<td align="left">频次估计，不直接输出Top-K</td>
+<td align="left"><strong>实时Top-K检测，如热key、热门话题</strong></td>
+</tr>
+</tbody></table>
+<p>在使用Redis的<code>TOPK.RESERVE</code>命令时，需要设置几个参数。如何选择合适的值呢？这里有一些指导原则：</p>
+<ul>
+<li>**<code>k</code> (你想要的前K名数量)**：这是最直接的参数，根据业务需求设定。</li>
+<li>**<code>width</code> (二维数组的宽度)**：可以理解为“桶”的数量。推荐值为 <code>k * log(k)</code>。<code>width</code> 越大，哈希冲突的概率越低，准确性越高，但内存占用也越大。</li>
+<li>**<code>depth</code> (二维数组的深度)**：可以理解为哈希函数的个数。推荐值为 <code>max(log(k), 5)</code>。<code>depth</code> 越大，多个哈希函数同时冲突的概率越低，准确性越高，但也会略微增加计算开销。</li>
+<li>**<code>decay_constant</code> (衰减常数)**：这是控制“指数衰减”速度的关键参数，通常设为 <code>0.9</code>。一个更小的 <code>decay</code> 值（如 <code>0.5</code>）会使计数器增长更保守，更难被小流量干扰，但也可能导致大象流增长变慢；一个更接近1的值（如 <code>0.99</code>）则相反。<code>0.9</code> 是一个经过广泛测试、能很好平衡各种场景的默认值。</li>
+</ul>
+<p><strong>总结</strong></p>
+<p>Redis的Top-K功能基于<strong>HeavyKeeper算法</strong>，通过 <strong>“二维计数数组 + 最小堆”</strong> 的架构和创新的 <strong>“指数衰减计数”</strong> 策略，为实时数据流中的热门元素检测问题提供了一个内存高效、处理快速且足够准确的解决方案。它不仅通过简单的命令降低了使用门槛，还能提供实时驱逐通知，使其成为检测热key、挖掘热门话题等场景的理想选择。</p>
 <h4 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h4><h5 id="MySQL执行流程"><a href="#MySQL执行流程" class="headerlink" title="MySQL执行流程"></a>MySQL执行流程</h5><img src="/2024/12/18/Java/image-20241222131241677.png" class="" title="image-20241222131241677">
 
 <p>MySQL的架构共分为两层：<strong>Server层和存储引擎层</strong></p>

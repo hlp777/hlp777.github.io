@@ -1565,6 +1565,197 @@
 <p>7.然后servlet来处理这个请求，如果是SpringMVC中的Dispatcherserlet，那么则会找到对应的controller中的方法，并执行该方法得到结果</p>
 <p>8.Tomcat得到响应结果后封装成HTTP响应的格式，并再次通过网络发送给浏览器所在的服务器</p>
 <p>9.浏览器所在的服务器拿到结果后再传递给浏览器，浏览器则负责解析并渲染</p>
+<h4 id="Drools-规则引擎详解"><a href="#Drools-规则引擎详解" class="headerlink" title="Drools 规则引擎详解"></a>Drools 规则引擎详解</h4><p><strong>一、概述</strong></p>
+<p>Drools 是一款用 Java 语言编写的开源业务规则引擎，基于 RETE&#x2F;ReteOO 算法，符合业内标准，速度快、效率高。它属于 KIE（Knowledge Is Everything）开源社区，由 Red Hat 赞助，是 DMN（Decision Model and Notation）规范的一种实现。2025 年，KIE 项目（包含 Drools）正式加入 Apache 软件基金会，进一步巩固了其在开源生态中的重要地位。</p>
+<p>Drools 的核心价值在于<strong>将业务决策逻辑从应用代码中分离出来进行集中管理</strong>，适用于业务规则频繁变化的场景。通过规则引擎，业务分析师或审核人员可以直接查看和检验业务规则，而无需深入理解底层代码实现。</p>
+<hr>
+<p><strong>二、核心概念</strong></p>
+<p>Drools 规则引擎围绕三个核心要素构建：</p>
+<ol>
+<li>事实（Fact）</li>
+</ol>
+<p>事实是插入到规则引擎中的业务数据对象（如订单、用户信息），是规则引擎的输入数据。在 Drools 中，将一个普通的 Java Bean 插入到工作内存后，该对象就成为 Fact 对象，它是应用与规则引擎之间进行数据交互的桥梁。</p>
+<ol start="2">
+<li>规则（Rule）</li>
+</ol>
+<p>规则是“条件-动作”型语句，基本形式为 <strong>When-Condition-Then-Action</strong>。例如：“当订单金额 &gt; 1000 元，则赠送优惠券”。Drools 使用专门的 DRL（Drools Rule Language）语言来编写规则。</p>
+<ol start="3">
+<li>推理机（Inference Engine）</li>
+</ol>
+<p>推理机是匹配事实与规则的核心组件，Drools 采用 Rete 算法及后续改进的 Phreak 算法来优化匹配效率，支持前向链推理和后向链推理。</p>
+<hr>
+<p><strong>三、架构与核心组件</strong></p>
+<p>Drools 采用 KIE（Knowledge Is Everything）架构体系，包含以下四大核心组件：</p>
+<table>
+<thead>
+<tr>
+<th>组件</th>
+<th>功能说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>KieServices</strong></td>
+<td>引擎入口，提供所有 KIE 组件的工厂方法，可类比为规则引擎的“中央控制台”</td>
+</tr>
+<tr>
+<td><strong>KieContainer</strong></td>
+<td>规则容器，管理规则库和会话的生命周期，可类比为规则的“智能仓储系统”</td>
+</tr>
+<tr>
+<td><strong>KieBase</strong></td>
+<td>规则库，包含一组相关的业务规则，可类比为“规则手册”</td>
+</tr>
+<tr>
+<td><strong>KieSession</strong></td>
+<td>规则会话，执行规则的运行时环境，分为有状态和无状态两种类型</td>
+</tr>
+</tbody></table>
+<p><strong>有状态会话 vs 无状态会话</strong>：有状态会话会在内存中保存规则的状态，适用于多次执行相同规则的场景；无状态会话不保存规则状态，适用于一次性执行规则的场景。</p>
+<p><strong>规则执行的生命周期</strong></p>
+<p>规则执行遵循“<strong>构建-部署-执行</strong>”三步流程：</p>
+<ol>
+<li><strong>构建阶段</strong>：通过 KieBuilder 编译规则文件，生成可执行的知识包（KieModule）</li>
+<li><strong>部署阶段</strong>：KieContainer 加载知识包，准备执行环境</li>
+<li><strong>执行阶段</strong>：KieSession 接收业务数据，匹配并执行规则</li>
+</ol>
+<hr>
+<p><strong>四、工作原理：Rete 算法</strong></p>
+<p>Drools 采用基于 RETE 算法的模式匹配机制。Rete 算法通过构建有向无环图来缓存中间匹配结果，显著提升大量规则下的执行效率，相比逐条匹配，它大大减少了重复计算。</p>
+<p>Rete 网络结构</p>
+<ul>
+<li><strong>Alpha 节点</strong>：单条件过滤节点，处理事实的单一属性判断</li>
+<li><strong>Beta 节点</strong>：多条件连接节点，处理多个事实之间的关联匹配</li>
+<li><strong>Terminal 节点</strong>：规则激活节点，当所有条件满足时触发规则执行</li>
+</ul>
+<p>当事实被插入到工作内存后，Rete 网络会从根节点出发，依次通过 Alpha 节点进行条件过滤，再经 Beta 节点进行多条件连接匹配，最终到达 Terminal 节点激活相应规则。</p>
+<p><strong>Rete 的优化演进</strong></p>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>传统 Rete</th>
+<th>优化 Rete &#x2F; Phreak</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>内存使用</td>
+<td>高</td>
+<td>中等</td>
+</tr>
+<tr>
+<td>匹配速度</td>
+<td>快</td>
+<td>更快</td>
+</tr>
+<tr>
+<td>动态更新</td>
+<td>弱</td>
+<td>强</td>
+</tr>
+</tbody></table>
+<p>Drools 6.0 开始引入 Phreak 算法（在 Rete 算法上改进的算法），进一步提升了模式匹配效率。</p>
+<hr>
+<p><strong>五、规则语言（DRL）</strong></p>
+<p>DRL（Drools Rule Language）是 Drools 的本地规则语言，语法简洁，支持通过扩展器支持自然语言和领域特定语言。</p>
+<p><strong>规则文件结构</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">package package-name</span><br><span class="line">imports</span><br><span class="line">globals</span><br><span class="line">functions</span><br><span class="line">queries</span><br><span class="line">rules</span><br></pre></td></tr></table></figure>
+
+<p><strong>规则的基本结构</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">rule &quot;规则名称&quot;</span><br><span class="line">    attributes</span><br><span class="line">    when</span><br><span class="line">        // 条件部分 (LHS - Left Hand Side)</span><br><span class="line">    then</span><br><span class="line">        // 动作部分 (RHS - Right Hand Side)</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+
+<p><strong>常用关键字</strong></p>
+<ul>
+<li><strong>硬关键字</strong>（禁止作为标识符）：<code>true</code>, <code>false</code>, <code>null</code></li>
+<li><strong>软关键字</strong>（上下文相关）：<code>salience</code>（优先级）、<code>agenda-group</code>（议程组）、<code>no-loop</code>（防止循环）、<code>date-effective</code>（生效日期）、<code>date-expires</code>（失效日期）等</li>
+</ul>
+<hr>
+<p><strong>六、高级特性</strong></p>
+<p><strong>1. 决策表（Decision Table）</strong></p>
+<p>决策表允许通过 Excel 或 CSV 文件定义规则，降低非技术人员的参与门槛。决策表支持条件列（规则 LHS 模式）、动作列（规则 RHS 结果）、元数据列（规则属性）和基于模板的单元格值处理。Drools 还提供决策表的缺口分析（Gap Analysis）功能，帮助识别规则集中的覆盖空白和重叠问题。</p>
+<p><strong>2. 复杂事件处理（CEP - Complex Event Processing）</strong></p>
+<p>Drools Fusion 模块支持时序约束和聚合计算识别事件模式，适用于金融交易监控、安全告警和供应链优化等场景。在流模式下，Drools 可以处理事件的时间窗口、序列模式和滑动窗口等高级特性。</p>
+<p><strong>3. 规则流（Rule Flow）</strong></p>
+<p>规则流可以帮助组织复杂业务逻辑，更好地控制规则的执行顺序和条件。通过规则流，可以将多个规则组织成有序的执行流程。</p>
+<p><strong>4. DMN 支持</strong></p>
+<p>Drools 是 DMN（Decision Model and Notation）规范的一种实现，支持使用标准化的决策模型进行规则定义。</p>
+<p><strong>5. 持久化与可靠性</strong></p>
+<p>Drools 支持通过 JPA 进行状态持久化，以及使用 Infinispan 实现容错可靠性和分布式存储能力，适用于生产环境的企业级部署。</p>
+<p><strong>6. 规则单元（Rule Unit）</strong></p>
+<p>Drools 9.0 增强了规则单元模型，支持更复杂的流式数据处理，实现了规则的模块化封装和复用。</p>
+<hr>
+<p><strong>七、性能优化策略</strong></p>
+<p><strong>1. 规则层面优化</strong></p>
+<ul>
+<li><strong>减少规则数量</strong>：合并相似规则，规则数量越多，执行时间越长</li>
+<li><strong>规则分组</strong>：通过 agenda-group 控制规则激活顺序，按业务领域划分规则集，减少单次匹配的规则数量</li>
+<li><strong>使用高效的匹配条件</strong>：使用 <code>==</code> 运算符绑定变量可以获得极快的执行速度（可利用哈希索引）；谨慎使用嵌套访问器，其性能影响远大于直接字段访问</li>
+</ul>
+<p><strong>2. 引擎层面优化</strong></p>
+<ul>
+<li><strong>预编译规则</strong>：确保 DRL 文件在部署前进行预编译，避免运行时编译开销</li>
+<li><strong>使用 KieBase 缓存</strong>：缓存已编译的 KieBase，避免重复编译</li>
+<li><strong>合理选择会话类型</strong>：StatefulKnowledgeSession 适用于多次执行相同规则；StatelessKnowledgeSession 适用于一次性执行</li>
+</ul>
+<p><strong>3. 数据层面优化</strong></p>
+<ul>
+<li><strong>优化数据结构</strong>：如使用 ArrayList 而非 LinkedList 提升访问性能</li>
+<li><strong>事实对象设计</strong>：减少不必要的属性，降低匹配复杂度</li>
+</ul>
+<p><strong>4. 并发与批量处理</strong></p>
+<ul>
+<li><strong>批量执行</strong>：减少规则引擎的启动和关闭次数</li>
+<li><strong>并发执行</strong>：通过 ExecutorService 支持多线程并行执行</li>
+</ul>
+<p><strong>5. 监控与调优</strong></p>
+<p>使用 Drools Performance Monitor、KieRuntimeLogger 等工具监控规则执行性能，找出性能瓶颈并进行相应优化。</p>
+<hr>
+<p><strong>与其他规则引擎对比</strong></p>
+<table>
+<thead>
+<tr>
+<th>对比项</th>
+<th>Drools</th>
+<th>LiteFlow</th>
+<th>Easy Rules</th>
+<th>Jess</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>定位</td>
+<td>功能强大的完整 BRMS</td>
+<td>轻量级流程编排引擎</td>
+<td>轻量级简单规则引擎</td>
+<td>CLIPS 移植的专家系统</td>
+</tr>
+<tr>
+<td>规则表达</td>
+<td>强（DRL&#x2F;决策表&#x2F;DMN）</td>
+<td>中（依赖组件内部实现）</td>
+<td>弱（POJO 注解）</td>
+<td>强（Lisp 风格）</td>
+</tr>
+<tr>
+<td>学习成本</td>
+<td>高</td>
+<td>中</td>
+<td>低</td>
+<td>高</td>
+</tr>
+<tr>
+<td>重量级</td>
+<td>重量级</td>
+<td>轻量级</td>
+<td>轻量级</td>
+<td>轻量级</td>
+</tr>
+<tr>
+<td>适用场景</td>
+<td>复杂业务逻辑决策</td>
+<td>快速响应业务变化的流程</td>
+<td>简单规则场景</td>
+<td>医疗诊断等专家系统</td>
+</tr>
+</tbody></table>
 <h4 id="等保三级（2026版）合规实战指南"><a href="#等保三级（2026版）合规实战指南" class="headerlink" title="等保三级（2026版）合规实战指南"></a>等保三级（2026版）合规实战指南</h4><p>等保三级（网络安全等级保护第三级）是国家对非涉密信息系统的<strong>最高安全等级认证</strong>，其核心目标是防范对<strong>社会秩序、公共利益造成严重损害</strong>的安全风险，是政府、金融、医疗、能源及大型互联网平台等关键信息基础设施的合规“硬门槛”。</p>
 <p>随着2025年新规的落地，等保体系已从“静态合规”全面转向“动态运营”与“精准防控”。以下为您梳理最新的核心要求与实施要点。</p>
 <h5 id="一，适用对象：谁必须过等保三级？"><a href="#一，适用对象：谁必须过等保三级？" class="headerlink" title="一，适用对象：谁必须过等保三级？"></a>一，适用对象：谁必须过等保三级？</h5><p>系统一旦遭破坏，可能对公共利益或国家安全造成损害的，均需定级为等保三级。典型场景包括：</p>

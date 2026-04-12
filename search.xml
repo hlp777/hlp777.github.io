@@ -1792,6 +1792,213 @@
 <li><p><strong>维护多级索引</strong><br>在一些复杂的业务系统中，比如电商平台的卖家和买家中心，可能会对同一份数据建立不同维度的索引。Canal 可以捕获数据变更，然后分发到不同的索引库中，分别构建适合卖家查询和买家查询的索引结构。</p>
 </li>
 </ol>
+<h5 id="CTE（公共表表达式）"><a href="#CTE（公共表表达式）" class="headerlink" title="CTE（公共表表达式）"></a>CTE（公共表表达式）</h5><p><strong>一、CTE概述</strong></p>
+<p><strong>1.1 什么是CTE</strong></p>
+<p>CTE（Common Table Expression，公共表表达式），也称为WITH子句，是SQL标准的一部分，自MySQL 8.0版本引入。CTE是一个命名的临时结果集，在单个语句的范围内存在，可以在该语句中稍后被多次引用。简单来说，CTE可以理解成一个可以复用的子查询。</p>
+<p><strong>1.2 CTE的核心价值</strong></p>
+<ul>
+<li><strong>模块化</strong>：将复杂查询拆解为多个逻辑步骤</li>
+<li><strong>可复用</strong>：同一CTE可在查询中多次引用</li>
+<li><strong>可递归</strong>：支持CTE自引用，实现递归查询</li>
+<li><strong>可链式引用</strong>：一个CTE可以引用另一个CTE</li>
+</ul>
+<p><strong>1.3 版本支持</strong></p>
+<p>CTE在MySQL 8.0中正式引入。递归CTE（WITH RECURSIVE）在MySQL 8.0.16版本起获得完整支持。MySQL 5.7及更早版本不支持CTE语法。</p>
+<p><strong>二、CTE语法详解</strong></p>
+<p><strong>2.1 基本语法结构</strong></p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">WITH</span> [<span class="keyword">RECURSIVE</span>]</span><br><span class="line">    cte_name_1 [(col_name_list)] <span class="keyword">AS</span> (subquery_1),</span><br><span class="line">    cte_name_2 [(col_name_list)] <span class="keyword">AS</span> (subquery_2),</span><br><span class="line">    ...</span><br><span class="line">    cte_name_n [(col_name_list)] <span class="keyword">AS</span> (subquery_n)</span><br><span class="line">sql_statement</span><br></pre></td></tr></table></figure>
+
+<p>其中：</p>
+<ul>
+<li><strong>RECURSIVE</strong>：可选关键字，当任一CTE为递归时必需</li>
+<li><strong>cte_name</strong>：CTE的名称，可在后续语句中作为表引用</li>
+<li><strong>col_name_list</strong>：可选的列名列表，数量必须与子查询的列数一致</li>
+<li><strong>subquery</strong>：生成CTE结果集的子查询，AS后面的括号是必需的</li>
+</ul>
+<p><strong>2.2 普通CTE（非递归）</strong></p>
+<p>普通CTE是最简单的形式，用于定义临时结果集，可在主查询中被多次引用。</p>
+<p><strong>示例1：定义单个CTE</strong></p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">WITH</span> daily_orders <span class="keyword">AS</span> (</span><br><span class="line">    <span class="keyword">SELECT</span> order_date, <span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="keyword">AS</span> order_count </span><br><span class="line">    <span class="keyword">FROM</span> orders </span><br><span class="line">    <span class="keyword">GROUP</span> <span class="keyword">BY</span> order_date</span><br><span class="line">)</span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> daily_orders <span class="keyword">WHERE</span> order_count <span class="operator">&gt;</span> <span class="number">10</span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例2：定义多个CTE并链式引用</strong></p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">WITH</span> </span><br><span class="line">    daily_orders <span class="keyword">AS</span> (</span><br><span class="line">        <span class="keyword">SELECT</span> order_date, <span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="keyword">AS</span> order_count </span><br><span class="line">        <span class="keyword">FROM</span> orders </span><br><span class="line">        <span class="keyword">GROUP</span> <span class="keyword">BY</span> order_date</span><br><span class="line">    ),</span><br><span class="line">    monthly_avg <span class="keyword">AS</span> (</span><br><span class="line">        <span class="keyword">SELECT</span> </span><br><span class="line">            <span class="keyword">YEAR</span>(order_date) <span class="keyword">AS</span> <span class="keyword">year</span>, </span><br><span class="line">            <span class="keyword">MONTH</span>(order_date) <span class="keyword">AS</span> <span class="keyword">month</span>, </span><br><span class="line">            <span class="built_in">AVG</span>(order_count) <span class="keyword">AS</span> avg_orders </span><br><span class="line">        <span class="keyword">FROM</span> daily_orders </span><br><span class="line">        <span class="keyword">GROUP</span> <span class="keyword">BY</span> <span class="keyword">YEAR</span>(order_date), <span class="keyword">MONTH</span>(order_date)</span><br><span class="line">    )</span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> monthly_avg <span class="keyword">WHERE</span> avg_orders <span class="operator">&gt;</span> <span class="number">100</span>;</span><br></pre></td></tr></table></figure>
+<p>这种写法使业务逻辑分层明确，调试时可单独执行每个CTE验证结果。</p>
+<p><strong>示例3：同一CTE被多次引用</strong></p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">WITH</span> a_cities <span class="keyword">AS</span> (</span><br><span class="line">    <span class="keyword">SELECT</span> name, zip <span class="keyword">FROM</span> cities <span class="keyword">WHERE</span> <span class="built_in">LOWER</span>(name) <span class="keyword">LIKE</span> <span class="string">&#x27;a%&#x27;</span></span><br><span class="line">)</span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> </span><br><span class="line"><span class="keyword">FROM</span> a_cities cities1 </span><br><span class="line"><span class="keyword">JOIN</span> a_cities cities2 <span class="keyword">ON</span> cities1.zip <span class="operator">=</span> cities2.zip;</span><br></pre></td></tr></table></figure>
+<p>使用CTE可以避免重复编写相同的子查询。</p>
+<p><strong>2.3 递归CTE</strong></p>
+<p>递归CTE是指子查询中引用自身名称的CTE，必须包含RECURSIVE关键字。</p>
+<p><strong>递归CTE的三部分结构</strong></p>
+<p>递归CTE由以下三部分构成：</p>
+<ol>
+<li><strong>基础查询（锚点成员&#x2F;种子查询）</strong>：非递归部分，仅执行一次，生成初始结果集</li>
+<li><strong>连接符</strong>：使用<code>UNION ALL</code>或<code>UNION</code>连接</li>
+<li><strong>递归查询（递归成员）</strong>：引用CTE自身，反复执行直到不再产生新行</li>
+</ol>
+<p><strong>示例1：生成数字序列</strong></p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">WITH</span> <span class="keyword">RECURSIVE</span> numbers <span class="keyword">AS</span> (</span><br><span class="line">    <span class="keyword">SELECT</span> <span class="number">1</span> <span class="keyword">AS</span> n                           <span class="comment">-- 基础查询：起始值</span></span><br><span class="line">    <span class="keyword">UNION</span> <span class="keyword">ALL</span></span><br><span class="line">    <span class="keyword">SELECT</span> n <span class="operator">+</span> <span class="number">1</span> <span class="keyword">FROM</span> numbers <span class="keyword">WHERE</span> n <span class="operator">&lt;</span> <span class="number">10</span>  <span class="comment">-- 递归查询：每次n+1，直到n=10</span></span><br><span class="line">)</span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> numbers;</span><br></pre></td></tr></table></figure>
+<p>执行结果：生成1到10的数字序列。</p>
+<p><strong>示例2：组织架构递归查询</strong></p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">WITH</span> <span class="keyword">RECURSIVE</span> org_tree <span class="keyword">AS</span> (</span><br><span class="line">    <span class="comment">-- 基础查询：获取顶级管理者</span></span><br><span class="line">    <span class="keyword">SELECT</span> id, name, manager_id, <span class="number">1</span> <span class="keyword">AS</span> level </span><br><span class="line">    <span class="keyword">FROM</span> employees </span><br><span class="line">    <span class="keyword">WHERE</span> manager_id <span class="keyword">IS</span> <span class="keyword">NULL</span></span><br><span class="line">    <span class="keyword">UNION</span> <span class="keyword">ALL</span></span><br><span class="line">    <span class="comment">-- 递归查询：获取下属</span></span><br><span class="line">    <span class="keyword">SELECT</span> e.id, e.name, e.manager_id, ot.level <span class="operator">+</span> <span class="number">1</span> </span><br><span class="line">    <span class="keyword">FROM</span> employees e </span><br><span class="line">    <span class="keyword">JOIN</span> org_tree ot <span class="keyword">ON</span> e.manager_id <span class="operator">=</span> ot.id</span><br><span class="line">)</span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> org_tree <span class="keyword">ORDER</span> <span class="keyword">BY</span> level, name;</span><br></pre></td></tr></table></figure>
+<p>此方案无需创建临时表或多次查询，通过递归深度控制可高效处理任意深度的树形结构。</p>
+<p><strong>递归CTE的工作原理</strong></p>
+<ol>
+<li><strong>初始化</strong>：执行基础查询获取初始结果集</li>
+<li><strong>迭代</strong>：将前一次迭代的结果作为输入执行递归查询，将新结果合并到CTE中</li>
+<li><strong>终止</strong>：当递归查询不再返回任何新行时停止</li>
+</ol>
+<p><strong>2.4 指定CTE列名</strong></p>
+<p>可以在CTE名称后显式指定列名：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">WITH</span> cte (col1, col2) <span class="keyword">AS</span> (</span><br><span class="line">    <span class="keyword">SELECT</span> <span class="number">1</span>, <span class="number">2</span> <span class="keyword">UNION</span> <span class="keyword">ALL</span> <span class="keyword">SELECT</span> <span class="number">3</span>, <span class="number">4</span></span><br><span class="line">)</span><br><span class="line"><span class="keyword">SELECT</span> col1, col2 <span class="keyword">FROM</span> cte;</span><br></pre></td></tr></table></figure>
+<p>列表中的名称数量必须与结果集中的列数相同。</p>
+<p><strong>2.5 CTE的使用范围</strong></p>
+<p>CTE可用于多种SQL语句中，包括SELECT、INSERT、UPDATE、DELETE以及任何可以使用SELECT子句的地方。</p>
+<p><strong>三、CTE vs 子查询 vs 临时表 vs 视图</strong></p>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>CTE</th>
+<th>子查询</th>
+<th>临时表</th>
+<th>视图</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>作用范围</strong></td>
+<td>单个语句</td>
+<td>单个查询</td>
+<td>会话或全局</td>
+<td>数据库对象</td>
+</tr>
+<tr>
+<td><strong>可多次引用</strong></td>
+<td>√</td>
+<td>×</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td><strong>可引用其他CTE</strong></td>
+<td>√</td>
+<td>×</td>
+<td>N&#x2F;A</td>
+<td>N&#x2F;A</td>
+</tr>
+<tr>
+<td><strong>支持递归</strong></td>
+<td>√</td>
+<td>×</td>
+<td>需手动</td>
+<td>×</td>
+</tr>
+<tr>
+<td><strong>自动清理</strong></td>
+<td>√（语句结束）</td>
+<td>N&#x2F;A</td>
+<td>×（需手动）</td>
+<td>N&#x2F;A</td>
+</tr>
+<tr>
+<td><strong>性能开销</strong></td>
+<td>较低</td>
+<td>视情况</td>
+<td>较高</td>
+<td>视情况</td>
+</tr>
+</tbody></table>
+<p>相较于传统子查询，CTE通过显式命名和结构化组织，使查询意图更清晰。CTE可以引用其他CTE，但子查询不能引用其他子查询，因此CTE可以很好地替代子查询。</p>
+<p><strong>四、实际应用场景</strong></p>
+<p><strong>4.1 树形结构遍历</strong></p>
+<p>处理组织架构、分类树、评论回复链等层级数据是CTE最经典的应用场景。</p>
+<p><strong>场景1：查询部门及其所有子部门</strong></p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">WITH</span> <span class="keyword">RECURSIVE</span> dept_tree <span class="keyword">AS</span> (</span><br><span class="line">    <span class="keyword">SELECT</span> id, name, parent_id, <span class="number">1</span> <span class="keyword">AS</span> level </span><br><span class="line">    <span class="keyword">FROM</span> departments </span><br><span class="line">    <span class="keyword">WHERE</span> name <span class="operator">=</span> <span class="string">&#x27;技术部&#x27;</span></span><br><span class="line">    <span class="keyword">UNION</span> <span class="keyword">ALL</span></span><br><span class="line">    <span class="keyword">SELECT</span> d.id, d.name, d.parent_id, dt.level <span class="operator">+</span> <span class="number">1</span> </span><br><span class="line">    <span class="keyword">FROM</span> departments d </span><br><span class="line">    <span class="keyword">JOIN</span> dept_tree dt <span class="keyword">ON</span> d.parent_id <span class="operator">=</span> dt.id</span><br><span class="line">)</span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> dept_tree;</span><br></pre></td></tr></table></figure>
+<p>此查询从技术部出发，向下遍历所有子部门，level字段记录当前层级深度。</p>
+<p><strong>场景2：生成完整路径</strong></p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">WITH</span> <span class="keyword">RECURSIVE</span> path_cte <span class="keyword">AS</span> (</span><br><span class="line">    <span class="keyword">SELECT</span> id, name, <span class="built_in">CAST</span>(name <span class="keyword">AS</span> <span class="type">CHAR</span>(<span class="number">500</span>)) <span class="keyword">AS</span> path </span><br><span class="line">    <span class="keyword">FROM</span> departments </span><br><span class="line">    <span class="keyword">WHERE</span> parent_id <span class="keyword">IS</span> <span class="keyword">NULL</span></span><br><span class="line">    <span class="keyword">UNION</span> <span class="keyword">ALL</span></span><br><span class="line">    <span class="keyword">SELECT</span> d.id, d.name, CONCAT(pc.path, <span class="string">&#x27;/&#x27;</span>, d.name) </span><br><span class="line">    <span class="keyword">FROM</span> departments d </span><br><span class="line">    <span class="keyword">JOIN</span> path_cte pc <span class="keyword">ON</span> d.parent_id <span class="operator">=</span> pc.id</span><br><span class="line">)</span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> path_cte;</span><br></pre></td></tr></table></figure>
+<p>生成如”总公司&#x2F;技术部&#x2F;后端组”格式的完整路径，使用CAST初始化路径类型，CONCAT拼接父路径和当前节点。</p>
+<p><strong>场景3：统计子树数据</strong></p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">WITH</span> <span class="keyword">RECURSIVE</span> dept_stats <span class="keyword">AS</span> (</span><br><span class="line">    <span class="keyword">SELECT</span> id, employee_count </span><br><span class="line">    <span class="keyword">FROM</span> departments </span><br><span class="line">    <span class="keyword">WHERE</span> name <span class="operator">=</span> <span class="string">&#x27;技术部&#x27;</span></span><br><span class="line">    <span class="keyword">UNION</span> <span class="keyword">ALL</span></span><br><span class="line">    <span class="keyword">SELECT</span> d.id, d.employee_count </span><br><span class="line">    <span class="keyword">FROM</span> departments d </span><br><span class="line">    <span class="keyword">JOIN</span> dept_stats ds <span class="keyword">ON</span> d.parent_id <span class="operator">=</span> ds.id</span><br><span class="line">)</span><br><span class="line"><span class="keyword">SELECT</span> <span class="built_in">SUM</span>(employee_count) <span class="keyword">AS</span> total_employees <span class="keyword">FROM</span> dept_stats;</span><br></pre></td></tr></table></figure>
+<p>统计技术部及其所有子部门的员工总数。</p>
+<p><strong>4.2 复杂数据报表</strong></p>
+<p>CTE可以将复杂的分组计算拆分为多个逻辑步骤，提高可读性。例如，统计每日订单数后再计算月度平均，代码逻辑清晰可调试。</p>
+<p><strong>4.3 电商用户行为分析</strong></p>
+<p>在电商数据分析中，CTE可用于：</p>
+<ul>
+<li>计算每日活跃用户（DAU）</li>
+<li>分析用户从浏览到购买的转化路径</li>
+<li>识别高价值用户（购买频次和金额高于平均值）</li>
+</ul>
+<p><strong>4.4 数据去重与清洗</strong></p>
+<p>CTE结合窗口函数可以实现高效的数据去重：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">WITH</span> duplicates <span class="keyword">AS</span> (</span><br><span class="line">    <span class="keyword">SELECT</span> <span class="operator">*</span>, <span class="built_in">ROW_NUMBER</span>() <span class="keyword">OVER</span> (<span class="keyword">PARTITION</span> <span class="keyword">BY</span> key_column <span class="keyword">ORDER</span> <span class="keyword">BY</span> id) <span class="keyword">AS</span> rn</span><br><span class="line">    <span class="keyword">FROM</span> target_table</span><br><span class="line">)</span><br><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> target_table </span><br><span class="line"><span class="keyword">WHERE</span> (key_column, id) <span class="keyword">IN</span> (<span class="keyword">SELECT</span> key_column, id <span class="keyword">FROM</span> duplicates <span class="keyword">WHERE</span> rn <span class="operator">&gt;</span> <span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
+<p><strong>4.5 分页查询优化</strong></p>
+<p>对于树形结构数据，递归CTE结合预排序遍历树算法可以实现优雅的分页。</p>
+<p><strong>五、性能优化与注意事项</strong></p>
+<p><strong>5.1 性能优势</strong></p>
+<p>CTE在优化器处理上具有以下优势：</p>
+<ul>
+<li><strong>物化策略</strong>：MySQL 8.0.16+版本支持CTE物化，将中间结果存入临时表避免重复计算</li>
+<li><strong>谓词下推</strong>：优化器可将WHERE条件提前到CTE内部执行</li>
+<li><strong>并行执行</strong>：复杂CTE可拆分为多个执行单元并行处理</li>
+</ul>
+<p>实际测试显示，处理百万级数据的递归查询时，优化后的CTE比存储过程方案快40%。</p>
+<p><strong>5.2 潜在性能陷阱</strong></p>
+<ul>
+<li><strong>嵌套层级限制</strong>：MySQL默认CTE嵌套深度为1000层，超限会报错</li>
+<li><strong>物化成本</strong>：复杂CTE可能生成大型临时表，消耗内存和I&#x2F;O资源</li>
+<li><strong>优化器局限</strong>：早期版本（8.0.0-8.0.15）的CTE优化不完善，存在重复计算问题</li>
+</ul>
+<p><strong>建议</strong>：对超大数据集（中间结果 &gt;1GB），考虑拆分查询或使用临时表替代。</p>
+<p><strong>5.3 递归查询的常见陷阱</strong></p>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>说明</th>
+<th>解决方案</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>无限递归</strong></td>
+<td>未设置终止条件导致无限循环</td>
+<td>添加WHERE条件限制递归次数</td>
+</tr>
+<tr>
+<td><strong>深度爆炸</strong></td>
+<td>过深树形结构超出系统限制</td>
+<td>添加层级计数器，设置递归深度参数</td>
+</tr>
+<tr>
+<td><strong>排序失控</strong></td>
+<td>未指定ORDER BY的结果不稳定</td>
+<td>显式添加ORDER BY子句</td>
+</tr>
+<tr>
+<td><strong>数据类型不匹配</strong></td>
+<td>UNION两侧列类型不一致</td>
+<td>使用CAST转换数据类型</td>
+</tr>
+</tbody></table>
+<p>递归部分不能包含聚合函数、窗口函数、GROUP BY、ORDER BY或DISTINCT。</p>
+<p><strong>5.4 递归深度控制</strong></p>
+<p>MySQL默认递归深度限制为1000，可通过参数调整：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="comment">-- 查看当前限制</span></span><br><span class="line"><span class="keyword">SHOW</span> VARIABLES <span class="keyword">LIKE</span> <span class="string">&#x27;cte_max_recursion_depth&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 修改限制（需SUPER权限）</span></span><br><span class="line"><span class="keyword">SET</span> SESSION cte_max_recursion_depth <span class="operator">=</span> <span class="number">5000</span>;</span><br><span class="line"><span class="keyword">SET</span> <span class="keyword">GLOBAL</span> cte_max_recursion_depth <span class="operator">=</span> <span class="number">5000</span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong>5.5 版本兼容性风险</strong></p>
+<p>CTE功能依赖MySQL 8.0+。低版本用户可考虑：</p>
+<ul>
+<li>使用临时表或视图模拟CTE功能</li>
+<li>评估升级至MySQL 8.0的成本和兼容性影响</li>
+</ul>
+<p><strong>5.6 优化技巧</strong></p>
+<ol>
+<li><strong>合理设置递归深度限制</strong>：避免长时间运行的查询被误判为超时</li>
+<li><strong>使用MATERIALIZED提示</strong>：在需要时强制物化CTE，减少重复计算</li>
+<li><strong>监控内存消耗</strong>：在内存有限的环境下，务必监控递归查询的内存消耗</li>
+<li><strong>使用EXPLAIN分析</strong>：通过EXPLAIN分析执行计划，识别性能瓶颈</li>
+</ol>
 <h5 id="常见面试题"><a href="#常见面试题" class="headerlink" title="常见面试题"></a>常见面试题</h5><hr>
 <h6 id="索引的分类"><a href="#索引的分类" class="headerlink" title="索引的分类"></a>索引的分类</h6><p><strong>按照四个角度来分类索引</strong></p>
 <p><strong>按「数据结构」分类：</strong>B+tree索引、Hash索引、Full-text索引。<br><strong>按「物理存储」分类：</strong>聚簇索引（主键索引）、二级索引（辅助索引）。<br><strong>按「字段特性」分类：</strong>主键索引、唯一索引、普通索引、前缀索引。<br><strong>按「字段个数」分类：</strong>单列索引、联合索引。</p>

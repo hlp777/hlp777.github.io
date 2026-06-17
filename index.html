@@ -159,6 +159,427 @@
     
     
     <article
+  id="post-RAG-混合检索深度分析"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2026/06/17/RAG-%E6%B7%B7%E5%90%88%E6%A3%80%E7%B4%A2%E6%B7%B1%E5%BA%A6%E5%88%86%E6%9E%90/"
+    >RAG 混合检索深度分析</a> 
+</h2>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2026/06/17/RAG-%E6%B7%B7%E5%90%88%E6%A3%80%E7%B4%A2%E6%B7%B1%E5%BA%A6%E5%88%86%E6%9E%90/" class="article-date">
+  <time datetime="2026-06-17T08:13:16.000Z" itemprop="datePublished">2026-06-17</time>
+</a>    
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h2 id="第-1-章：问题驱动——为什么需要混合检索？"><a href="#第-1-章：问题驱动——为什么需要混合检索？" class="headerlink" title="第 1 章：问题驱动——为什么需要混合检索？"></a>第 1 章：问题驱动——为什么需要混合检索？</h2><h3 id="1-1-纯向量检索的”词汇鸿沟”"><a href="#1-1-纯向量检索的”词汇鸿沟”" class="headerlink" title="1.1 纯向量检索的”词汇鸿沟”"></a>1.1 纯向量检索的”词汇鸿沟”</h3><p>向量检索的核心思路是：将文档和问题都转为高维向量，通过余弦相似度找到语义最接近的片段。这在语义泛化场景表现优秀——问”如何让身体更健康”，能召回”养生食谱”和”运动方案”。</p>
+<p><strong>但问题在于</strong>：向量模型学到的是<strong>语义相似度</strong>，而非<strong>字符精确性</strong>。面对专有名词、产品编号、版本号、人名时，召回率会显著下降——这是结构性缺陷，不是调参能解决的。</p>
+<table>
+<thead>
+<tr>
+<th>查询类型</th>
+<th>向量检索效果</th>
+<th>BM25 效果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>语义问答（”如何提升免疫力”）</td>
+<td>优秀</td>
+<td>一般</td>
+</tr>
+<tr>
+<td>同义词泛化（”汽车” vs “小轿车”）</td>
+<td>优秀</td>
+<td>较差</td>
+</tr>
+<tr>
+<td>精确专有名词（”GPT-4o”）</td>
+<td>一般</td>
+<td>优秀</td>
+</tr>
+<tr>
+<td>产品编号&#x2F;型号（”ORD-9527”）</td>
+<td>较差</td>
+<td>优秀</td>
+</tr>
+<tr>
+<td>代码方法名（”getUserById”）</td>
+<td>较差</td>
+<td>优秀</td>
+</tr>
+</tbody></table>
+<h3 id="1-2-核心思路：两路召回，取长补短"><a href="#1-2-核心思路：两路召回，取长补短" class="headerlink" title="1.2 核心思路：两路召回，取长补短"></a>1.2 核心思路：两路召回，取长补短</h3><p>既然每种检索各有所长，最直接的解法就是<strong>同时用两种方式检索，然后把结果合并</strong>——这就是混合检索的核心思想。</p>
+<img src="/2026/06/17/RAG-%E6%B7%B7%E5%90%88%E6%A3%80%E7%B4%A2%E6%B7%B1%E5%BA%A6%E5%88%86%E6%9E%90/image-20260617162540191.png" class="" title="image-20260617162540191">
+
+<hr>
+<h2 id="第-2-章：BM25——关键词检索的经典算法"><a href="#第-2-章：BM25——关键词检索的经典算法" class="headerlink" title="第 2 章：BM25——关键词检索的经典算法"></a>第 2 章：BM25——关键词检索的经典算法</h2><h3 id="2-1-一句话理解-BM25"><a href="#2-1-一句话理解-BM25" class="headerlink" title="2.1 一句话理解 BM25"></a>2.1 一句话理解 BM25</h3><p>BM25（Best Match 25）是 Elasticsearch、Lucene 的默认排序算法。可以把它想象成一位图书馆管理员：你说要找”苹果手机”，他会扫描所有书的索引，数一数每本书提到”苹果”和”手机”多少次，优先推荐那些<strong>反复提到这两个词、且整本书不太厚</strong>的书籍。</p>
+<h3 id="2-2-三个核心因子"><a href="#2-2-三个核心因子" class="headerlink" title="2.2 三个核心因子"></a>2.2 三个核心因子</h3><table>
+<thead>
+<tr>
+<th>因子</th>
+<th>全称</th>
+<th>作用</th>
+<th>举例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>TF</strong></td>
+<td>Term Frequency（词频）</td>
+<td>词在文档中出现越多，相关性越高</td>
+<td>“苹果”出现 5 次 &gt; 出现 1 次</td>
+</tr>
+<tr>
+<td><strong>IDF</strong></td>
+<td>Inverse Document Frequency（逆文档频率）</td>
+<td>词在所有文档中越罕见，越有辨别力</td>
+<td>“苹果”比”的”更有价值</td>
+</tr>
+<tr>
+<td><strong>文档长度归一化</strong></td>
+<td>Document Length Normalization</td>
+<td>防止长文档因词多而”霸榜”</td>
+<td>长文档中词出现多次不一定更相关</td>
+</tr>
+</tbody></table>
+<h3 id="2-3-BM25-vs-向量检索：互补而非替代"><a href="#2-3-BM25-vs-向量检索：互补而非替代" class="headerlink" title="2.3 BM25 vs 向量检索：互补而非替代"></a>2.3 BM25 vs 向量检索：互补而非替代</h3><p>两者的关系不是”谁替代谁”，而是<strong>各有所长、互为补充</strong>。</p>
+<hr>
+<h2 id="第-3-章：RRF——公平融合多路结果的算法"><a href="#第-3-章：RRF——公平融合多路结果的算法" class="headerlink" title="第 3 章：RRF——公平融合多路结果的算法"></a>第 3 章：RRF——公平融合多路结果的算法</h2><h3 id="3-1-为什么不能直接加权相加？"><a href="#3-1-为什么不能直接加权相加？" class="headerlink" title="3.1 为什么不能直接加权相加？"></a>3.1 为什么不能直接加权相加？</h3><p>当 BM25 和向量检索各返回结果后，面临一个棘手问题：<strong>两路分数不在同一量纲</strong>——</p>
+<ul>
+<li>BM25 得分：12.7、8.3、5.1……（无上限）</li>
+<li>向量相似度：0.93、0.87、0.82……（0~1 之间）</li>
+</ul>
+<p>直接加权相加（如 0.5 × BM25 + 0.5 × 向量）会让 BM25 的绝对量级淹没向量检索的贡献。</p>
+<h3 id="3-2-RRF-的核心思想"><a href="#3-2-RRF-的核心思想" class="headerlink" title="3.2 RRF 的核心思想"></a>3.2 RRF 的核心思想</h3><p><strong>RRF（Reciprocal Rank Fusion，倒数排名融合）</strong> 由滑铁卢大学和 Google 联合提出。其核心思想极其优雅：</p>
+<blockquote>
+<p><strong>不管你的原始分数是多少，我只关心你在各自榜单里排第几名。</strong></p>
+</blockquote>
+<h3 id="3-3-具体示例"><a href="#3-3-具体示例" class="headerlink" title="3.3 具体示例"></a>3.3 具体示例</h3><p>假设检索 <strong>“苹果14 售价”</strong> ，两路各召回 5 条结果：</p>
+<table>
+<thead>
+<tr>
+<th>排名</th>
+<th>BM25 结果</th>
+<th>向量检索结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>第 1 名</td>
+<td>文档A（iPhone 14 参数）</td>
+<td>文档C（苹果产品历史）</td>
+</tr>
+<tr>
+<td>第 2 名</td>
+<td>文档B（手机价格比较）</td>
+<td>文档A（iPhone 14 参数）</td>
+</tr>
+<tr>
+<td>第 3 名</td>
+<td>文档C（苹果产品历史）</td>
+<td>文档D（苹果公司财报）</td>
+</tr>
+<tr>
+<td>第 4 名</td>
+<td>文档D（苹果公司财报）</td>
+<td>文档B（手机价格比较）</td>
+</tr>
+<tr>
+<td>第 5 名</td>
+<td>文档E（Android 手机推荐）</td>
+<td>文档E（Android 手机推荐）</td>
+</tr>
+</tbody></table>
+<p>使用 k&#x3D;60 计算各文档的 RRF 得分：</p>
+<table>
+<thead>
+<tr>
+<th>文档</th>
+<th>BM25 排名</th>
+<th>向量排名</th>
+<th>RRF 得分</th>
+<th>最终排名</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>文档A</td>
+<td>1</td>
+<td>2</td>
+<td>1&#x2F;(60+1) + 1&#x2F;(60+2) &#x3D; 0.0321</td>
+<td>第 1</td>
+</tr>
+<tr>
+<td>文档C</td>
+<td>3</td>
+<td>1</td>
+<td>1&#x2F;(60+3) + 1&#x2F;(60+1) &#x3D; 0.0321</td>
+<td>第 1（同分）</td>
+</tr>
+<tr>
+<td>文档B</td>
+<td>2</td>
+<td>4</td>
+<td>1&#x2F;(60+2) + 1&#x2F;(60+4) &#x3D; 0.0317</td>
+<td>第 3</td>
+</tr>
+<tr>
+<td>文档D</td>
+<td>4</td>
+<td>3</td>
+<td>1&#x2F;(60+4) + 1&#x2F;(60+3) &#x3D; 0.0317</td>
+<td>第 4</td>
+</tr>
+<tr>
+<td>文档E</td>
+<td>5</td>
+<td>5</td>
+<td>1&#x2F;(60+5) + 1&#x2F;(60+5) &#x3D; 0.0308</td>
+<td>第 5</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><strong>关键洞察</strong>：文档 A（iPhone 14 参数）在两路结果中都排名靠前，RRF 将其综合排名拉到最高——**”两路都认可的文档更可信”**。k&#x3D;60  让第 1 名和第 2 名的得分差距适中，防止排名过度集中。</p>
+</blockquote>
+<hr>
+<h2 id="第-4-章：Spring-Boot-LangChain4j-代码实现"><a href="#第-4-章：Spring-Boot-LangChain4j-代码实现" class="headerlink" title="第 4 章：Spring Boot + LangChain4j 代码实现"></a>第 4 章：Spring Boot + LangChain4j 代码实现</h2><h3 id="4-1-项目依赖"><a href="#4-1-项目依赖" class="headerlink" title="4.1 项目依赖"></a>4.1 项目依赖</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">properties</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">langchain4j.version</span>&gt;</span>1.13.1<span class="tag">&lt;/<span class="name">langchain4j.version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>dev.langchain4j<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>langchain4j<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;langchain4j.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>dev.langchain4j<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>langchain4j-open-ai<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;langchain4j.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>dev.langchain4j<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>langchain4j-embeddings-all-minilm-l6-v2<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;langchain4j.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="4-2-核心组件一：BM25-关键词检索器"><a href="#4-2-核心组件一：BM25-关键词检索器" class="headerlink" title="4.2 核心组件一：BM25 关键词检索器"></a>4.2 核心组件一：BM25 关键词检索器</h3><blockquote>
+<p><strong>设计说明</strong>：LangChain4j 1.x 未内置 BM25 ContentRetriever，需手动实现。生产环境建议替换为 Elasticsearch 的 BM25 接口或接入 IK&#x2F;jieba 分词器处理中文。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">BM25ContentRetriever</span> <span class="keyword">implements</span> <span class="title class_">ContentRetriever</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">double</span> <span class="variable">K1</span> <span class="operator">=</span> <span class="number">1.5</span>;   <span class="comment">// 词频饱和参数</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">double</span> <span class="variable">B</span> <span class="operator">=</span> <span class="number">0.75</span>;   <span class="comment">// 文档长度归一化系数</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> List&lt;TextSegment&gt; corpus = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">int</span> topK;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">BM25ContentRetriever</span><span class="params">(<span class="type">int</span> topK)</span> &#123; <span class="built_in">this</span>.topK = topK; &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/** 文档入库时同步调用，建立索引 */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">index</span><span class="params">(TextSegment segment)</span> &#123; corpus.add(segment); &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> List&lt;Content&gt; <span class="title function_">retrieve</span><span class="params">(Query query)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (corpus.isEmpty()) <span class="keyword">return</span> Collections.emptyList();</span><br><span class="line">        String[] queryTerms = tokenize(query.text());</span><br><span class="line">        <span class="type">double</span> <span class="variable">avgdl</span> <span class="operator">=</span> corpus.stream()</span><br><span class="line">                .mapToInt(s -&gt; tokenize(s.text()).length)</span><br><span class="line">                .average().orElse(<span class="number">1.0</span>);</span><br><span class="line">        <span class="keyword">return</span> corpus.stream()</span><br><span class="line">                .map(seg -&gt; Map.entry(seg, bm25Score(queryTerms, seg.text(), avgdl)))</span><br><span class="line">                .filter(e -&gt; e.getValue() &gt; <span class="number">0</span>)</span><br><span class="line">                .sorted(Map.Entry.comparingByValue().reversed())</span><br><span class="line">                .limit(topK)</span><br><span class="line">                .map(e -&gt; Content.from(e.getKey()))</span><br><span class="line">                .collect(Collectors.toList());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="type">double</span> <span class="title function_">bm25Score</span><span class="params">(String[] queryTerms, String docText, <span class="type">double</span> avgdl)</span> &#123;</span><br><span class="line">        String[] docTerms = tokenize(docText);</span><br><span class="line">        Map&lt;String, Long&gt; tf = Arrays.stream(docTerms)</span><br><span class="line">                .collect(Collectors.groupingBy(t -&gt; t, Collectors.counting()));</span><br><span class="line">        <span class="type">double</span> <span class="variable">score</span> <span class="operator">=</span> <span class="number">0.0</span>;</span><br><span class="line">        <span class="type">int</span> <span class="variable">N</span> <span class="operator">=</span> corpus.size();</span><br><span class="line">        <span class="keyword">for</span> (String term : queryTerms) &#123;</span><br><span class="line">            <span class="type">long</span> <span class="variable">df</span> <span class="operator">=</span> corpus.stream()</span><br><span class="line">                    .filter(s -&gt; s.text().toLowerCase().contains(term))</span><br><span class="line">                    .count();</span><br><span class="line">            <span class="keyword">if</span> (df == <span class="number">0</span>) <span class="keyword">continue</span>;</span><br><span class="line">            <span class="comment">// IDF：文档频率越低，辨别力越强</span></span><br><span class="line">            <span class="type">double</span> <span class="variable">idf</span> <span class="operator">=</span> Math.log((N - df + <span class="number">0.5</span>) / (df + <span class="number">0.5</span>) + <span class="number">1</span>);</span><br><span class="line">            <span class="type">double</span> <span class="variable">termFreq</span> <span class="operator">=</span> tf.getOrDefault(term, <span class="number">0L</span>);</span><br><span class="line">            <span class="type">double</span> <span class="variable">numerator</span> <span class="operator">=</span> termFreq * (K1 + <span class="number">1</span>);</span><br><span class="line">            <span class="type">double</span> <span class="variable">denominator</span> <span class="operator">=</span> termFreq + K1 * (<span class="number">1</span> - B + B * (docTerms.length / avgdl));</span><br><span class="line">            score += idf * (numerator / denominator);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> score;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/** 简单分词（空格/标点）；中文场景请替换为 jieba / HanLP / IK */</span></span><br><span class="line">    <span class="keyword">private</span> String[] tokenize(String text) &#123;</span><br><span class="line">        <span class="keyword">return</span> text.toLowerCase().split(<span class="string">&quot;[\\s\\p&#123;Punct&#125;]+&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="4-3-核心组件二：RRF-融合检索器"><a href="#4-3-核心组件二：RRF-融合检索器" class="headerlink" title="4.3 核心组件二：RRF 融合检索器"></a>4.3 核心组件二：RRF 融合检索器</h3><blockquote>
+<p><strong>设计说明</strong>：支持任意数量的检索器融合，不依赖原始分数，只依赖排名。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RrfFusionContentRetriever</span> <span class="keyword">implements</span> <span class="title class_">ContentRetriever</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> List&lt;ContentRetriever&gt; retrievers;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">int</span> rrfK;  <span class="comment">// 平滑常数，业界标准值 60</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">RrfFusionContentRetriever</span><span class="params">(List&lt;ContentRetriever&gt; retrievers, <span class="type">int</span> rrfK)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.retrievers = retrievers;</span><br><span class="line">        <span class="built_in">this</span>.rrfK = rrfK;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> List&lt;Content&gt; <span class="title function_">retrieve</span><span class="params">(Query query)</span> &#123;</span><br><span class="line">        <span class="comment">// 1. 依次调用各路检索器</span></span><br><span class="line">        List&lt;List&lt;Content&gt;&gt; allResults = retrievers.stream()</span><br><span class="line">                .map(r -&gt; r.retrieve(query))</span><br><span class="line">                .collect(Collectors.toList());</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 2. 以文本内容为 Key，累加 RRF 得分</span></span><br><span class="line">        Map&lt;String, Double&gt; rrfScores = <span class="keyword">new</span> <span class="title class_">LinkedHashMap</span>&lt;&gt;();</span><br><span class="line">        Map&lt;String, Content&gt; contentMap = <span class="keyword">new</span> <span class="title class_">LinkedHashMap</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (List&lt;Content&gt; results : allResults) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">rank</span> <span class="operator">=</span> <span class="number">0</span>; rank &lt; results.size(); rank++) &#123;</span><br><span class="line">                <span class="type">Content</span> <span class="variable">content</span> <span class="operator">=</span> results.get(rank);</span><br><span class="line">                <span class="type">String</span> <span class="variable">key</span> <span class="operator">=</span> content.textSegment().text();</span><br><span class="line">                <span class="type">double</span> <span class="variable">score</span> <span class="operator">=</span> <span class="number">1.0</span> / (rrfK + rank + <span class="number">1</span>);  <span class="comment">// rank 从 0 开始</span></span><br><span class="line">                rrfScores.merge(key, score, Double::sum);</span><br><span class="line">                contentMap.putIfAbsent(key, content);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 3. 按 RRF 得分降序返回融合结果（已去重）</span></span><br><span class="line">        <span class="keyword">return</span> rrfScores.entrySet().stream()</span><br><span class="line">                .sorted(Map.Entry.comparingByValue().reversed())</span><br><span class="line">                .map(e -&gt; contentMap.get(e.getKey()))</span><br><span class="line">                .collect(Collectors.toList());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="4-4-Spring-配置：组装混合检索器"><a href="#4-4-Spring-配置：组装混合检索器" class="headerlink" title="4.4 Spring 配置：组装混合检索器"></a>4.4 Spring 配置：组装混合检索器</h3><blockquote>
+<p><strong>版本说明</strong>：LangChain4j 0.x 提供内置的 <code>HybridRetriever</code>，1.x 已移除，需手动组合。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">HybridRetrieverConfig</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">BM25_TOP_K</span> <span class="operator">=</span> <span class="number">20</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">VECTOR_TOP_K</span> <span class="operator">=</span> <span class="number">20</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">RRF_K</span> <span class="operator">=</span> <span class="number">60</span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> ChatModel <span class="title function_">chatModel</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> OpenAiChatModel.builder()</span><br><span class="line">                .apiKey(apiKey)</span><br><span class="line">                .build();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> EmbeddingModel <span class="title function_">embeddingModel</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">AllMiniLmL6V2EmbeddingModel</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> EmbeddingStore&lt;TextSegment&gt; <span class="title function_">embeddingStore</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">InMemoryEmbeddingStore</span>&lt;&gt;();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> ContentRetriever <span class="title function_">hybridContentRetriever</span><span class="params">(</span></span><br><span class="line"><span class="params">            EmbeddingModel embeddingModel,</span></span><br><span class="line"><span class="params">            EmbeddingStore&lt;TextSegment&gt; embeddingStore)</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 向量语义检索器</span></span><br><span class="line">        <span class="type">ContentRetriever</span> <span class="variable">vectorRetriever</span> <span class="operator">=</span> EmbeddingStoreContentRetriever.builder()</span><br><span class="line">                .embeddingStore(embeddingStore)</span><br><span class="line">                .embeddingModel(embeddingModel)</span><br><span class="line">                .maxResults(VECTOR_TOP_K)</span><br><span class="line">                .build();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// BM25 关键词检索器（文档入库时需同步调用 bm25Retriever.index()）</span></span><br><span class="line">        <span class="type">BM25ContentRetriever</span> <span class="variable">bm25Retriever</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">BM25ContentRetriever</span>(BM25_TOP_K);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// RRF 融合</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">RrfFusionContentRetriever</span>(</span><br><span class="line">                List.of(bm25Retriever, vectorRetriever),</span><br><span class="line">                RRF_K</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="4-5-知识库服务与-REST-API"><a href="#4-5-知识库服务与-REST-API" class="headerlink" title="4.5 知识库服务与 REST API"></a>4.5 知识库服务与 REST API</h3><p><strong>AI Service 接口</strong>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">KnowledgeAssistant</span> &#123;</span><br><span class="line">    <span class="meta">@SystemMessage(&quot;&quot;&quot;</span></span><br><span class="line"><span class="meta">            你是一个专业的知识库问答助手。</span></span><br><span class="line"><span class="meta">            请严格根据提供的上下文内容来回答用户问题。</span></span><br><span class="line"><span class="meta">            如果上下文中没有相关信息，请直接告知用户，不要编造答案。</span></span><br><span class="line"><span class="meta">            &quot;&quot;&quot;)</span></span><br><span class="line">    String <span class="title function_">answer</span><span class="params">(String userQuestion)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>Service 层</strong>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">KnowledgeBaseService</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> KnowledgeAssistant assistant;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">KnowledgeBaseService</span><span class="params">(</span></span><br><span class="line"><span class="params">            ChatModel chatModel,</span></span><br><span class="line"><span class="params">            ContentRetriever hybridContentRetriever)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.assistant = AiServices.builder(KnowledgeAssistant.class)</span><br><span class="line">                .chatModel(chatModel)</span><br><span class="line">                .contentRetriever(hybridContentRetriever)</span><br><span class="line">                .build();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">ask</span><span class="params">(String userQuestion)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> assistant.answer(userQuestion);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>REST Controller</strong>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping(&quot;/api/knowledge&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">KnowledgeController</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> KnowledgeBaseService knowledgeBaseService;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PostMapping(&quot;/ask&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> AnswerResponse <span class="title function_">ask</span><span class="params">(<span class="meta">@RequestBody</span> QuestionRequest request)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">AnswerResponse</span>(knowledgeBaseService.ask(request.question()));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">record</span> <span class="title class_">QuestionRequest</span><span class="params">(String question)</span> &#123;&#125;</span><br><span class="line">    <span class="keyword">record</span> <span class="title class_">AnswerResponse</span><span class="params">(String answer)</span> &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<hr>
+<h2 id="第-5-章：调参与最佳实践"><a href="#第-5-章：调参与最佳实践" class="headerlink" title="第 5 章：调参与最佳实践"></a>第 5 章：调参与最佳实践</h2><h3 id="5-1-参数设置指南"><a href="#5-1-参数设置指南" class="headerlink" title="5.1 参数设置指南"></a>5.1 参数设置指南</h3><table>
+<thead>
+<tr>
+<th>参数</th>
+<th>作用</th>
+<th>过小的问题</th>
+<th>过大的问题</th>
+<th><strong>推荐起点</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>bm25TopK</code></td>
+<td>BM25 侧召回候选数</td>
+<td>漏掉关键词相关文档</td>
+<td>噪声增加，重排负担重</td>
+<td><strong>20</strong></td>
+</tr>
+<tr>
+<td><code>vectorTopK</code></td>
+<td>向量侧召回候选数</td>
+<td>漏掉语义相关文档</td>
+<td>同上</td>
+<td><strong>20</strong></td>
+</tr>
+<tr>
+<td><code>rrfK</code></td>
+<td>RRF 平滑常数</td>
+<td>结果过度集中于两路都排名 #1 的文档</td>
+<td>低排名噪声文档得分变高</td>
+<td><strong>60</strong>（业界标准）</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><strong>经验法则</strong>：<code>bm25TopK</code> 和 <code>vectorTopK</code> 建议设为<strong>最终返回文档数的 4~5 倍</strong>。例如最终想给大模型 5 条上下文，两路各召回 20 条，经 RRF 融合后取前 5，保证候选池足够大。</p>
+</blockquote>
+<h3 id="5-2-常见错误与排查"><a href="#5-2-常见错误与排查" class="headerlink" title="5.2 常见错误与排查"></a>5.2 常见错误与排查</h3><p><strong>错误做法：直接拼接，不做融合与去重</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 两路各 20 条，合并后 40 条全塞给大模型</span></span><br><span class="line">List&lt;Content&gt; combined = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">combined.addAll(bm25Results);</span><br><span class="line">combined.addAll(vectorResults);  <span class="comment">// 可能包含大量重复文档，且未按质量排序</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>正确做法：通过 <code>hybridContentRetriever</code> 统一调用</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 内部完成两路召回 + RRF 融合 + 去重</span></span><br><span class="line">List&lt;Content&gt; results = hybridContentRetriever.retrieve(Query.from(userQuery));</span><br><span class="line"><span class="comment">// results 已按 RRF 分数降序排列，无重复文档</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>问题排查表</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>问题现象</th>
+<th>可能原因</th>
+<th>解决方案</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>专业术语始终召回不到</td>
+<td>BM25 分词器不支持中文术语</td>
+<td>接入 IK 分词器或使用 jieba 预处理</td>
+</tr>
+<tr>
+<td>召回结果全是语义相关但不精确</td>
+<td><code>bm25TopK</code> 过低或 BM25 索引未初始化</td>
+<td>检查 <code>.index()</code> 是否调用，适当增大 <code>bm25TopK</code></td>
+</tr>
+<tr>
+<td>两路结果高度重叠，混合意义不大</td>
+<td>知识库内容同质化，或向量模型欠训练</td>
+<td>评估语料多样性，换用更强的 Embedding 模型</td>
+</tr>
+<tr>
+<td>RRF 后结果与预期偏差大</td>
+<td><code>rrfK</code> 设置不当</td>
+<td>在 20~80 之间调参，较小的 $k$ 让前排文档优势更大</td>
+</tr>
+</tbody></table>
+<h3 id="5-3-重要提醒"><a href="#5-3-重要提醒" class="headerlink" title="5.3 重要提醒"></a>5.3 重要提醒</h3><blockquote>
+<p> <strong>混合检索 ≠ 精排</strong>。生产环境建议在混合检索之后<strong>再接一层重排序（Reranker）</strong> ，使用 Cross-Encoder 模型对召回的 Top-20 候选进行精细打分，最终取 Top-5 送入大模型。</p>
+</blockquote>
+<hr>
+<h2 id="第-6-章：三种检索策略横向对比"><a href="#第-6-章：三种检索策略横向对比" class="headerlink" title="第 6 章：三种检索策略横向对比"></a>第 6 章：三种检索策略横向对比</h2><table>
+<thead>
+<tr>
+<th>对比维度</th>
+<th>纯向量检索</th>
+<th>纯 BM25 检索</th>
+<th><strong>混合检索（推荐）</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>语义泛化能力</td>
+<td>⭐⭐⭐⭐⭐</td>
+<td>⭐⭐</td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>专有名词精确匹配</td>
+<td>⭐⭐</td>
+<td>⭐⭐⭐⭐⭐</td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>系统复杂度</td>
+<td>⭐⭐</td>
+<td>⭐⭐</td>
+<td>⭐⭐⭐（适中）</td>
+</tr>
+<tr>
+<td>索引维护成本</td>
+<td>向量库</td>
+<td>倒排索引</td>
+<td><strong>两者均需</strong></td>
+</tr>
+<tr>
+<td><strong>2026 年生产推荐</strong></td>
+<td>不建议单独使用</td>
+<td>不建议单独使用</td>
+<td><strong>强烈推荐</strong></td>
+</tr>
+</tbody></table>
+<h3 id="何时必须用混合检索？"><a href="#何时必须用混合检索？" class="headerlink" title="何时必须用混合检索？"></a>何时必须用混合检索？</h3><ul>
+<li>√  知识库中有<strong>产品型号、订单编号、API 名称</strong>等精确标识符</li>
+<li>√  用户会搜索<strong>人名、地名、特定版本号</strong></li>
+<li>√  知识库文档<strong>来源多样，语义分布广</strong></li>
+<li>× 如果知识库<strong>非常小（&lt; 100 条）</strong> 且查询均为语义问题，纯向量检索已足够</li>
+</ul>
+<h3 id="混合检索架构全局视图"><a href="#混合检索架构全局视图" class="headerlink" title="混合检索架构全局视图"></a>混合检索架构全局视图</h3><img src="/2026/06/17/RAG-%E6%B7%B7%E5%90%88%E6%A3%80%E7%B4%A2%E6%B7%B1%E5%BA%A6%E5%88%86%E6%9E%90/image-20260617162844138.png" class="" title="image-20260617162844138">
+
+
+
+<hr>
+<h2 id="第-7-章：总结"><a href="#第-7-章：总结" class="headerlink" title="第 7 章：总结"></a>第 7 章：总结</h2><table>
+<thead>
+<tr>
+<th>核心概念</th>
+<th>一句话解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>BM25</strong></td>
+<td>基于词频（TF）和逆文档频率（IDF）的关键词精确匹配算法，擅长专有名词召回</td>
+</tr>
+<tr>
+<td><strong>向量检索</strong></td>
+<td>将文本转为 Embedding 向量后计算语义相似度，擅长语义泛化</td>
+</tr>
+<tr>
+<td><strong>混合检索</strong></td>
+<td>同时运行 BM25 和向量检索两路召回，各取所长</td>
+</tr>
+<tr>
+<td><strong>RRF 算法</strong></td>
+<td>不依赖原始分数，仅通过各榜单排名的倒数加权来公平融合多路结果</td>
+</tr>
+<tr>
+<td><strong>rrfK&#x3D;60</strong></td>
+<td>RRF 平滑常数的业界标准值，平衡顶部排名优势与尾部文档贡献</td>
+</tr>
+</tbody></table>
+<h3 id="学习路径"><a href="#学习路径" class="headerlink" title="学习路径"></a>学习路径</h3><ol>
+<li><strong>先用纯向量检索</strong>搭起 RAG 基础框架，体验其优缺点</li>
+<li><strong>引入 BM25</strong>，对比两者在专业术语场景下的召回差异</li>
+<li><strong>接入混合检索 + RRF</strong>，观察综合召回率的提升</li>
+<li><strong>在混合检索之后再接 Reranker</strong> 重排模型，追求极致的答案质量</li>
+</ol>
+<hr>
+<blockquote>
+<p><strong>原文出处</strong>：<a target="_blank" rel="noopener" href="https://www.smallyoung.cn/docs/028-RAG%E6%B7%B7%E5%90%88%E6%A3%80%E7%B4%A2%E4%B8%8ERRF%E7%AE%97%E6%B3%95%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90">小杨技术笔记</a> </p>
+</blockquote>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+    </footer>
+  </div>
+
+   
+   
+  
+</article>
+
+    
+    <article
   id="post-初识LangChain4j"
   class="article article-type-post"
   itemscope
@@ -3451,365 +3872,6 @@
 <p>第二，提高响应速度，当任务到达时，任务可以不需要等到线程创建就能立即执行</p>
 <p>第三，提高线程的可管理性，线程是稀缺资源，如果无限制地创建，不仅会消耗系统资源，还会降低系统的稳定性，使用线程池可以统一分配，调优和监控。但是，要做到合理利用线程池，必须对其实现原理了如指掌。</p>
 <h5 id="15-在并发编程中使用生产者和消费者模式能够解决大多数并发问题。该模式通过平衡生产者和消费者的工作能力来提高程序整体处理数据的速度"><a href="#15-在并发编程中使用生产者和消费者模式能够解决大多数并发问题。该模式通过平衡生产者和消费者的工作能力来提高程序整体处理数据的速度" class="headerlink" title="15.在并发编程中使用生产者和消费者模式能够解决大多数并发问题。该模式通过平衡生产者和消费者的工作能力来提高程序整体处理数据的速度"></a>15.在并发编程中使用生产者和消费者模式能够解决大多数并发问题。该模式通过平衡生产者和消费者的工作能力来提高程序整体处理数据的速度</h5> 
-      <!-- reward -->
-      
-    </div>
-    
-
-    <!-- copyright -->
-    
-    <footer class="article-footer">
-       
-    </footer>
-  </div>
-
-   
-   
-  
-</article>
-
-    
-    <article
-  id="post-设计模式"
-  class="article article-type-post"
-  itemscope
-  itemprop="blogPost"
-  data-scroll-reveal
->
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2024/09/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"
-    >设计模式</a> 
-</h2>
- 
-
-      
-    </header>
-     
-    <div class="article-meta">
-      <a href="/2024/09/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" class="article-date">
-  <time datetime="2024-09-23T14:24:01.000Z" itemprop="datePublished">2024-09-23</time>
-</a>    
-    </div>
-      
-    <div class="article-entry" itemprop="articleBody">
-       
-  <h3 id="设计原则"><a href="#设计原则" class="headerlink" title="设计原则"></a>设计原则</h3><p>1.针对接口编程，而不是针对实现编程</p>
-<p>2.”针对接口编程“真正的意思是“针对超类型（supertype）编程”</p>
-<p>3.多用组合少用继承</p>
-<p>4.为了交互对象之间的松耦合设计而努力</p>
-<p>5.类应该对扩展开放，对修改关闭</p>
-<p>6.要依赖抽象，不要依赖具体类（依赖倒置原则）</p>
-<p>7.最少知识原则：只和你的密友谈话</p>
-<p>8.别调用我们，我们会调用你</p>
-<p>9.一个类应该只有一个引起变化的原因</p>
-<h3 id="松耦合的威力"><a href="#松耦合的威力" class="headerlink" title="松耦合的威力"></a>松耦合的威力</h3><p><strong>当两个对象之间松耦合，它们依然可以交互，但是不太清楚彼此的细节，观察者模式提供了一种对象设计，让主题和观察者之间松耦合</strong></p>
-<p><strong>松耦合的设计之所以能让我们建立有弹性的OO系统，能够应对变化，是因为对象之间的互相依赖降低了最低</strong></p>
-<h3 id="策略模式"><a href="#策略模式" class="headerlink" title="策略模式"></a>策略模式</h3><p><strong>定义了算法族，分别封装起来，让它们之间可以互相替换，此模式让算法的变化独立于使用算法的客户</strong></p>
-<p><strong>要点</strong></p>
-<p>1.策略模式通常会用行为或算法配置Context类</p>
-<h3 id="观察者模式"><a href="#观察者模式" class="headerlink" title="观察者模式"></a>观察者模式</h3><p><strong>定义了对象之间的一对多依赖，这样一来，当一个对象改变状态时，它的所有依赖者会收到通知并自动更新</strong></p>
-<p><strong>要点</strong></p>
-<p>1.观察者模式定义了对象之间一对多的关系</p>
-<p>2.主题（也就是可观察者）用一个共同的接口来更新观察者</p>
-<p>3.观察者和可观察者之间用松耦合方式结合（loosecoupling），可观察者不知道观察者的细节，只知道观察者实现了观察者接口</p>
-<p>4.使用此模式时，你可从被观察者处推（push）或拉（pull）数据（然而，推的方式被认为更“正确”）。</p>
-<p>5.有多个观察者时，不可以依赖特定的通知次序</p>
-<p>6.Java有多种观察者模式的实现，包括了通用的java.util.Observable实现上所带来的一些问题</p>
-<p>7.如果有必要的话，可以实现自己的Observable，这并不难，不要害怕</p>
-<p>8.Swing大量使用观察者模式，许多GUI框架也是如此</p>
-<p>9.此模式也被应用在许多地方，例如：JavaBeans，RMI</p>
-<h3 id="装饰者模式"><a href="#装饰者模式" class="headerlink" title="装饰者模式"></a>装饰者模式</h3><p><strong>装饰者模式动态地将责任附加到对象上。若要扩展功能，装饰者提供了比继承更有弹性的替代方案</strong></p>
-<p><strong>装饰者和被装饰对象有相同的超类型</strong></p>
-<p><strong>你可以用一个或多个装饰者包装一个对象</strong></p>
-<p><strong>既然装饰者和被装饰者有相同的超类型，所以在任何需要原始对象（被包装的）的场合，可以用装饰过的对象替代它</strong></p>
-<p><strong>装饰者可以在所委托被装饰者的行为之前与&#x2F;或之后，加上自己的行为，以达到特定的目的</strong></p>
-<p><strong>对象可以在任何时候被装饰，所以可以在运行时动态地，不限量地用你喜欢的装饰者来装饰对象</strong></p>
-<p><strong>要点</strong></p>
-<p>1.继承属于扩展形式之一，但不见得是达到弹性设计的最佳方式</p>
-<p>2.在我们的设计中，应该允许行为可以被扩展，而无须修改现有的代码</p>
-<p>3.组合和委托可用与在运行时动态地加上新的行为</p>
-<p>4.除了继承装饰者模式也可以让我们扩展行为</p>
-<p>5.装饰者模式意味着一群装饰者类，这些类用来包装具体组件</p>
-<p>6.装饰者类放映处被装饰的组件类型（事实上，它们具有相同的类型，都经过接口或继承实现）</p>
-<p>7.装饰者可以在被装饰者的行为前面与&#x2F;或后面加上自己的行为，甚至将被装饰者的行为整个取代掉，而达到特定的目的</p>
-<p>8.你可以用无数个装饰者包装一个组件</p>
-<p>9.装饰者一般对组件的客户是透明的，除非客户程序依赖于组件的具体类型</p>
-<p>10.装饰者会导致设计中出现许多小对象，如果过度使用，会让程序变得很复杂</p>
-<h3 id="简单工厂方法模式"><a href="#简单工厂方法模式" class="headerlink" title="简单工厂方法模式"></a>简单工厂方法模式</h3><p><strong>定义了一个创建对象的接口，但由于子类决定要实例化的类是哪一个。工厂方法让类把实例化推迟到子类</strong></p>
-<h4 id="依赖倒置原则"><a href="#依赖倒置原则" class="headerlink" title="依赖倒置原则"></a>依赖倒置原则</h4><p><strong>避免违反</strong></p>
-<p>1.变量不可以持有具体类的引用   （如果使用new，就会持有具体类的引用。你可以改用工厂避开这样的做法）</p>
-<p>2.不要让类派生自具体类   （如果派生自具体类，你就会依赖具体类，请派生自一个抽象[接口或抽象类]）</p>
-<p>3.不要覆盖基类中已实现的方法   （如果覆盖基类已实现的方法，那么你的基类就不是一个真正适合被继承的抽象。基类中已实现的方法，应该由所有的子类共享）</p>
-<p><strong>要点</strong></p>
-<p>1.简单工厂，虽然不是真正的设计模式，但仍不失为一个简单的方法，可以将客户程序从具体类解耦</p>
-<p>2.工厂方法使用继承，把对象的创建委托给子类，子类实现工厂方法来创建对象</p>
-<p>3.工厂方法允许类将实例化延迟到子类进行</p>
-<p>4.工厂是很有威力的技巧，帮助外面针对抽象编程，而不要针对具体类编程</p>
-<h3 id="抽象工厂模式"><a href="#抽象工厂模式" class="headerlink" title="抽象工厂模式"></a>抽象工厂模式</h3><p><strong>提供一个接口，用于创建相关或依赖对象的家族，而不需要明确指定具体类</strong></p>
-<p><strong>要点</strong></p>
-<p>1.所有的工厂都是用来封装对象的创建</p>
-<p>2.抽象工厂使用对象组合，对象的创建被实现在工厂接口所暴露出来的方法中</p>
-<p>3.所有工厂模式都通过减少应用程序和具体类之间的依赖促进松耦合</p>
-<p>4.抽象工厂创建相关的对象家族，而不需要依赖它们的具体类</p>
-<p>5.依赖倒置原则，指导外面避免依赖具体类型，而要尽量依赖抽象</p>
-<h3 id="单例模式"><a href="#单例模式" class="headerlink" title="单例模式"></a>单例模式</h3><p><strong>确保一个类只有一个实例，并提供一个全局访问的</strong></p>
-<p><strong>要点</strong></p>
-<p>1.单例模式确保程序中一个类最多只有一个实例</p>
-<p>2.单例模式也提供访问这个实例的全局点</p>
-<p>3.在Java中实现单例模式需要私有的构造器，一个静态方法和一个静态变量</p>
-<p>4.确定在性能和资源上的限制，然后小心地选择适当的方案来实现单例，以解决多线程的问题（我们必须认定所有的程序都是多线程的）</p>
-<p>5.小心，你如果使用多个类加载器，可能导致单例失效而产生多个实例</p>
-<h3 id="命令模式"><a href="#命令模式" class="headerlink" title="命令模式"></a>命令模式</h3><p><strong>将“请求”封装成对象，以便使用不同的请求，队列或者日志来参数化其他对象，命令模式也支持可撤销的操作</strong></p>
-<p><strong>要点</strong></p>
-<p>1.命令模式将发出请求的对象和执行请求的对象解耦</p>
-<p>2.在被解耦的两者之间是通过命令对象进行沟通的。命令对象封装了接收者和一个或一组动作</p>
-<p>3.通用者通过调用命令对象的execute()发出请求，这会使得接收者的动作被调用</p>
-<p>4.调用者可以接受命令当做参数，甚至在运行时动态地进行</p>
-<p>5.命令可以支持撤销，做法是实现一个undo()方法来回到execute()被执行前的状态</p>
-<p>6.宏命令是命令的一种简单的延伸，允许调用多个命令。宏方法也可以支持撤销</p>
-<p>7.实际操作时，很常见使用“聪明”命令对象，也就是之间实现了请求，而不是将工作委托给接收者</p>
-<p>8.命令也可以用来实现日志和事务系统</p>
-<h3 id="适配器模式"><a href="#适配器模式" class="headerlink" title="适配器模式"></a>适配器模式</h3><p><strong>将一个类的接口，转换成客户期望的另一个接口。适配器让原来接口不兼容的类可以合作无间</strong></p>
-<h3 id="外观模式"><a href="#外观模式" class="headerlink" title="外观模式"></a>外观模式</h3><p><strong>提供了一个统一的接口，用来访问子系统中的一群接口。外观定义了一个高层接口，让子系统更容易使用</strong></p>
-<p><strong>要点</strong></p>
-<p>1.当需要使用一个现有的类而其接口并不符合你的需要时，就使用适配器</p>
-<p>2.当需要简化并统一一个很大的接口或者一群复杂的接口时，使用外观</p>
-<p>3.适配器改变接口以符合客户的期望</p>
-<p>4.外观将客户从一个复杂的子系统中解耦</p>
-<p>5.实现一个适配器可能需要一番功夫，也可能不费功夫，视目标接口的大小与复杂度而定</p>
-<p>6.实现一个外观，需要将子系统组合进外观中，然后将工作委托给子系统执行</p>
-<p>7.适配器模式有两种形式：对象适配器和类适配器。类适配器需要用到多重继承</p>
-<p>8.你可以为一个子系统实现一个以上的外观</p>
-<p>9.适配器将一个对象包装起来以改变其接口，装饰者将一个对象包装起来以增加新的行为和责任；而外观将一群对象“包装”起来以简化其接口</p>
-<h3 id="模板方法模式"><a href="#模板方法模式" class="headerlink" title="模板方法模式"></a>模板方法模式</h3><p><strong>在一个方法中定义一个算法的骨架，而将一些步骤延迟到子类中，模板方法使得子类可以在不改变算法结构的情况下，重新定义算法中的某些步骤</strong></p>
-<p><strong>要点</strong></p>
-<p>1.”模板方法”定义了算法的步骤，把这些步骤的实现延迟到子类</p>
-<p>2.模板方法模式为我们提供了一种代码复用的重要技巧</p>
-<p>3.模板方法的抽象类可以定义具体方法，抽象方法和钩子</p>
-<p>4.抽象方法由子类实现</p>
-<p>5.钩子是一种方法，它在抽象类中不做事，或者只做默认的事，子类可以选择要不要去覆盖它</p>
-<p>6.为了防止子类改变模板方法中的算法，可以将模板方法声明为final</p>
-<p>7.好莱坞原则告诉我们，将决策权放在高层模块中，以便决定如何以及何时调用底层模块</p>
-<p>8.你将在真实世界代码中看到模板方法模式的许多变体，不要期待它们全都是一眼就可以被你认出的</p>
-<p>9.策略模式和模板方法模式都封装算法，一个用组合，一个用继承</p>
-<p>10.工厂方法是模板方法的一种特殊版本</p>
-<h3 id="迭代器模式"><a href="#迭代器模式" class="headerlink" title="迭代器模式"></a>迭代器模式</h3><p><strong>提供一种方法顺序访问一个聚合对象中的各个元素，而又不暴露其内部的表示</strong></p>
-<p><strong>迭代器模式让我们能游走于聚合内的每一个元素，而不暴露其内部的表示</strong></p>
-<p><strong>把游走的任务放在迭代器上，而不是聚合上，这样简化了聚合的接口和实现，也让责任各得其所</strong></p>
-<p><strong>要点</strong></p>
-<p>1.迭代器允许访问聚合的元素，而不需要暴露它的内部结构</p>
-<p>2.迭代器将遍历聚合的工作封装进一个对象中</p>
-<p>3.当使用迭代器的时候，我们依赖聚合提供遍历</p>
-<p>4.迭代器提供一个通用的接口，让我们遍历聚合的项，当我们编码使用聚合的项时，就可以使用多态</p>
-<p>5.我们应该努力让一个类只分配一个责任</p>
-<h3 id="单一原则"><a href="#单一原则" class="headerlink" title="单一原则"></a>单一原则</h3><p><strong>类的每个责任都有改变的潜在区域。超过一个责任，意味者超过一个改变的区域</strong></p>
-<p><strong>这个原则告诉我们，尽量让每个类保持单一责任</strong></p>
-<h3 id="组合模式"><a href="#组合模式" class="headerlink" title="组合模式"></a>组合模式</h3><p><strong>允许你将对象组合成树型结构来表现“整体&#x2F;部分”层次结构。组合能让客户以一致的方式处理个别对象以及对象组合</strong></p>
-<p><strong>组合模式让我们能用树形创建对象的结构，树里面包含了组合以及个别的对象</strong>**</p>
-<p><strong>使用组合结构，我们能把相同的操作应用在组合和个别对象上，换句话说，在大多数情况下，我们可以忽略组合和个别对象之间的差别</strong></p>
-<p><strong>要点</strong></p>
-<p>1.组合模式提供一个结构，可同时包容个别对象和组合对象</p>
-<p>2.组合模式允许客户对个别对象以及组合对象一视同仁</p>
-<p>3.组合结构内的任意对象称为组件，组件可以是组合，也可以是叶节点</p>
-<p>4.在实现组合模式时，有许多设计上的折衷。你要根据需要平衡透明性和安全性</p>
-<h3 id="状态模式"><a href="#状态模式" class="headerlink" title="状态模式"></a>状态模式</h3><p><strong>允许对象在内部状态改变时改变它的行为，对象看起来好像修改了它的类</strong></p>
-<p> <strong>要点</strong></p>
-<p>1.状态模式允许一个对象基于内部状态而拥有不同得行为</p>
-<p>2.和程序状态机（PSM）不同，状态模式用类代表状态</p>
-<p>3.Context会将行为委托给当前状态对象</p>
-<p>4.通过将每个状态封装进一个类，我们把以后需要做得任何改变局部化了</p>
-<p>5.状态模式和策略模式有相同的类图，但是它们的意图不同</p>
-<p>6..状态模式允许Context随着状态的改变而改变行为</p>
-<p>7.状态转换可以由State类或Context类控制</p>
-<p>8.使用状态模式通常会导致设计中类的数目大量增加</p>
-<p>9.状态类可以被多个Context实例共享</p>
-<h3 id="代理模式"><a href="#代理模式" class="headerlink" title="代理模式"></a>代理模式</h3><p><strong>为另一个对象提供一个替身或占位符以控制对这个对象的访问</strong></p>
-<p><strong>使用代理模式创建代表（representative）对象，让代表对象控制某对象的访问被代理的对象可以是远程的对象，创建开销打的对象或需要安全的控制对象</strong></p>
-<p><strong>要点</strong></p>
-<p>1.代理模式为另一个对象提供代表，以便控制客户对对象的访问，管理访问的方式有许多种</p>
-<p>2.远程代理管理客户和远程对象之间的交互</p>
-<p>3.虚拟代理控制访问实例化开销大的对象</p>
-<p>4.保护代理基于调用者控制对象方法的访问</p>
-<p>5.代理模式有许多变体，例如：缓存代理，同步代理，防火墙代理和写入时复制代理</p>
-<p>6.代理在结构上类似装饰者，但是目的不同</p>
-<p>7.装饰者模式为对象加上行为，而代理则是控制访问</p>
-<p>8.Java内置的代理支持，可以根据需要建立动态代理，并将所有调用分配到所选的处理器</p>
-<p>9.就和其他的包装者（wrapper）一样，代理会造成你的设计中类的数目增加</p>
-<h3 id="复合模式"><a href="#复合模式" class="headerlink" title="复合模式"></a>复合模式</h3><p><strong>要点</strong></p>
-<p>1.MVC是复合模式，结合了观察者模式，策略模式和组合模式</p>
-<p>2.模型使用观察者模式，以便观察者更新，同时保持两者之间解耦</p>
-<p>3.控制器是视图的策略，视图可以使用不同的控制器实现，得到不同的行为</p>
-<p>4.视图使用组合模式实现用户界面，用户界面通常组合了嵌套的组件，像面板，框架和按钮</p>
-<p>5.这些模式携手合作，把MVC模型的三层解耦，这样可以保持设计干净又有弹性</p>
-<p>6.适配器模式用来将新的模型适配成已有的视图和控制器</p>
-<p>7.Model2是MVC在Web上的应用</p>
-<p>8.在Model2中，控制器实现成Serblet，而JSP&#x2F;HTML实现视图</p>
-<h3 id="反模式"><a href="#反模式" class="headerlink" title="反模式"></a>反模式</h3><p><strong>告诉你如何采用一个不好的解决方案解决一个问题</strong></p>
-<h3 id="桥接模式"><a href="#桥接模式" class="headerlink" title="桥接模式"></a>桥接模式</h3><p><strong>使用桥接模式（Bridge Pattern）不只改变你的实现，也改变你的抽象</strong></p>
-<p><strong>桥接模式通过将实现和抽象放在两个不同的类层次中而使它们可以独立改变</strong></p>
-<p><strong>适合使用在需要跨越多个平台的图形和窗口系统上</strong></p>
-<p><strong>当需要用不同的方式改变接口和实现时，你会发现桥接模式很好用</strong></p>
-<p><strong>优点</strong></p>
-<p>1.将实现予以解耦，让它和界面之间不再永久绑定</p>
-<p>2.抽象和实现可以独立扩展，不会影响到对方</p>
-<p>3.对于“具体的抽象类”所做的改变，不会影响到客户</p>
-<p><strong>缺点</strong></p>
-<p>桥接模式的缺点是增加了复杂度</p>
-<h3 id="生成器模式"><a href="#生成器模式" class="headerlink" title="生成器模式"></a>生成器模式</h3><p><strong>使用生成器模式（Builder Pattern）封装一个产品的构造过程，并允许按步骤构造</strong></p>
-<p><strong>经常被用来创建组合结构</strong></p>
-<p><strong>优点</strong></p>
-<p>1.将一个复杂对象的创建过程封装起来</p>
-<p>2.允许对象通过多个步骤来创建，并且可以改变过程（这和只有一个步骤的工厂模式不同）</p>
-<p>3.向客户隐藏产品内部的表现</p>
-<p>4.产品的实现可以被替换，因为客户只看到一个对象的接口</p>
-<p><strong>缺点</strong></p>
-<p>与工厂模式相比，采用生成器模式创建对象的客户，需要具备更多的领域知识</p>
-<h3 id="责任链模式"><a href="#责任链模式" class="headerlink" title="责任链模式"></a>责任链模式</h3><p><strong>当你想要让一个以上的对象有机会能够处理某个请求对象的时候，就使用责任链模式（Chain of Responsibility Pattern）</strong></p>
-<p><strong>经常被使用在窗口系统中，处理鼠标和键盘之类的事件</strong></p>
-<p><strong>优点</strong></p>
-<p>将请求的发送者和接收者解耦</p>
-<p>可以简化你的对象，因为它不需要知道链的结构</p>
-<p>通过改变链内的成员或调动它们的次序，允许你动态地新增或者删除责任</p>
-<p><strong>缺点</strong></p>
-<p>并不保证请求一定会被执行，如果没有任何对象处理它的话，它可能会落到链尾端之外（<strong>这可以是优点也可以是缺点</strong>）</p>
-<p>可能不容易观察运行时的特征，有碍于出错</p>
-<h3 id="蝇量模式"><a href="#蝇量模式" class="headerlink" title="蝇量模式"></a>蝇量模式</h3><p><strong>如果让某个类的一个实例能够用来提供许多“虚拟实例”，就使用蝇量模式（Flyweight Pattern）</strong></p>
-<p><strong>当一个类有许多的实例，而这些实例能被同一方法控制的时候，我们就可以使用蝇量模式</strong></p>
-<p><strong>优点</strong></p>
-<p>减少运行时对象实例的个数，节省内存</p>
-<p>将许多“虚拟”对象的状态集中管理</p>
-<p><strong>缺点</strong></p>
-<p>一旦你实现了它，那么单个的逻辑实例将无法拥有独立而不同的行为</p>
-<h3 id="解释器模式"><a href="#解释器模式" class="headerlink" title="解释器模式"></a>解释器模式</h3><p><strong>使用解释器模式（Interpreter Pattern）为语言创建解释器</strong></p>
-<p><strong>当你需要实现一个简单的语言时，使用解释器</strong></p>
-<p><strong>当你有一个简单的语法，而且简单比效率更重要时，使用解释器</strong></p>
-<p><strong>可以处理脚本语言和编程语言</strong></p>
-<p><strong>优点</strong></p>
-<p>将每一个语法规则表示成一个类，方便于实现语言</p>
-<p>因为语法由许多类表示，所以你可以轻易地改变或扩展此语言</p>
-<p>通过在类结构中加入新的方法，可以在解释的同时增加新的行为，例如打印格式的美化或者进行复杂的程序验证</p>
-<p><strong>缺点</strong></p>
-<p>当语法规则的数目太大时，这个模式可能会变得非常繁杂。在这种情况下，使用解析器或编译器的产生器可能更加合适</p>
-<h3 id="中介者模式"><a href="#中介者模式" class="headerlink" title="中介者模式"></a>中介者模式</h3><p><strong>使用中介者模式（Mediator Pattern）来集中相关对象之间复杂的沟通和控制方式</strong></p>
-<p><strong>中介者常常被用来协调相关的GUI组件</strong></p>
-<p><strong>优点</strong></p>
-<p>通过将对象彼此解耦，可以增加对象的复用性</p>
-<p>通过将控制逻辑集中，可以简化系统维护</p>
-<p>可以让对象之间所传递的消息变得简单而且大幅减少</p>
-<p><strong>缺点</strong></p>
-<p>中介者模式的缺点是，如果设计不当，中介者对象本身会变得过于复杂</p>
-<h3 id="备忘录模式"><a href="#备忘录模式" class="headerlink" title="备忘录模式"></a>备忘录模式</h3><p><strong>当你需要让对象返回之前的状态时（例如，你的用户请求“撤销”），就使用备忘录模式（MementoPattern）</strong></p>
-<p><strong>备忘录用于储存状态</strong></p>
-<p><strong>目的</strong></p>
-<p>储存系统关键对象的重要状态</p>
-<p>维护关键对象的封装</p>
-<p><strong>优点</strong></p>
-<p>将被储存的状态放在外面，不要和关键对象混在一起，这可以帮助维护内聚</p>
-<p>保持关键对象的数据封装</p>
-<p>提供了容易实现的恢复能力</p>
-<p><strong>缺点</strong></p>
-<p>储存和恢复状态的过程可能相当耗时</p>
-<p>在Java系统时，其实可以考虑使用序列化（serialization）机制储存系统的状态</p>
-<h3 id="原型模式"><a href="#原型模式" class="headerlink" title="原型模式"></a>原型模式</h3><p><strong>当创建给定类的实例的过程很复杂时，就使用原型模式（Prototype Pattern）</strong></p>
-<p><strong>在一个复杂的类层次中，当系统必须从其中的许多类型创建新对象时，可以考虑原型</strong></p>
-<p><strong>优点</strong></p>
-<p>向客户隐藏制造新实例的复杂性</p>
-<p>提供让客户能够产生未知类型对象的选项</p>
-<p>在某些环境下，复制对象比创建新对象更有效</p>
-<p><strong>缺点</strong></p>
-<p>对象的复制有时相当复杂</p>
-<h3 id="访问者模式"><a href="#访问者模式" class="headerlink" title="访问者模式"></a>访问者模式</h3><p><strong>当你想要成为一个对象的组合增加新的能力，且封装并不重要时，就使用访问者模式（Visitor Pattern）</strong></p>
-<p><strong>当采用访问者模式的时候，就会打破组合类的封装</strong></p>
-<p><strong>优点</strong></p>
-<p>允许你对组合结构加入新的操作，而无需改变结构本身</p>
-<p>想要加入新的操作，相对容易</p>
-<p>访问者所进行的操作，其代码是集中在一起的</p>
-<p><strong>缺点</strong></p>
-<p>因为游走的功能牵涉其中，所以对组合结构的改变就更加困难</p>
-<h3 id="定义设计模式"><a href="#定义设计模式" class="headerlink" title="定义设计模式"></a>定义设计模式</h3><p><strong>模式是在某情景（context）下，针对某问题的某种解决方案</strong></p>
-<p><strong>情境</strong>就是应用某个模式的情况。这应该是会不断出现的情况</p>
-<p><strong>问题</strong>就是你想在某情境下达到的目标，但也可以是某情境下的约束</p>
-<p><strong>解决方案</strong>就是你所追求的：一个通用的设计，用来解决约束，达到目标</p>
-<p><strong>如果你发现自己处于某个情境下，面对这所欲达到的目标被一群约束影响着的问题，然而，你能够应用某个设计，克服这些约束并达到该目标，将你领向某个解决方案</strong></p>
-<p><strong>要点</strong></p>
-<p>1.让设计模式自然而然地出现在你的设计中，而不是为了使用而使用</p>
-<p>2.设计模式并非僵化的教条，你可以依据自己的需要采用或调整</p>
-<p>3.总是使用满足需要的最简单解决方案，不管它用不用模式</p>
-<p>4.学习设计模式的类目，可以帮你自己熟悉这些模式以及它们之间的关系</p>
-<p>5.模式的分类（或类目）是将模式分成不用的族群，如果这么做对你有帮助，就采用吧</p>
-<p>6.你必须相当专注才能够成为一个模式的作家，这需要时间也需要耐心，同时还必须乐意做大量的精化工作</p>
-<p>7.请牢记：你所遇到大多数的模式都是现有模式的变体，而非新的模式</p>
-<p>8.模式能够为你带来的最大好处之一是，让你的团队拥有共享词汇</p>
-<p>9.任何社群都有自己的行话，模式社群也是如此。别让这些行话绊着，在读完这本书之后，你已经能够应用大部分的行话了</p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><table>
-<thead>
-<tr>
-<th>模式</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>装饰者</td>
-<td>包装一个对象，以提供新的行为</td>
-</tr>
-<tr>
-<td>状态</td>
-<td>封装了基于状态的行为，并使用委托在行为之间切换</td>
-</tr>
-<tr>
-<td>迭代器</td>
-<td>在对象的集合之中游走，而不暴露集合的实现</td>
-</tr>
-<tr>
-<td>外观</td>
-<td>简化一群类的接口</td>
-</tr>
-<tr>
-<td>策略</td>
-<td>封装可以互换的行为，并使用委托来决定要使用哪一个</td>
-</tr>
-<tr>
-<td>代理</td>
-<td>包装对象，以控制对此对象的访问</td>
-</tr>
-<tr>
-<td>工厂方法</td>
-<td>由子类决定要创建的具体类是哪一个</td>
-</tr>
-<tr>
-<td>适配器</td>
-<td>封装对象，并提供不同的接口</td>
-</tr>
-<tr>
-<td>观察者</td>
-<td>让对象能够在状态改变时被通知</td>
-</tr>
-<tr>
-<td>模板方法</td>
-<td>客户用一致的方式处理对象集合和单个对象</td>
-</tr>
-<tr>
-<td>组合</td>
-<td>客户用一致的方式处理对象集合和单个对象</td>
-</tr>
-<tr>
-<td>单件（单例）</td>
-<td>确保有且只有一个对象被创建</td>
-</tr>
-<tr>
-<td>抽象工厂</td>
-<td>允许客户创建对象的家族，而无需指定他们的具体类</td>
-</tr>
-<tr>
-<td>命令</td>
-<td>封装请求成为对象</td>
-</tr>
-</tbody></table>
- 
       <!-- reward -->
       
     </div>
